@@ -1,13 +1,207 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D Sailing Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { overflow: hidden; margin: 0; background-color: #87CEEB; }
+        #gameCanvas { background: url('water.png') repeat; }
+        #hud { position: absolute; top: 10px; left: 10px; font-size: 20px; color: white; }
+        #warning { position: absolute; top: 40px; left: 10px; font-size: 20px; color: red; display: none; }
+    </style>
 </head>
 <body>
-  
+    <canvas id="gameCanvas"></canvas>
+    <div id="hud">Fuel: <span id="fuel">100</span> | Health: <span id="health">100</span></div>
+    <div id="warning">⚠️ Low Fuel! ⚠️</div>
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const boat = {
+            x: canvas.width / 2 - 25,
+            y: canvas.height / 2 - 25,
+            width: 50,
+            height: 50,
+            speed: 5,
+            dx: 0,
+            dy: 0,
+            fuel: 100,
+            health: 100
+        };
+
+        function updateBars() {
+            document.getElementById("fuelBar").style.width = boat.fuel + "%";
+            document.getElementById("healthBar").style.width = boat.health + "%";
+        }
+
+        let fuelPickups = [];
+        let hazards = [];
+        let pirates = [];
+        let windSpeed = 0;
+        let waveEffect = 0;
+
+        function spawnFuelPickups() {
+            fuelPickups = [];
+            for (let i = 0; i < 3; i++) {
+                fuelPickups.push({
+                    x: Math.random() * (canvas.width - 20),
+                    y: Math.random() * (canvas.height - 20),
+                    width: 20,
+                    height: 20
+                });
+            }
+        }
+
+        function spawnHazards() {
+            hazards = [];
+            for (let i = 0; i < 5; i++) {
+                hazards.push({
+                    x: Math.random() * (canvas.width - 40),
+                    y: Math.random() * (canvas.height - 40),
+                    width: 40,
+                    height: 40
+                });
+            }
+        }
+
+        function spawnPirates() {
+            pirates = [];
+            for (let i = 0; i < 2; i++) {
+                pirates.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    width: 50,
+                    height: 50,
+                    speed: 2
+                });
+            }
+        }
+
+        function drawBoat() {
+            ctx.fillStyle = "brown";
+            ctx.fillRect(boat.x, boat.y, boat.width, boat.height);
+        }
+
+        function drawFuelPickups() {
+            ctx.fillStyle = "yellow";
+            fuelPickups.forEach(fuel => {
+                ctx.fillRect(fuel.x, fuel.y, fuel.width, fuel.height);
+            });
+        }
+
+        function drawHazards() {
+            ctx.fillStyle = "gray";
+            hazards.forEach(hazard => {
+                ctx.fillRect(hazard.x, hazard.y, hazard.width, hazard.height);
+            });
+        }
+
+        function drawPirates() {
+            ctx.fillStyle = "red";
+            pirates.forEach(pirate => {
+                ctx.fillRect(pirate.x, pirate.y, pirate.width, pirate.height);
+            });
+        }
+
+        function updatePosition() {
+            if (boat.fuel > 0) {
+                boat.x += boat.dx + windSpeed;
+                boat.y += boat.dy + waveEffect;
+                boat.fuel -= (Math.abs(boat.dx) + Math.abs(boat.dy)) * 0.15;
+                boat.fuel = Math.max(0, boat.fuel);
+                document.getElementById("fuel").innerText = Math.floor(boat.fuel);
+                document.getElementById("health").innerText = Math.floor(boat.health);
+                
+                if (boat.fuel < 20) {
+                    document.getElementById("warning").style.display = "block";
+                } else {
+                    document.getElementById("warning").style.display = "none";
+                }
+            }
+        }
+
+        function checkCollisions() {
+            fuelPickups.forEach((fuel, index) => {
+                if (
+                    boat.x < fuel.x + fuel.width &&
+                    boat.x + boat.width > fuel.x &&
+                    boat.y < fuel.y + fuel.height &&
+                    boat.y + boat.height > fuel.y
+                ) {
+                    boat.fuel = Math.min(100, boat.fuel + 30);
+                    fuelPickups.splice(index, 1);
+                }
+            });
+
+            hazards.forEach(hazard => {
+                if (
+                    boat.x < hazard.x + hazard.width &&
+                    boat.x + boat.width > hazard.x &&
+                    boat.y < hazard.y + hazard.height &&
+                    boat.y + boat.height > hazard.y
+                ) {
+                    boat.health -= 10;
+                }
+            });
+        }
+
+        function movePirates() {
+            pirates.forEach(pirate => {
+                let dx = boat.x - pirate.x;
+                let dy = boat.y - pirate.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance > 1) {
+                    pirate.x += (dx / distance) * pirate.speed;
+                    pirate.y += (dy / distance) * pirate.speed;
+                }
+            });
+        }
+
+        function updateWeather() {
+            windSpeed = Math.random() * 2 - 1;
+            waveEffect = Math.random() * 2 - 1;
+        }
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBoat();
+            drawFuelPickups();
+            drawHazards();
+            drawPirates();
+            updatePosition();
+            checkCollisions();
+            movePirates();
+            requestAnimationFrame(gameLoop);
+        }
+
+        function keyDown(e) {
+            if (boat.fuel > 0) {
+                if (e.key === "ArrowRight") boat.dx = boat.speed;
+                if (e.key === "ArrowLeft") boat.dx = -boat.speed;
+                if (e.key === "ArrowDown") boat.dy = boat.speed;
+                if (e.key === "ArrowUp") boat.dy = -boat.speed;
+            }
+        }
+
+        function keyUp(e) {
+            if (e.key === "ArrowRight" || e.key === "ArrowLeft") boat.dx = 0;
+            if (e.key === "ArrowDown" || e.key === "ArrowUp") boat.dy = 0;
+        }
+
+        document.addEventListener("keydown", keyDown);
+        document.addEventListener("keyup", keyUp);
+
+        setInterval(updateWeather, 3000);
+        spawnFuelPickups();
+        spawnHazards();
+        spawnPirates();
+        gameLoop();
+    </script>
 </body>
 </html>
