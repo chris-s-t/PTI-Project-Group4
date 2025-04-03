@@ -8,7 +8,7 @@
     <style>
         body { overflow: hidden; margin: 0; background-color: #87CEEB; }
         #gameCanvas { background: url('water.png') repeat; display: block; }
-        #hud { position: absolute; top: 10px; left: 10px; font-size: 20px; color: white; width: 200px; }
+        #hud { position: absolute; top: 10px; left: 10px; font-size: 20px; width: 200px; background-image: 'Fighter1.jpg';}
         .bar-container { width: 100%; background-color: rgba(255, 255, 255, 0.5); border-radius: 5px; overflow: hidden; margin-bottom: 5px; }
         .bar { height: 20px; transition: width 0.2s ease-in-out; }
         #fuelBar { background-color: yellow; width: 100%; }
@@ -48,14 +48,16 @@
         canvas.height = window.innerHeight;
 
         let boat, obstacles, fuelPickups;
+        let keysPressed = { w: false, a: false, s: false, d: false };
+        let rotation = 0;  // Boat's current rotation in degrees
 
         function initializeGame() {
             boat = {
-                x: 0,
-                y: 0,
+                x: canvas.width / 2,
+                y: canvas.height / 2,
                 width: 50,
                 height: 50,
-                speed: 5,
+                speed: 3,
                 dx: 0,
                 dy: 0,
                 fuel: 100,
@@ -64,6 +66,12 @@
             };
             obstacles = [];
             fuelPickups = [];
+            keysPressed = { 
+                w: false, 
+                a: false, 
+                s: false, 
+                d: false 
+            };
             document.getElementById("gameOverScreen").style.display = "none";
         }
 
@@ -89,7 +97,7 @@
             obstacles.forEach(obstacle => {
                 ctx.fillRect(obstacle.x - boat.x + canvas.width / 2, obstacle.y - boat.y + canvas.height / 2, obstacle.size, obstacle.size);
             });
-            
+
             ctx.fillStyle = "yellow";
             fuelPickups.forEach(fuel => {
                 ctx.beginPath();
@@ -101,8 +109,12 @@
         function drawBoat() {
             let hygieneFactor = boat.hygiene / 100;
             let colorIntensity = Math.floor(255 * hygieneFactor);
+            ctx.save(); // Save the current state
+            ctx.translate(canvas.width / 2, canvas.height / 2); // Move to the center
+            ctx.rotate(rotation * Math.PI / 180); // Rotate by the current rotation angle
             ctx.fillStyle = `rgb(${colorIntensity}, ${colorIntensity}, ${colorIntensity})`;
-            ctx.fillRect(canvas.width / 2 - boat.width / 2, canvas.height / 2 - boat.height / 2, boat.width, boat.height);
+            ctx.fillRect(-boat.width / 2, -boat.height / 2, boat.width, boat.height); // Draw the boat centered at (0, 0)
+            ctx.restore(); 
         }
 
         function updateBars() {
@@ -141,17 +153,56 @@
             gameLoop();
         }
 
+        function getShortestRotation(current, target) {
+            const difference = target - current;
+            if (difference > 180) return difference - 360; 
+            if (difference < -180) return difference + 360; 
+            return difference;
+        }
+        function updateBoatMovement() {
+            let rad = (rotation - 90) * Math.PI / 180;
+            boat.dx = Math.cos(rad) * boat.speed;
+            boat.dy = Math.sin(rad) * boat.speed;
+        }
         document.addEventListener("keydown", (event) => {
-            if (event.key === "ArrowUp") boat.dy = -boat.speed;
-            if (event.key === "ArrowDown") boat.dy = boat.speed;
-            if (event.key === "ArrowLeft") boat.dx = -boat.speed;
-            if (event.key === "ArrowRight") boat.dx = boat.speed;
+            if (event.key === "w") keysPressed.w = true;
+            if (event.key === "a") keysPressed.a = true;
+            if (event.key === "s") keysPressed.s = true;
+            if (event.key === "d") keysPressed.d = true;
+            if (keysPressed.w && keysPressed.a) {
+                rotateToTarget(315); 
+            } else if (keysPressed.a && keysPressed.s) {
+                rotateToTarget(225); 
+            } else if (keysPressed.s && keysPressed.d) {
+                rotateToTarget(135); 
+            } else if (keysPressed.d && keysPressed.w) {
+                rotateToTarget(45); 
+            } else {
+                
+                if (keysPressed.w) rotateToTarget(0);   
+                if (keysPressed.s) rotateToTarget(180); 
+                if (keysPressed.a) rotateToTarget(270); 
+                if (keysPressed.d) rotateToTarget(90);  
+            }
+
+            updateBoatMovement(); 
         });
 
-        document.addEventListener("keyup", () => {
-            boat.dx = 0;
-            boat.dy = 0;
+        document.addEventListener("keyup", (event) => {
+            if (event.key === "w") keysPressed.w = false;
+            if (event.key === "a") keysPressed.a = false;
+            if (event.key === "s") keysPressed.s = false;
+            if (event.key === "d") keysPressed.d = false;
+            if (!keysPressed.w && !keysPressed.a && !keysPressed.s && !keysPressed.d) {
+                boat.dx = 0;
+                boat.dy = 0;
+            }
         });
+
+        function rotateToTarget(targetRotation) {
+            const shortestRotation = getShortestRotation(rotation, targetRotation);
+            rotation += shortestRotation;
+        }
 
         initializeGame();
         gameLoop();
