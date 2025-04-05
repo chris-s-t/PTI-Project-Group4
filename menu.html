@@ -40,6 +40,31 @@
             <li id="stat2"></li>
             <li id="stat3"></li>
           </ul>
+
+          <div class="relative w-full max-w-md mx-auto mt-10 animate-fade-in pulse-container">
+            <input
+              type="text"
+              id="shipName"
+              name="shipName"
+              required
+              class="peer w-full bg-transparent border-b-[3px] border-cyan-400 text-white placeholder-transparent focus:outline-none focus:border-pink-500 text-center text-xl pt-6 z-10 relative"
+              placeholder="Star Voyager"
+            />
+            <label
+              for="shipName"
+              class="absolute left-1/2 -translate-x-1/2 top-2 text-cyan-400 text-base transition-all duration-300 peer-placeholder-shown:top-6 peer-placeholder-shown:text-xl peer-placeholder-shown:text-white peer-focus:top-2 peer-focus:text-base peer-focus:text-pink-400 font-orbitron pointer-events-none z-10"
+            >
+              Enter Ship Name
+            </label>
+          
+            <!-- Floating star particles -->
+            <div class="absolute inset-0 z-0 pointer-events-none">
+              <div class="star-particle top-0 left-10"></div>
+              <div class="star-particle top-1/2 right-6"></div>
+              <div class="star-particle bottom-2 left-1/3"></div>
+            </div>
+          </div>
+          
           <button onclick="startGame()" class="select-button">Select Ship</button>
         </div>
       </div>
@@ -50,6 +75,6 @@
     <audio autoplay loop id="bgMusic" src="Audios/Menu Ambience.mp3" type="audio/mp3"></audio>
 
     <script src="menuScript.js"></script>
-    
+
   </body>
 </html>
