@@ -92,13 +92,21 @@ function previewShip(name, desc, stat1, stat2, stat3, imgSrc) {
 }
 
 function startGame() {
-  const music = document.getElementById("bgMusic");
-  music.pause();
-  alert("Ship selected. Starting game...");
+  const selectedShip = {
+    name: document.getElementById("previewName").textContent,
+    desc: document.getElementById("previewDesc").textContent,
+    stats: [
+      document.getElementById("stat1").textContent,
+      document.getElementById("stat2").textContent,
+      document.getElementById("stat3").textContent
+    ],
+    img: document.getElementById("previewImage").src
+  };
+
+  localStorage.setItem("selectedShip", JSON.stringify(selectedShip));
+
   window.location.href = "main.html";
 }
-
-window.onload = () => filterCategory("All");
 
 const canvas = document.getElementById("starCanvas");
 const ctx = canvas.getContext("2d");
@@ -123,15 +131,6 @@ function resizeCanvas() {
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.scale(dpr, dpr);
 }
-
-window.addEventListener('resize', resizeCanvas);
-window.addEventListener('orientationchange', resizeCanvas);
-window.addEventListener('load', () => {
-  resizeCanvas();
-  createStars();
-  animate();
-});
-resizeCanvas();
 
 function createStars() {
   stars = [];
@@ -177,5 +176,16 @@ function animate() {
   requestAnimationFrame(animate);
 }
 
+window.onload = () => filterCategory("All");
+
+window.addEventListener('resize', resizeCanvas);
+window.addEventListener('orientationchange', resizeCanvas);
+window.addEventListener('load', () => {
+  resizeCanvas();
+  createStars();
+  animate();
+});
+
+resizeCanvas();
 createStars();
 animate();
