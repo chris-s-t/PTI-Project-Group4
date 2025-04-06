@@ -24,7 +24,9 @@ function initializeGame() {
     fuel: 1000,
     health: 100,
     hygiene: 100,
-
+    acceleration: 0.1,
+    maxSpeed: 5,
+    friction: 0.95,
     rotation: 0,
     rotationSpeed: 2,
   };
