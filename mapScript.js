@@ -263,32 +263,42 @@ function isColliding(a, b) {
     a.y + a.height > b.y;
 }
 
+const keys = {};
+
 document.addEventListener("keydown", function (e) {
+  keys[e.key] = true; // Mark the key as pressed
+});
+
+document.addEventListener("keyup", function (e) {
+  keys[e.key] = false; // Mark the key as released
+});
+
+function updatePlayerPosition() {
   const lastX = player.x;
   const lastY = player.y;
-  const speed = 2;
+  const speed = 1;
 
   let moved = false;
 
-  if (e.key === "ArrowUp") {
+  if (keys["ArrowUp"]) {
     player.y -= speed;
-    player.frameY = 1;
+    player.frameY = 1; // Row for "up" animation
     moved = true;
   }
-  if (e.key === "ArrowDown") {
+  if (keys["ArrowDown"]) {
     player.y += speed;
-    player.frameY = 1;
+    player.frameY = 1; // Row for "down" animation
     moved = true;
   }
-  if (e.key === "ArrowLeft") {
+  if (keys["ArrowLeft"]) {
     player.x -= speed;
-    player.frameY = 1;
+    player.frameY = 1; // Row for "left" animation
     moved = true;
     facingLeft = true;
   }
-  if (e.key === "ArrowRight") {
+  if (keys["ArrowRight"]) {
     player.x += speed;
-    player.frameY = 1;
+    player.frameY = 1; // Row for "right" animation
     moved = true;
     facingLeft = false;
   }
@@ -319,7 +329,7 @@ document.addEventListener("keydown", function (e) {
   }
 
   camera.update();
-});
+};
 function drawPlayer() {
   const drawX = (player.x - player.hitbox.offsetX - camera.x) * zoom;
   const drawY = (player.y - player.hitbox.offsetY - camera.y) * zoom;
@@ -374,7 +384,7 @@ function drawMap() {
 }
 function gameLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  camera.update();
+  updatePlayerPosition();
   drawMap();
   drawPlayer();
   requestAnimationFrame(gameLoop);
