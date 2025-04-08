@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -234,7 +233,7 @@
           drawWidth,
           drawHeight
         );
-      } 
+      }
       else {
         ctx.translate(drawX, drawY);
         ctx.drawImage(
@@ -275,6 +274,21 @@
     mapImg.onload = () => {
       gameLoop();
     };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const playerName = localStorage.getItem('playerName');
+      const characterId = localStorage.getItem('characterId');
+
+      if (!playerName || !characterId) {
+        window.location.href = 'mainMenu.html';
+        return;
+      }
+
+      console.log("Player Name:", playerName);
+      console.log("Selected Character ID:", characterId);
+
+      // You can now use these to set up the game state
+    });
   </script>
 </body>
 

@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Medieval Game Menu</title>
+  <title>West Journey</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel&display=swap" rel="stylesheet">
   <style>
     body {
@@ -14,12 +14,11 @@
       overflow: hidden;
       color: #f0e6d2;
     }
-
     body.fade-out {
       opacity: 0;
       transition: opacity 0.5s ease;
     }
-
+    /* Menu Styling */
     .menu {
       position: absolute;
       top: 50%;
@@ -30,7 +29,6 @@
 
       text-align: center;
     }
-
     .menu h1 {
       font-size: 48px;
       margin-bottom: 20px;
@@ -40,7 +38,20 @@
       animation: floatFadeUp 1.2s ease-out forwards;
       animation-delay: 0.2s;
     }
+    .menu-button-img {
+      width: 200px;
+      transition: transform 0.2s ease;
+      cursor: pointer;
+    }
+    .menu-button-img:hover {
+      content: url('Assets/GUI/start_Press.png');
+      transform: scale(0.9);
+    }
+    .menu-button-img:active {
+      content: url('Assets/GUI/start_Unpress.png');
+    }
 
+    /* Input Styling */
     .name-input {
       margin-bottom: 100px;
       opacity: 0;
@@ -48,19 +59,6 @@
       animation: floatFadeUp 1.2s ease-out forwards;
       animation-delay: 0.5s;
     }
-
-    @keyframes floatFadeUp {
-      0% {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
     .name-input input {
       padding: 14px 24px;
       border: none;
@@ -72,23 +70,17 @@
       font-size: 22px;
       width: 320px;
       text-align: center;
-
-      /* Black stroke effect */
       text-shadow:
         1px 1px 0 #000,
         -1px 1px 0 #000,
         1px -1px 0 #000,
         -1px -1px 0 #000;
-
-      /* Glowy golden glow around the whole input */
       box-shadow:
         0 0 10px rgba(0, 0, 0, 0.8),
         0 0 20px rgba(255, 220, 150, 0.5),
         inset 0 0 10px rgba(0, 0, 0, 0.4);
-
       transition: transform 0.25s ease, box-shadow 0.25s ease;
     }
-
     .name-input input:focus {
       outline: none;
       transform: scale(1.05);
@@ -97,7 +89,18 @@
         0 0 28px rgba(255, 245, 200, 0.6),
         inset 0 0 12px rgba(0, 0, 0, 0.4);
     }
+    @keyframes floatFadeUp {
+      0% {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
+    /* Character Select Styling */
     .character-selection h2 {
       text-align: center;
       font-family: "MedievalSharp", cursive;
@@ -105,7 +108,6 @@
       border: 2px solid bl;
       margin-bottom: 20px;
     }
-
     .character-grid {
       display: flex;
       flex-wrap: wrap;
@@ -116,7 +118,6 @@
       animation: floatFadeUp 1.2s ease-out forwards;
       animation-delay: 1.2s;
     }
-
     .character-card {
       display: flex;
       flex-direction: column;
@@ -124,15 +125,12 @@
       transition: transform 0.3s ease;
       cursor: pointer;
     }
-
-
     .character-card img {
       width: 250px;
       height: 350px;
       border-radius: 12px;
       transition: transform 0.3s ease, filter 0.3s ease;
     }
-
     .character-name {
       font-size: 20px;
       color: #fcebb4;
@@ -154,25 +152,11 @@
       opacity: 0;
       transition: transform 0.4s ease-out, opacity 0.4s ease-out;
     }
-
-    @keyframes parchmentFloat {
-
-      0%,
-      100% {
-        transform: scaleY(1) translateY(0);
-      }
-
-      50% {
-        transform: scaleY(1) translateY(-3px);
-      }
-    }
-
     .character-card:hover .character-name {
       transform: scaleY(1);
       opacity: 1;
       animation: parchmentFloat 2s ease-in-out infinite;
     }
-
     .character-divider {
       width: 90%;
       height: 12px;
@@ -184,7 +168,6 @@
       overflow: hidden;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-
     .character-divider::before {
       content: "ᚠᛃᚢᛇᚾ";
       position: absolute;
@@ -198,23 +181,29 @@
       letter-spacing: 6px;
       pointer-events: none;
     }
-
-    /* Hover effect — scales within the card bounds */
     .character-card:hover .character-divider {
       transform: scale(1.5);
       box-shadow: 0 0 14px #0f0f0faa, 0 0 26px #000000aa;
     }
-
     .character-card:hover img {
       transform: scale(1.15);
       filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 18px rgba(0, 0, 0, 0.4));
     }
-
     .character-card.selected img {
       filter: drop-shadow(0 0 12px rgba(0, 0, 0, 0.75)) drop-shadow(0 0 24px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 36px rgba(0, 0, 0, 0.35));
       transform: scale(1.12);
     }
+    @keyframes parchmentFloat {
+      0%,
+      100% {
+        transform: scaleY(1) translateY(0);
+      }
+      50% {
+        transform: scaleY(1) translateY(-3px);
+      }
+    }
 
+    /* Button Styling */
     .buttons {
       margin-top: 30px;
       display: flex;
@@ -227,58 +216,7 @@
       animation-delay: 1.2s;
     }
 
-    .menu.hidden {
-      display: none;
-    }
-
-    .menu.show-menu {
-      display: block;
-      opacity: 0;
-      animation: fadeInUp 1s ease forwards;
-      animation-delay: 0.5s;
-    }
-
-    .menu-button-img {
-      width: 200px;
-      transition: transform 0.2s ease;
-      cursor: pointer;
-    }
-
-    .menu-button-img:hover {
-      content: url('Assets/GUI/start_Press.png');
-      transform: scale(0.9);
-    }
-
-    .menu-button-img:active {
-      content: url('Assets/GUI/start_Unpress.png');
-    }
-
-    /*
-    .settings-panel {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background-color: rgba(43, 30, 15, 0.8);
-      border: 2px solid #a87d43;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 250px;
-      z-index: 4;
-      opacity: 0;
-      transform: translateY(30px);
-      animation: floatFadeUp 1.2s ease-out forwards;
-      animation-delay: 1.5s;
-    }
-
-    .settings-panel h3 {
-      margin-top: 0;
-      margin-bottom: 10px;
-    }
-
-    .settings-panel p {
-      font-size: 14px;
-    }
-*/
+    /* Intro & Error Styling */
     #intro-screen {
       position: fixed;
       top: 0;
@@ -293,12 +231,10 @@
       z-index: 10;
       transition: opacity 1s ease;
     }
-
     .intro-content {
       text-align: center;
       animation: fadeUp 1.5s ease forwards;
     }
-
     .intro-title {
       font-size: 64px;
       font-family: 'Cinzel', serif;
@@ -307,7 +243,12 @@
       opacity: 0;
       animation: inkReveal 2.5s ease-out forwards;
     }
-
+    .input-error {
+      border: 2px solid #ff3c3c;
+      box-shadow: 0 0 8px 2px rgba(255, 60, 60, 0.8);
+      background-color: rgba(255, 230, 230, 0.05);
+      animation: runeGlowRed 1s infinite alternate;
+    }
     .click-to-begin {
       margin-top: 20px;
       font-size: 24px;
@@ -317,24 +258,14 @@
       pointer-events: none;
       animation: fadeInText 1s ease forwards 2.5s, float 3s ease-in-out infinite 3.5s;
     }
-
-    .input-error {
-      border: 2px solid #ff3c3c;
-      box-shadow: 0 0 8px 2px rgba(255, 60, 60, 0.8);
-      background-color: rgba(255, 230, 230, 0.05);
-      animation: runeGlowRed 1s infinite alternate;
-    }
-
     @keyframes runeGlowRed {
       0% {
         box-shadow: 0 0 8px 2px rgba(255, 60, 60, 0.6);
       }
-
       100% {
         box-shadow: 0 0 12px 4px rgba(255, 10, 10, 0.9);
       }
     }
-
     #characterError {
       color: #ff3c3c;
       font-size: 25px;
@@ -344,49 +275,40 @@
       display: none;
       animation: flickerRed 0.8s infinite alternate;
     }
-
     @keyframes flickerRed {
       from {
         opacity: 1;
       }
-
       to {
         opacity: 0.6;
       }
     }
-
-
     @keyframes fadeInUp {
       from {
         opacity: 0;
         transform: translateY(30px);
       }
-
       to {
         opacity: 1;
         transform: translateY(0);
       }
     }
-
     @keyframes fadeInText {
       from {
         opacity: 0;
         transform: translateY(10px);
       }
-
       to {
         opacity: 1;
         transform: translateY(0);
       }
     }
-
     @keyframes inkReveal {
       0% {
         opacity: 0;
         transform: translateY(50px) scale(0.8);
         filter: blur(10px);
       }
-
       100% {
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -395,23 +317,19 @@
     }
 
     @keyframes float {
-
       0%,
       100% {
         transform: translateY(0);
       }
-
       50% {
         transform: translateY(-8px);
       }
     }
-
     @keyframes fadeUp {
       0% {
         opacity: 0;
         transform: translateY(20px);
       }
-
       100% {
         opacity: 1;
         transform: translateY(0);
@@ -419,64 +337,56 @@
     }
   </style>
 </head>
-
 <body>
   <audio id="introSound" src="Assets/Sounds/ambient_intro.mp3" autoplay loop></audio>
-
   <div id="intro-screen">
     <div class="intro-content">
       <h1 class="intro-title">Uchup Journey to The West</h1>
       <p class="click-to-begin" id="clickToBegin">Click to Begin</p>
     </div>
   </div>
-
   <div class="menu">
-    <h1 class="ink-reveal">Choose Your Character</h1>
-
+    <h1>Choose Your Character</h1>
     <div class="name-input">
       <input type="text" placeholder="Enter your name..." id="playerName">
     </div>
     <div id="characterError">⚠ Please choose a character to continue.</div>
-
     <div class="character-grid">
-      <div class="character-card" data-name="Noble Man">
+      <div class="character-card" data-character-id="Noble Man">
         <img src="Assets/Avatars/MiniNobleManCrop.png" alt="Noble Man">
         <div class="character-divider"></div>
         <div class="character-name">Noble Man</div>
       </div>
-      <div class="character-card" data-name="Noble Woman">
+      <div class="character-card" data-character-id="Noble Woman">
         <img src="Assets/Avatars/MiniNobleWomanCrop.png" alt="Noble Woman">
         <div class="character-divider"></div>
         <div class="character-name">Noble Woman</div>
       </div>
-      <div class="character-card" data-name="Old Man">
+      <div class="character-card" data-character-id="Old Man">
         <img src="Assets/Avatars/MiniOldManCrop.png" alt="Old Man">
         <div class="character-divider"></div>
         <div class="character-name">Old Man</div>
       </div>
-      <div class="character-card" data-name="Peasant">
+      <div class="character-card" data-character-id="Peasant">
         <img src="Assets/Avatars/MiniPeasantCrop.png" alt="Peasant">
         <div class="character-divider"></div>
         <div class="character-name">Peasant</div>
       </div>
-      <div class="character-card" data-name="Princess">
+      <div class="character-card" data-character-id="Princess">
         <img src="Assets/Avatars/MiniPrincessCrop.png" alt="Princess">
         <div class="character-divider"></div>
         <div class="character-name">Princess</div>
       </div>
-      <div class="character-card" data-name="Queen">
+      <div class="character-card" data-character-id="Queen">
         <img src="Assets/Avatars/MiniQueenCrop.png" alt="Queen">
         <div class="character-divider"></div>
         <div class="character-name">Queen</div>
       </div>
     </div>
-
-
     <div class="buttons">
-      <img src="Assets/GUI/start_Unpress.png" class="menu-button-img" id="startBtn" onclick="startGame()"
+      <img src="Assets/GUI/start_Unpress.png" class="menu-button-img" id="startBtn"
         alt="Start Game">
     </div>
-
     <script>
       const characterCards = document.querySelectorAll('.character-card');
       const nameField = document.getElementById("playerName");
@@ -486,7 +396,6 @@
       startButton.addEventListener("click", function () {
         const playerName = nameField.value.trim();
         const selectedCharacter = document.querySelector(".character-card.selected");
-
         let valid = true;
 
         if (!playerName) {
@@ -505,18 +414,16 @@
 
         if (valid) {
           console.log("Starting game with:", playerName);
-          const characterId = selectedCharacter.getAttribute('data-character-id'); // Assuming each card has this attribute
+          const characterId = selectedCharacter.getAttribute('data-character-id');
 
-          // Save to localStorage
           localStorage.setItem('playerName', playerName);
           localStorage.setItem('characterId', characterId);
 
-          // Optional: Add transition animation class before redirect
           document.body.classList.add('fade-out');
 
           setTimeout(() => {
             window.location.href = 'test.html';
-          }, 500); // Match to your fade-out CSS duration
+          }, 500);
         }
       });
 
@@ -531,10 +438,6 @@
           card.classList.add('selected');
         });
       });
-
-      setInterval(() => {
-        if (Math.random() < 0.3) lightningStrike();
-      }, 5000);
 
       function setupButton(buttonId, defaultSrc, hoverSrc, activeSrc) {
         const btn = document.getElementById(buttonId);
@@ -558,33 +461,6 @@
 
       setupButton("startBtn", "Assets/GUI/start_Unpress.png", "Assets/GUI/start_Press.png", "Assets/GUI/start_Press.png");
 
-      function startGame() {
-        const playerName = nameField.value.trim();
-        const selectedCharacter = document.querySelector('.character-card.selected');
-
-        let hasError = false;
-
-        nameField.classList.remove("input-error");
-        characterError.style.display = "none";
-
-        if (playerName === "") {
-          nameField.classList.add("input-error");
-          hasError = true;
-        }
-
-        if (!selectedCharacter) {
-          characterError.style.display = "block";
-          hasError = true;
-        }
-
-        if (!hasError) {
-          console.log("Starting game with:", playerName, selectedCharacter.dataset.name);
-          // Continue game logic...
-        }
-      }
-
-      startBtn.addEventListener("click", startGame);
-
       document.addEventListener('DOMContentLoaded', () => {
         const intro = document.getElementById('intro-screen');
         const menu = document.querySelector('.menu');
@@ -592,7 +468,6 @@
 
         menu.style.display = 'none';
 
-        // Enable clicking only after intro animation finishes
         setTimeout(() => {
           clickText.style.pointerEvents = 'auto';
         }, 3500);
