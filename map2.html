@@ -144,23 +144,23 @@
     
           if (e.key === "ArrowUp") {
             player.y -= speed;
-            player.frameY = 3; // assuming row 3 = up
+            player.frameY = 1;
             moved = true;
           }
           if (e.key === "ArrowDown") {
             player.y += speed;
-            player.frameY = 0; // assuming row 0 = down
+            player.frameY = 1;
             moved = true;
           }
           if (e.key === "ArrowLeft") {
             player.x -= speed;
-            player.frameY = 1; // assuming row 1 = left
+            player.frameY = 1;
             moved = true;
             facingLeft = true;
           }
           if (e.key === "ArrowRight") {
             player.x += speed;
-            player.frameY = 2; // assuming row 2 = right
+            player.frameY = 1;
             moved = true;
             facingLeft = false;
           }
