@@ -9,7 +9,7 @@ playerImg.src = 'Assets/Characters/MiniPrincess.png'
 
 const mapImg = new Image();
 const mapGrid = [];
-let scaleFactor = 2;
+let scaleFactor = 3;
 
 let player = {
   x: 100,
