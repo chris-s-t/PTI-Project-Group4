@@ -5,7 +5,17 @@ const ctx = canvas.getContext("2d");
 const zoom = 2;
 
 const playerImg = new Image()
-playerImg.src = 'Assets/Characters/MiniPrincess.png'
+
+document.addEventListener("DOMContentLoaded", () => {
+  const characterId = localStorage.getItem("characterId");
+  const playerName = localStorage.getItem("playerName");
+
+  const stats = JSON.parse(localStorage.getItem("playerStats"));
+
+  playerImg.src = `Assets/Characters/Mini${characterId.replaceAll(" ", "")}.png`;
+  player.stats = stats;
+
+});
 
 const mapImg = new Image();
 const mapGrid = [];
@@ -382,7 +392,7 @@ function drawMap() {
     ctx.strokeRect(box.x, box.y, box.width, box.height);
   }
   */
- 
+
   ctx.restore();
 }
 function gameLoop() {
