@@ -51,7 +51,7 @@ if (mapNum == "1") {
     frameDelay: 10,
     frameTimer: 0,
     hitbox: {
-      offsetX: 6,
+      offsetX: 7,
       offsetY: 15,
       width: 18,
       height: 20,
@@ -88,7 +88,7 @@ if (mapNum == "1") {
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
@@ -253,16 +253,35 @@ for (let row = 0; row < mapGrid.length; row++) {
         x: startX + col * tileWidth,
         y: startY + row * tileHeight,
         width: tileWidth,
-        height: tileHeight
+        height: tileHeight,
+        type: "wall"
       });
     } else if (mapGrid[row][col] === 2) {
       collisions.push({
         x: startX + col * tileWidth - 10,
         y: startY + row * tileHeight,
         width: tileWidth,
-        height: tileHeight
+        height: tileHeight,
+        type: "wall"
+      });
+    } else if (mapGrid[row][col] === 3) { // Area interaction
+      collisions.push({
+        x: startX + col * tileWidth,
+        y: startY + row * tileHeight,
+        width: tileWidth,
+        height: tileHeight,
+        type: "interact"
+      });
+    } else if (mapGrid[row][col] === 4) { // Fishing interaction
+      collisions.push({
+        x: startX + col * tileWidth,
+        y: startY + row * tileHeight,
+        width: tileWidth,
+        height: tileHeight,
+        type: "fishing"
       });
     }
+    
   }
 }
 // Collision detection
@@ -275,12 +294,19 @@ function isColliding(a, b) {
 
 const keys = {};
 
+let interactCooldown = false;
+let zKeyPressed = false;
+
 document.addEventListener("keydown", function (e) {
   keys[e.key] = true; // Mark the key as pressed
 });
 
 document.addEventListener("keyup", function (e) {
   keys[e.key] = false; // Mark the key as released
+  if (e.key === "z") {
+    zKeyPressed = false;
+    interactCooldown = false;
+  }
 });
 
 function updatePlayerPosition() {
@@ -312,19 +338,34 @@ function updatePlayerPosition() {
     moved = true;
     facingLeft = false;
   }
+  if (keys["z"] && !zKeyPressed) {  
+    zKeyPressed = true;
+  }
 
   hitbox.x = player.x + player.hitbox.offsetX;
   hitbox.y = player.y + player.hitbox.offsetY;
 
-  // Check for collision and revert if needed
+  // Check for collision and interactables
   for (let collision of collisions) {
     if (isColliding(hitbox, collision)) {
-      player.x = lastX;
-      player.y = lastY;
-      hitbox.x = lastX + player.hitbox.offsetX;
-      hitbox.y = lastY + player.hitbox.offsetY;
-      moved = false;
-      break;
+      if(collision.type == "wall"){
+        player.x = lastX;
+        player.y = lastY;
+        hitbox.x = lastX + player.hitbox.offsetX;
+        hitbox.y = lastY + player.hitbox.offsetY;
+        moved = false;
+        break;
+
+      } else if(collision.type == "interact"){
+        //wip
+
+      } else if(collision.type == "fishing" && zKeyPressed && !interactCooldown){
+        interactCooldown = true;
+        let changeMoney = parseInt(localStorage.getItem('playerMoney'));
+        changeMoney += 100;
+        localStorage.setItem('playerMoney', changeMoney);
+      }
+      
     }
   }
 
@@ -386,12 +427,17 @@ function drawMap() {
 
   ctx.drawImage(mapImg, 0, 0);
 
-  /*
+  // color hitboxes
   for (let box of collisions) {
-    ctx.strokeStyle = 'red';
-    ctx.strokeRect(box.x, box.y, box.width, box.height);
+    if (box.type == "interact" || box.type == "fishing"){
+      ctx.strokeStyle = 'blue';
+      ctx.strokeRect(box.x, box.y, box.width, box.height);
+    } else if (box.type == "wall"){
+      ctx.strokeStyle = 'red';
+      ctx.strokeRect(box.x, box.y, box.width, box.height);
+    }
   }
-  */
+  
 
   ctx.restore();
 }
@@ -409,6 +455,7 @@ mapImg.onload = () => {
 window.addEventListener('DOMContentLoaded', () => {
   const playerName = localStorage.getItem('playerName');
   const characterId = localStorage.getItem('characterId');
+  const playerMoney = localStorage.getItem("playerMoney");
 
   if (!playerName || !characterId) {
     window.location.href = 'mainMenu.html';
