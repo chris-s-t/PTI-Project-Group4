@@ -21,11 +21,35 @@
       border: 2px solid white;
     }
   </style>
+  <link rel="stylesheet" href="statusGUI.css">
 </head>
 
 <body>
-  <canvas id="gameCanvas" width="800" height="736" mapNum="1"></canvas>
+  <div id="gameContainer">
+    <canvas id="gameCanvas" width="800" height="736" mapNum="1"></canvas>
+
+    <div id="status-container"></div>
+  </div>
+
   <script src="mapScript.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      fetch('statusGUI.html')
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById('status-container').innerHTML = html;
+
+          const script = document.createElement('script');
+          script.src = 'statusGUI.js';
+          script.onload = () => {
+            const stats = JSON.parse(localStorage.getItem("playerStats"));
+            if (stats) updateStatusBars(stats); // <- move here
+          };
+          document.body.appendChild(script);
+        });
+    });
+  </script>
 </body>
 
 </html>

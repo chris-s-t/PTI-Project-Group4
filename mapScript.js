@@ -376,10 +376,13 @@ function drawMap() {
 
   ctx.drawImage(mapImg, 0, 0);
 
+  /*
   for (let box of collisions) {
     ctx.strokeStyle = 'red';
     ctx.strokeRect(box.x, box.y, box.width, box.height);
   }
+  */
+ 
   ctx.restore();
 }
 function gameLoop() {

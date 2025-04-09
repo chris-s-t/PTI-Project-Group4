@@ -1,0 +1,337 @@
+#gameContainer {
+  position: relative;
+  width: fit-content;
+  height: fit-content;
+}
+
+#status-container {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1000;
+  pointer-events: none; /* UI doesn't block game unless needed */
+}
+
+#status-container * {
+  pointer-events: auto; /* Allow interactions inside the status */
+}
+.info-container {
+  margin-top: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  z-index: 5;
+}
+.avatar-section {
+  display: flex;
+  align-items: center;
+  gap: 0px;
+  margin-bottom: 5px;
+}
+
+.avatar-stack {
+  position: relative;
+  width: 64px;
+  height: 64px;
+}
+
+/* Outer circle mask that crops bottom */
+.avatar-mask {
+  width: 80px;
+  height: 80px;
+  overflow: hidden;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Core avatar image – extend height and move up to crop bottom */
+.avatar-core {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  object-position: center top;
+  position: absolute;
+  top: 10px; /* crop bottom */
+  left: 0;
+}
+
+.avatar-ring {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.name-money-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 21px;
+  margin-left: 20px;
+}
+
+.name-box,
+.money-box {
+  background-image: url("Assets/StatusGUI/nameHold.png");
+  background-size: 100% 100%;
+  padding: 4px 10px;
+  font-family: "Cinzel", serif;
+  font-size: 16px;
+  color: #f1f1ee;
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+}
+
+.coin-icon {
+  height: 18px;
+  margin-right: 6px;
+  margin-bottom: 5px;
+}
+
+.money-text {
+  color: rgb(241, 199, 109);
+  margin-bottom: 5px;
+}
+
+.status-bar {
+  display: flex;
+  align-items: center;
+  width: 300px;
+  height: 40px;
+  margin: 0px 0;
+}
+
+.status-icon {
+  position: absolute;
+  top: 20%;
+  left: 8px;
+  width: 10%;
+  height: 80%;
+  z-index: 3;
+  pointer-events: none;
+}
+.bar-container {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+}
+.bar-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 85%;
+  height: 100%;
+  background-image: url("Assets/StatusGUI/statBack.png");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  border-radius: 8px;
+  z-index: 1;
+}
+.bar-fill {
+  position: absolute;
+  top: 12px;
+  left: 8px;
+  height: 58%;
+  width: 80%;
+  border-radius: 8px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  z-index: 2;
+  transition: width 0.4s ease-in-out;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  box-shadow: 0 0 4px #000 inset, 0 0 10px rgba(255, 255, 255, 0.2);
+  opacity: 0.95;
+}
+.bar-fill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("Assets/StatusGUI/statFill.png");
+  background-size: cover;
+  opacity: 0.15;
+  z-index: 1;
+  pointer-events: none;
+}
+.status-bar-health .bar-fill {
+  background-image: linear-gradient(90deg, #600 0%, #d00 50%, #800 100%);
+  animation: pulseRed 2s infinite alternate;
+  filter: brightness(1.2) drop-shadow(0 0 6px red);
+}
+
+.status-bar-food .bar-fill {
+  background-image: linear-gradient(
+    90deg,
+    #ffdb7c 0%,
+    #f7b733 50%,
+    #cc9900 100%
+  );
+  animation: pulseGold 2.5s infinite alternate;
+  filter: brightness(1.1) drop-shadow(0 0 5px gold);
+}
+
+.status-bar-stamina .bar-fill {
+  background-image: linear-gradient(90deg, #00d2ff 0%, #3a7bd5 100%);
+  animation: pulseBlue 2s infinite alternate;
+  filter: brightness(1.2) drop-shadow(0 0 6px #3af);
+}
+
+.status-bar-happiness .bar-fill {
+  background-image: linear-gradient(90deg, #ffff00 0%, #ffaa00 100%);
+  animation: pulseYellow 1.8s infinite alternate;
+  filter: brightness(1.1) drop-shadow(0 0 6px #ff0);
+}
+
+.status-bar-hygiene .bar-fill {
+  background-image: linear-gradient(90deg, #aaa 0%, #eee 50%, #999 100%);
+  animation: shimmerGray 3s linear infinite;
+  filter: brightness(1) drop-shadow(0 0 3px #ccc);
+}
+.status-bar-health .status-icon {
+  animation: heartbeat 1.5s infinite ease-in-out;
+}
+.status-bar-stamina .status-icon {
+  animation: wiggle 2s infinite ease-in-out;
+}
+.status-bar-happiness .status-icon {
+  animation: glowBounce 2s infinite ease-in-out;
+}
+.stat-text {
+  position: absolute;
+  right: 15px;
+  top: 58%;
+  right: 20%;
+  transform: translateY(-50%);
+  font-family: "Cinzel", serif;
+  font-size: 16px;
+  color: #fff8d4;
+  text-shadow: 1px 1px 2px #000;
+  z-index: 4;
+  pointer-events: none;
+}
+.floating-text-container {
+  position: absolute;
+  right: 30px;
+  top: 10%;
+  font-size: 14px;
+  font-family: "Cinzel", serif;
+  color: gold;
+  text-shadow: 1px 1px 2px black;
+  pointer-events: none;
+  z-index: 10;
+}
+.floating-text {
+  animation: floatUp 1.2s ease-out forwards;
+  opacity: 1;
+}
+@keyframes flashGreen {
+  0% {
+    box-shadow: inset 0 0 10px 2px lime;
+  }
+  100% {
+    box-shadow: none;
+  }
+}
+@keyframes flashRed {
+  0% {
+    box-shadow: inset 0 0 10px 2px red;
+  }
+  100% {
+    box-shadow: none;
+  }
+}
+@keyframes floatUp {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+}
+@keyframes heartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(5deg);
+  }
+  75% {
+    transform: rotate(-5deg);
+  }
+}
+
+@keyframes glowBounce {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.1);
+    filter: brightness(1.4);
+  }
+}
+@keyframes pulseRed {
+  from {
+    filter: brightness(1) drop-shadow(0 0 3px red);
+  }
+  to {
+    filter: brightness(1.4) drop-shadow(0 0 8px #ff5555);
+  }
+}
+
+@keyframes pulseGold {
+  from {
+    filter: brightness(1) drop-shadow(0 0 3px gold);
+  }
+  to {
+    filter: brightness(1.3) drop-shadow(0 0 7px #ffd700);
+  }
+}
+
+@keyframes pulseBlue {
+  from {
+    filter: brightness(1) drop-shadow(0 0 3px #0ff);
+  }
+  to {
+    filter: brightness(1.3) drop-shadow(0 0 7px #00faff);
+  }
+}
+
+@keyframes pulseYellow {
+  from {
+    filter: brightness(1) drop-shadow(0 0 3px #ff0);
+  }
+  to {
+    filter: brightness(1.3) drop-shadow(0 0 7px #ffff99);
+  }
+}
+
+@keyframes shimmerGray {
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 100% 0;
+  }
+}
