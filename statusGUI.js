@@ -66,3 +66,20 @@ document.getElementById("moneyDisplay").textContent = `${playerMoney}`;
 document.addEventListener("DOMContentLoaded", () => {
   updateStatusBars(defaultStatus);
 });
+
+//money_face update uang
+function updateMoneyDisplay() {
+  const playerMoney = localStorage.getItem("playerMoney");
+  document.getElementById("moneyDisplay").textContent = `${playerMoney}`;
+}
+
+let previousMoney = localStorage.getItem("playerMoney");
+
+setInterval(() => {
+  const playerMoney = localStorage.getItem("playerMoney");
+
+  if (playerMoney !== previousMoney) {
+    updateMoneyDisplay();
+    previousMoney = playerMoney;
+  }
+}, 500); //miliseconds
