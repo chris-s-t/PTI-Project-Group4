@@ -135,6 +135,8 @@ function updateClock() {
   if (day > 10) {
     resetTime();
   }
+
+ 
   // Update the display
   timeElement.textContent = formatTime(hours, minutes);
   dayElement.textContent = `${getDayOfWeek(day)} - Day ${day}`;
@@ -182,14 +184,9 @@ function updateStatusBar(stat, currentValue, maxValue) {
     changeStats[stat].currentStat = maxValue;
     localStorage.setItem("playerStats", JSON.stringify(changeStats));
   } else if (currentValue < 0) {
-    let changeStats = JSON.parse(localStorage.getItem("playerStats"));
-    currentValue = 0;
-    changeStats[stat].currentStat = 0;
-    localStorage.setItem("playerStats", JSON.stringify(changeStats));
-  }
-
-  if (currentValue === 0) {
-    triggerGameOver(stat);
+      const event = new CustomEvent("dead", {
+      });
+      window.dispatchEvent(event);  // Dispatch event to window object
   }
 
   const percent = Math.max(0, Math.min(80, currentValue)); // Fixed to 100 max
@@ -211,16 +208,6 @@ function updateStatusBar(stat, currentValue, maxValue) {
     fill.style.animation = diff > 0 ? "flashGreen 0.3s" : "flashRed 0.3s";
     setTimeout(() => (fill.style.animation = ""), 300);
   }
-}
-function triggerGameOver(stat) {
-  alert(`Game Over! Your ${stat} dropped to zero.`);
-  
-  // Optional: Clear localStorage or reset game state
-  localStorage.clear(); 
-
-  // Optional: Redirect or reload
-  // window.location.href = "gameover.html";
-  window.location.href = "mainmenu.html";
 }
 function updateStatusBars(stats) {
   for (const stat in stats) {
