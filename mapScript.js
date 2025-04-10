@@ -25,24 +25,6 @@ const mapImg = new Image();
 const mapGrid = [];
 let scaleFactor = 3;
 
-let player = {
-  x: 100,
-  y: 190,
-  width: 32,     // adjust based on your sprite frame width
-  height: 32,    // adjust based on your sprite frame height
-  frameX: 0,
-  frameY: 0,     // use this for direction-based row selection
-  maxFrame: 3,   // number of animation frames per row - adjust as needed
-  frameDelay: 10,
-  frameTimer: 0,
-  hitbox: {
-    offsetX: 6,
-    offsetY: 15,
-    width: 18,
-    height: 20,
-  },
-};
-
 if (mapNum == "1") {
   player = {
     x: 100,
@@ -114,7 +96,7 @@ if (mapNum == "1") {
     frameDelay: 10,
     frameTimer: 0,
     hitbox: {
-      offsetX: 6,
+      offsetX: 7,
       offsetY: 15,
       width: 18,
       height: 20,
@@ -155,7 +137,7 @@ if (mapNum == "1") {
     frameDelay: 10,
     frameTimer: 0,
     hitbox: {
-      offsetX: 6,
+      offsetX: 7,
       offsetY: 15,
       width: 18,
       height: 20,

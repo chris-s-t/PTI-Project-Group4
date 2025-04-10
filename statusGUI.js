@@ -27,7 +27,7 @@ function loadTime() {
     return savedTime;
   } else {
     // If no time is saved, initialize at 00:00
-    return { hours: 8, minutes: 0 };
+    return { hours: 15, minutes: 0 };
   }
 }
 // Function to save the current time to localStorage
@@ -60,8 +60,11 @@ function calculateOpacity(hours, minutes) {
 }
 function trackEvery10Minutes(minutes) {
   // degrade these stats every 10 minutes ingame
-  if (minutes % 1 === 0) {
-    statChange("happiness", 0)
+  if (minutes % 10 === 0) {
+    statChange("food", -3)
+    statChange("stamina", -1)
+    statChange("hygiene", -2)
+    statChange("happiness", -1)
   }
 }
 // Function to update the clock and the overlay opacity
@@ -120,7 +123,12 @@ function updateStatusBar(stat, currentValue, maxValue) {
   if(currentValue > maxValue){
     let changeStats = JSON.parse(localStorage.getItem("playerStats"));
     currentValue = maxValue;
-    changeStats[stat].currentValue = maxValue;
+    changeStats[stat].currentStat = maxValue;
+    localStorage.setItem("playerStats", JSON.stringify(changeStats));
+  } else if(currentValue < 0){
+    let changeStats = JSON.parse(localStorage.getItem("playerStats"));
+    currentValue = 0;
+    changeStats[stat].currentStat = 0;
     localStorage.setItem("playerStats", JSON.stringify(changeStats));
   }
 
