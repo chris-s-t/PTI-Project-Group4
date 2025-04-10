@@ -25,34 +25,54 @@ const mapImg = new Image();
 const mapGrid = [];
 let scaleFactor = 3;
 
+//default player value. the x and y posisiton here is the starting position after starting game.
+//change as you please with maps
+player = {
+  x: 100,
+  y: 190,
+  width: 32,     // adjust based on your sprite frame width
+  height: 32,    // adjust based on your sprite frame height
+  frameX: 0,
+  frameY: 0,     // use this for direction-based row selection
+  maxFrame: 3,   // number of animation frames per row - adjust as needed
+  frameDelay: 10,
+  frameTimer: 0,
+  hitbox: {
+    offsetX: 7,
+    offsetY: 15,
+    width: 18,
+    height: 20,
+  },
+};
+function fixMapPosition(x, y){
+  player.x = x;
+  player.y = y;
+}
+ // for setting player posisiton appropriately according to last visited map. switch case in each ifs
+const previousMap = localStorage.getItem("previousMap").match(/\d+/)[0];
+console.log("Selected Map ID:", previousMap);
 if (mapNum == "1") {
   zoom = 2;
-  player = {
-    x: 100,
-    y: 190,
-    width: 32,     // adjust based on your sprite frame width
-    height: 32,    // adjust based on your sprite frame height
-    frameX: 0,
-    frameY: 0,     // use this for direction-based row selection
-    maxFrame: 3,   // number of animation frames per row - adjust as needed
-    frameDelay: 10,
-    frameTimer: 0,
-    hitbox: {
-      offsetX: 7,
-      offsetY: 15,
-      width: 18,
-      height: 20,
-    },
-  };
+  switch (previousMap) {
+    case "2":
+      fixMapPosition(315, 680);
+      break;
+    case "4":
+      fixMapPosition(80, 180);
+      break;
+    case "5":
+      fixMapPosition(50, 190);
+      break;
+  }
   mapImg.src = 'map.jpg';
   mapGrid.push(
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-    [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-    [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
-    [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 1, 1, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-    [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 1, 1, 1, 0, 0, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-    [1, 1, 1, 1, 1, 4, 4, 1, 1, 0, 0, 2, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+    [1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+    [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+    [1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+    [1, 0, 0, 0, 0, 0, 0, 94,1, 0, 0, 2, 1, 1, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+    [1, 0, 0, 0, 0, 0, 0, 94,1, 0, 0, 2, 1, 1, 1, 0, 0, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+    [1, 1, 1, 0, 3, 1, 1, 1, 1, 0, 0, 2, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
     [95,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
     [95,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
     [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0],
@@ -87,23 +107,14 @@ if (mapNum == "1") {
 } else if (mapNum == "2") {
   zoom = 2;
   scaleFactor = 4;
-  player = {
-    x: 290,
-    y: 70,
-    width: 32,     // adjust based on your sprite frame width
-    height: 32,    // adjust based on your sprite frame height
-    frameX: 0,
-    frameY: 0,     // use this for direction-based row selection
-    maxFrame: 3,   // number of animation frames per row - adjust as needed
-    frameDelay: 10,
-    frameTimer: 0,
-    hitbox: {
-      offsetX: 10,
-      offsetY: 20,
-      width: 18,
-      height: 20,
-    },
-  };
+  switch (previousMap) {
+    case "1":
+      fixMapPosition(290, 70);
+      break;
+    case "3":
+      fixMapPosition(40, 150);
+      break;
+  }
   mapImg.src = 'map2.jpg';
   mapGrid.push(
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,91,91,91,91,91, 1, 1, 1, 1, 1],
@@ -129,23 +140,14 @@ if (mapNum == "1") {
   )
 } else if (mapNum == "3") {
   zoom = 2;
-  player = {
-    x: 100,
-    y: 190,
-    width: 32,     // adjust based on your sprite frame width
-    height: 32,    // adjust based on your sprite frame height
-    frameX: 0,
-    frameY: 0,     // use this for direction-based row selection
-    maxFrame: 3,   // number of animation frames per row - adjust as needed
-    frameDelay: 10,
-    frameTimer: 0,
-    hitbox: {
-      offsetX: 7,
-      offsetY: 15,
-      width: 18,
-      height: 20,
-    },
-  };
+  switch (previousMap) {
+    case "2":
+      fixMapPosition(960, 540);
+      break;
+    case "5":
+      fixMapPosition(40, 190);
+      break;
+  }
   mapImg.src = 'map3.jpg';
   mapGrid.push(
     [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 2],
@@ -199,27 +201,14 @@ if (mapNum == "1") {
     [2, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [2, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   )
-}else if(mapNum == "4"){
-  zoom = 2;
+} else if(mapNum == "4"){
+  zoom = 1.89;
   scaleFactor = 4;
-  player = {
-    x: 45,
-    y: 320,
-    width: 32,     // adjust based on your sprite frame width
-    height: 32,    // adjust based on your sprite frame height
-    frameX: 0,
-    frameY: 0,     // use this for direction-based row selection
-    maxFrame: 3,   // number of animation frames per row - adjust as needed
-    frameDelay: 10,
-    frameTimer: 0,
-    hitbox: {
-      offsetX: 10,
-      offsetY: 20,
-      width: 18,
-      height: 20,
-    },
-  };
-  mapImg.src = 'roommap.jpg';
+  player.x = 45;
+  player.y = 300;
+  player.hitbox.offsetX = 10;
+  player.hitbox.offsetY = 20;
+  mapImg.src = 'map4.jpg';
   mapGrid.push(
     [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],         
     [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],         
@@ -237,34 +226,29 @@ if (mapNum == "1") {
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],         
     [1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 0, 0, 0, 0, 1],         
     [1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1],            
-    [1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1],         
+    [1, 0,91,91,91,91,91, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1],         
     [1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 1, 0],         
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],         
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
   )
-}else if(mapNum == "5"){
+} else if(mapNum == "5"){
   zoom = 1;
   scaleFactor = 4;
-  player = {
-    x: 45,
-    y: 320,
-    width: 32,     // adjust based on your sprite frame width
-    height: 32,    // adjust based on your sprite frame height
-    frameX: 0,
-    frameY: 0,     // use this for direction-based row selection
-    maxFrame: 3,   // number of animation frames per row - adjust as needed
-    frameDelay: 10,
-    frameTimer: 0,
-    hitbox: {
-      offsetX: 30,
-      offsetY: 50,
-      width: 18,
-      height: 30,
-    },
-  };
+  player.hitbox.offsetX = 30;
+  player.hitbox.offsetY = 50;
+  player.hitbox.width =  18;
+  player.hitbox.height =  30;
+  switch (previousMap) {
+    case "1":
+      fixMapPosition(260, 70);
+      break;
+    case "3":
+      fixMapPosition(580, 600);
+      break;
+  }
   mapImg.src = 'map5.jpg';
   mapGrid.push(
-    [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 91, 91, 91, 91, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+    [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,91,91,91,91, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
     [2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
     [2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
     [2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
@@ -298,10 +282,9 @@ if (mapNum == "1") {
     [2, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
     [2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
     [2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-    [2, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 93, 93, 93, 93, 93, 93, 93, 93, 93, 1, 1, 1, 2],
+    [2, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,93,93,93,93,93,93,93,93,93, 1, 1, 1, 2],
   )
 }
-
 
 let isMapTransitionDialogActive = false; // Track dialog state
 
@@ -374,14 +357,15 @@ for (let row = 0; row < mapGrid.length; row++) {
         height: tileHeight,
         type: "fishing"
       });
-    } else if (mapGrid[row][col] === 5) { //interact wip
+    } else if (mapGrid[row][col] === 5) { // Sleeping interaction
       collisions.push({
         x: startX + col * tileWidth,
         y: startY + row * tileHeight,
         width: tileWidth,
         height: tileHeight,
-        type: "interact"
+        type: "sleep"
       });
+      
     } else if (String(mapGrid[row][col]).startsWith("9")) { // Map transition block
       const mapNum = parseInt(tile.slice(1)); // the map type written after 9
       const targetMap = `map${mapNum}.html`; // and then jadi deh html
@@ -414,7 +398,7 @@ let speed = 1;
 let inCutscene = false;
 let showExclamation = false;
 let timeout = null;
-//stops from moving
+//stops from moving                                //set displayText to null if you dont want popups
 function cutsceneToggle(cutsceneDuration, cooldownDuration, displayText){ //cooldownDuration determines when you can interact again
   inCutscene = true;
   interactCooldown = true;
@@ -522,12 +506,12 @@ function updatePlayerPosition() {
         break;
       } else if (collision.type === "interact") {
         // Handle interaction logic here
-      } else if (collision.type === "fishing") {
+      } else if (collision.type === "fishing") {  // Fishing behavior
         drawExclamation(0);
         if (zKeyPressed && !interactCooldown && !inCutscene) {
           drawExclamation(1000);
           let rarity = Math.floor(Math.random() * 100);
-          statChange("stamina", -2)
+          statChange("stamina", -2);
           if (rarity == 99) {
             statChange("happiness", 10);
             moneyChange(1000);
@@ -541,6 +525,15 @@ function updatePlayerPosition() {
             cutsceneToggle(1000, 2000, "You caught trash hahahahahaha!");
           }
         }
+      } else if(collision.type == "sleep"){  // Sleep behavior
+        drawExclamation(0);
+        if(zKeyPressed && !interactCooldown && !inCutscene){
+          cutsceneToggle(1000, 1000, );
+          statChange("food", -5);
+          statChange("stamina", 50);
+          statChange("happiness", 30);
+        }
+
       } else if (collision.type === "mapTransition") {
         if (!collision.inside && !isMapTransitionDialogActive) {
           collision.inside = true; // Mark the player as inside the block
@@ -632,6 +625,8 @@ function showMapTransitionDialog(nextMap) {
 
   // Handle "Yes" button click
   yesButton.onclick = () => {
+    const currentMap = window.location.pathname.split('/').pop();
+    localStorage.setItem("previousMap", currentMap);
     window.location.href = nextMap; // Redirect to the next map
   };
 

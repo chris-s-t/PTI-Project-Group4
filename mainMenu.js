@@ -108,6 +108,7 @@ startButton.addEventListener("click", function () {
     localStorage.setItem("playerName", playerName);
     localStorage.setItem("characterId", characterId);
     localStorage.setItem("playerMoney", characterData.moneyOwned);
+    localStorage.setItem("previousMap", "map3.html");
 
     document.body.classList.add("fade-out");
     setTimeout(() => {
