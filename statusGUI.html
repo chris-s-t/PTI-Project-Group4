@@ -1,9 +1,12 @@
 <div id="statusGUI" class="status-gui">
 
   <div class="clock">
-    <img src="Assets/StatusGUI/nameHold.png" class="clock back"/>
-      <div class="time">00:00</div>
+    <img src="Assets/GUI/Clock.png" />
+    <div class="time">00:00</div>
+    <div class="day">Day 1</div>
   </div>
+
+  <div id="greeting" class="greeting"></div>
 
   <div class="avatar-section">
     <div class="avatar-stack">
@@ -13,7 +16,7 @@
       </div>
       <img src="Assets/StatusGUI/avatarFront.png" class="avatar-ring front" />
     </div>
-  
+
     <div class="name-money-container">
       <div id="playerNameDisplay" class="name-box">a</div>
       <div class="money-box">
@@ -22,7 +25,7 @@
       </div>
     </div>
   </div>
-  
+
   <div class="status-bar status-bar-health">
     <div class="bar-container">
       <div class="floating-text-container"></div>
@@ -68,6 +71,15 @@
       <div class="stat-text" id="hygieneText">0</div>
     </div>
   </div>
+</div>
+
+<div class="medieval-joystick">
+  <button class="arrow up" data-key="ArrowUp">▲</button>
+  <div class="middle-row">
+    <button class="arrow left" data-key="ArrowLeft">◄</button>
+    <button class="arrow right" data-key="ArrowRight">►</button>
+  </div>
+  <button class="arrow down" data-key="ArrowDown">▼</button>
 </div>
 
 <div id="popupBox">

@@ -5,9 +5,13 @@ const playerMoney = localStorage.getItem("playerMoney") || 0;
 const previousStats = {};
 
 const timeElement = document.querySelector(".time");
-const overlay = document.getElementById("overlay");  // Reference to the overlay element
+const dayElement = document.querySelector(".day");
+const greetingElement = document.getElementById("greeting");
 
-function statChange(statName, amount){
+let day = loadDay();
+const overlay = document.getElementById("overlay"); // Reference to the overlay element
+
+function statChange(statName, amount) {
   let stats = JSON.parse(localStorage.getItem("playerStats"));
   stats[statName].currentStat += amount;
   localStorage.setItem("playerStats", JSON.stringify(stats));
@@ -17,7 +21,10 @@ function statChange(statName, amount){
 
 // Function to format time as HH:MM
 function formatTime(hours, minutes) {
-  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+    2,
+    "0"
+  )}`;
 }
 
 // Load the saved time from localStorage, or start from 00:00 if nothing is saved
@@ -30,14 +37,21 @@ function loadTime() {
     return { hours: 15, minutes: 0 };
   }
 }
+function loadDay() {
+  const savedDay = parseInt(localStorage.getItem("day"));
+  return isNaN(savedDay) ? 1 : savedDay;
+}
 // Function to save the current time to localStorage
 function saveTime(hours, minutes) {
   const time = { hours, minutes };
   localStorage.setItem("time", JSON.stringify(time));
 }
+function saveDay(currentDay) {
+  localStorage.setItem("day", currentDay);
+}
 // Function to calculate opacity based on the current time
 function calculateOpacity(hours, minutes) {
-  let opacity = 0;  // Default opacity is 1 (fully visible)
+  let opacity = 0; // Default opacity is 1 (fully visible)
 
   // If the time is between 12:00 and 20:00, darken the overlay
   if (hours >= 12 && hours < 20) {
@@ -53,7 +67,7 @@ function calculateOpacity(hours, minutes) {
   else if (hours >= 4 && hours < 10) {
     // Gradually brighten from 4:00 (opacity 0.5) to 10:00 (opacity 0)
     const timePassed = (hours - 4) * 60 + minutes; // Total minutes since 4:00
-    opacity = 0.5 - (timePassed / (6 * 60)); // 6 hours from 4:00 to 10:00
+    opacity = 0.5 - timePassed / (6 * 60); // 6 hours from 4:00 to 10:00
   }
 
   return opacity;
@@ -61,13 +75,46 @@ function calculateOpacity(hours, minutes) {
 function trackEvery10Minutes(minutes) {
   // degrade these stats every 10 minutes ingame
   if (minutes % 10 === 0) {
-    statChange("food", -3)
-    statChange("stamina", -1)
-    statChange("hygiene", -2)
-    statChange("happiness", -1)
+    statChange("food", -3);
+    statChange("stamina", -1);
+    statChange("hygiene", -2);
+    statChange("happiness", -1);
   }
 }
-// Function to update the clock and the overlay opacity
+function getDayOfWeek(dayNumber) {
+  const daysOfWeek = [
+    "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+  ];
+  return daysOfWeek[(dayNumber - 1) % 7];
+}
+function getTitleFromCharacter(characterId) {
+  switch (characterId) {
+    case "Noble Man": return "Noble Sir";
+    case "Noble Woman": return "Noble Lady";
+    case "Old Man": return "Elder";
+    case "Peasant": return "Peasant";
+    case "Princess": return "Princess";
+    case "Queen": return "Your Majesty";
+    default: return "";
+  }
+}
+function getGreeting(hours, playerName) {
+  let greeting;
+  if (hours >= 5 && hours < 12) {
+    greeting = "Good Morning";
+  } else if (hours >= 12 && hours < 17) {
+    greeting = "Good Afternoon";
+  } else if (hours >= 17 && hours < 21) {
+    greeting = "Good Evening";
+  } else {
+    greeting = "Good Night";
+  }
+
+  return `${greeting}, ${playerName}`;
+}
+const title = getTitleFromCharacter(characterId);
+const capitalizedPlayerName = playerName.charAt(0).toUpperCase() + playerName.slice(1);
+const fullPlayerName = `${title} ${capitalizedPlayerName}`;
 function updateClock() {
   // Load current time from localStorage
   let { hours, minutes } = loadTime();
@@ -79,14 +126,20 @@ function updateClock() {
     minutes = 0;
     hours++;
     if (hours >= 24) {
-      hours = 0; // Reset to 00:00 after 23:59
+      hours = 0;
+      day++;
+      saveDay(day);
     }
   }
 
-  // Update the clock display
+  if (day > 10) {
+    resetTime();
+  }
+  // Update the display
   timeElement.textContent = formatTime(hours, minutes);
+  dayElement.textContent = `${getDayOfWeek(day)} - Day ${day}`;
+  greetingElement.textContent = getGreeting(hours, fullPlayerName);
 
-  // Save the updated time to localStorage
   saveTime(hours, minutes);
 
   // Calculate the opacity based on the current time
@@ -96,15 +149,18 @@ function updateClock() {
   overlay.style.opacity = opacity;
 
   // Degradation period
-  trackEvery10Minutes(minutes)
+  trackEvery10Minutes(minutes);
 }
 
+function resetTime() {
+  localStorage.setItem("time", JSON.stringify({ hours: 15, minutes: 0 }));
+  localStorage.setItem("day", "1");
+}
 // Update the clock every 1000 milliseconds (1 second)
 setInterval(updateClock, 1000);
 
 // Initially update the clock to show the saved time (or 00:00 if not saved)
 updateClock();
-
 
 function updateStatusBar(stat, currentValue, maxValue) {
   const fill = document.querySelector(`.status-bar-${stat} .bar-fill`);
@@ -120,19 +176,19 @@ function updateStatusBar(stat, currentValue, maxValue) {
   }
 
   //checks if its over the max
-  if(currentValue > maxValue){
+  if (currentValue > maxValue) {
     let changeStats = JSON.parse(localStorage.getItem("playerStats"));
     currentValue = maxValue;
     changeStats[stat].currentStat = maxValue;
     localStorage.setItem("playerStats", JSON.stringify(changeStats));
-  } else if(currentValue < 0){
+  } else if (currentValue < 0) {
     let changeStats = JSON.parse(localStorage.getItem("playerStats"));
     currentValue = 0;
     changeStats[stat].currentStat = 0;
     localStorage.setItem("playerStats", JSON.stringify(changeStats));
   }
 
-  const percent = Math.max(0, Math.min(80, currentValue));  // Fixed to 100 max
+  const percent = Math.max(0, Math.min(80, currentValue)); // Fixed to 100 max
   const prevValue = previousStats[stat] || 0;
   const diff = percent - prevValue;
 
@@ -152,9 +208,9 @@ function updateStatusBar(stat, currentValue, maxValue) {
     setTimeout(() => (fill.style.animation = ""), 300);
   }
 }
-function updateStatusBars(stats) {  
+function updateStatusBars(stats) {
   for (const stat in stats) {
-    updateStatusBar(stat, stats[stat].currentStat, stats[stat].max);  // Access currentStat correctly
+    updateStatusBar(stat, stats[stat].currentStat, stats[stat].max); // Access currentStat correctly
   }
 }
 
@@ -172,8 +228,10 @@ if (savedStats) {
   console.log("Saved Stats", savedStats);
   updateStatusBars(savedStats);
 } else {
-  updateStatusBars(defaultStatus);
+  console.log("No saved stats");
 }
+
+
 document.getElementById(
   "playerAvatar"
 ).src = `Assets/Avatars/Mini${characterId.replaceAll(" ", "")}Crop.png`;
@@ -188,18 +246,31 @@ function updateMoneyDisplay() {
   const playerMoney = localStorage.getItem("playerMoney");
   document.getElementById("moneyDisplay").textContent = `${playerMoney}`;
 }
-window.addEventListener("playerMoneyChanged", function () { //money
+window.addEventListener("playerMoneyChanged", function () {
+  //money
   updateMoneyDisplay();
 });
-window.addEventListener("playerStatChanged", function () {  //stat
+window.addEventListener("playerStatChanged", function () {
+  //stat
   const updateStats = JSON.parse(localStorage.getItem("playerStats"));
   updateStatusBars(updateStats);
 });
 
+document.querySelectorAll(".arrow").forEach(btn => {
+  btn.addEventListener("mousedown", () => {
+    const key = btn.dataset.key;
+    document.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true }));
+  });
+  btn.addEventListener("mouseup", () => {
+    const key = btn.dataset.key;
+    document.dispatchEvent(new KeyboardEvent("keyup", { key, bubbles: true }));
+  });
+});
+
 // Listen for the custom event
-window.addEventListener('showBox', function(event) {
-  const popupBox = document.getElementById('popupBox');
-  const popupText = document.getElementById('popupText');
+window.addEventListener("showBox", function (event) {
+  const popupBox = document.getElementById("popupBox");
+  const popupText = document.getElementById("popupText");
 
   // Get the data from the event
   const { message, imageUrl } = event.detail;
@@ -209,11 +280,10 @@ window.addEventListener('showBox', function(event) {
   popupText.textContent = message;
 
   // Show the popup box
-  popupBox.style.display = 'block';
+  popupBox.style.display = "block";
 
   // Optional: Hide the box after x seconds
-  clearTimeout(null);
   setTimeout(() => {
-      popupBox.style.display = 'none';
+    popupBox.style.display = "none";
   }, 1000); //miliseconds
 });
