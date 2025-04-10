@@ -37,6 +37,7 @@ body.fade-out {
   max-height: 100vh;
   text-align: center;
   scrollbar-width: none;
+  transition: transform 0.3s ease;
 }
 
 .menu h1 {
@@ -93,6 +94,7 @@ body.fade-out {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 220, 150, 0.5),
     inset 0 0 10px rgba(0, 0, 0, 0.4);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
+  margin: 0 auto;
 }
 
 .name-input input:focus {
@@ -115,12 +117,16 @@ body.fade-out {
 }
 
 /* Character Select Styling */
-.character-selection h2 {
+.character-selection {
   text-align: center;
-  font-family: "MedievalSharp", cursive;
-  color: #fff4cc;
-  border: 2px solid black;
-  margin-bottom: 20px;
+  padding: 7vh 4vw;
+  max-width: 600px;
+  margin: auto;
+}
+
+.character-selection h1 {
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  margin-bottom: 0.2vh;
 }
 
 .character-grid {
@@ -292,6 +298,7 @@ body.fade-out {
     0 0 20px rgba(255, 190, 130, 0.6);
   opacity: 0;
   animation: inkReveal 2.5s ease-out forwards;
+  text-align: center;
 }
 
 .input-error {
@@ -407,7 +414,7 @@ body.fade-out {
 
 @media screen and (max-width: 768px) {
   .intro-title {
-    font-size: 1.5rem;
+    font-size: 1rem;
   }
 
   .character-grid {
@@ -416,5 +423,49 @@ body.fade-out {
 
   .buttons img {
     width: 150px;
+  }
+}
+@media screen and (min-width: 1400px) {
+  .intro-title {
+    font-size: 2rem;
+  }
+  .character-grid {
+    grid-template-columns: repeat(2, 3fr);
+  }
+  .menu {
+    transform: scale(1.2);
+  }
+}
+@media screen and (min-width: 1800px) {
+  .intro-title {
+    font-size: 6rem;
+  }
+  .menu {
+    transform: scale(1.4);
+  }
+}
+@media screen and (min-width: 2200px) {
+  .intro-title {
+    font-size: 6rem;
+  }
+  .menu {
+    transform: scale(1.7);
+  }
+}
+@media screen and (min-width: 2400px) {
+  .intro-title {
+    font-size: 6rem;
+  }
+  .menu {
+    transform: scale(2);
+  }
+}
+@media screen and (min-width: 3500px) {
+  .intro-title {
+    font-size: 10rem;
+  }
+
+  .menu {
+    transform: scale(4);
   }
 }
