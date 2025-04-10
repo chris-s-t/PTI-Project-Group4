@@ -179,5 +179,3 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1000);
   });
 });
-
-document.getElementById("introSound").play();
