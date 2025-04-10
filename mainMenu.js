@@ -164,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   setTimeout(() => {
     clickText.style.pointerEvents = "auto";
-  }, 3500);
+  }, 3500); 
 
   intro.addEventListener("click", () => {
     intro.style.opacity = "0";
