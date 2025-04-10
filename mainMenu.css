@@ -1,10 +1,18 @@
 body {
   margin: 0;
-  font-family: 'Cinzel', serif;
-  background: url('Assets/Backgrounds/menuBackground.jpg') no-repeat center center fixed;
-  background-size: cover;
-  overflow: hidden;
-  color: #f0e6d2;
+  padding: 0;
+  font-family: "Cinzel", serif;
+  background: url("Assets/Backgrounds/menuBackground.jpg") center center / cover
+    no-repeat;
+  background-attachment: scroll;
+  min-height: 100vh;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  overflow-x: hidden;
 }
 
 body.fade-out {
@@ -14,14 +22,21 @@ body.fade-out {
 
 /* Menu Styling */
 .menu {
+  width: 100%;
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  box-sizing: border-box;
   display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   opacity: 0;
-
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  overflow-x: auto;
+  max-height: 100vh;
   text-align: center;
+  scrollbar-width: none;
 }
 
 .menu h1 {
@@ -29,6 +44,7 @@ body.fade-out {
   margin-bottom: 20px;
   text-shadow: 2px 2px 5px #000;
   transform: translateY(30px);
+  opacity: 0;
 
   animation: floatFadeUp 1.2s ease-out forwards;
   animation-delay: 0.2s;
@@ -41,12 +57,12 @@ body.fade-out {
 }
 
 .menu-button-img:hover {
-  content: url('Assets/GUI/start_Press.png');
+  content: url("Assets/GUI/start_Press.png");
   transform: scale(0.9);
 }
 
 .menu-button-img:active {
-  content: url('Assets/GUI/start_Unpress.png');
+  content: url("Assets/GUI/start_Unpress.png");
 }
 
 /* Input Styling */
@@ -59,24 +75,22 @@ body.fade-out {
 }
 
 .name-input input {
-  padding: 14px 24px;
+  width: 100%;
+  max-width: 300px;
+  padding: 0.5rem;
   border: none;
   border-radius: 12px;
-  background: url('Assets/GUI/UI board Small  parchment.png') no-repeat center center;
+  background: url("Assets/GUI/UI board Small  parchment.png") no-repeat center
+    center;
   background-size: 100% 100%;
   color: #fcebb4;
-  font-family: 'Cinzel', serif;
-  font-size: 22px;
+  font-family: "Cinzel", serif;
+  font-size: 1rem;
   width: 320px;
   text-align: center;
-  text-shadow:
-    1px 1px 0 #000,
-    -1px 1px 0 #000,
-    1px -1px 0 #000,
+  text-shadow: 1px 1px 0 #000, -1px 1px 0 #000, 1px -1px 0 #000,
     -1px -1px 0 #000;
-  box-shadow:
-    0 0 10px rgba(0, 0, 0, 0.8),
-    0 0 20px rgba(255, 220, 150, 0.5),
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 220, 150, 0.5),
     inset 0 0 10px rgba(0, 0, 0, 0.4);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
@@ -84,10 +98,8 @@ body.fade-out {
 .name-input input:focus {
   outline: none;
   transform: scale(1.05);
-  box-shadow:
-    0 0 16px rgba(255, 235, 180, 0.8),
-    0 0 28px rgba(255, 245, 200, 0.6),
-    inset 0 0 12px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 16px rgba(255, 235, 180, 0.8),
+    0 0 28px rgba(255, 245, 200, 0.6), inset 0 0 12px rgba(0, 0, 0, 0.4);
 }
 
 @keyframes floatFadeUp {
@@ -107,7 +119,7 @@ body.fade-out {
   text-align: center;
   font-family: "MedievalSharp", cursive;
   color: #fff4cc;
-  border: 2px solid bl;
+  border: 2px solid black;
   margin-bottom: 20px;
 }
 
@@ -115,15 +127,19 @@ body.fade-out {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 30px;
+  gap: 5rem;
+  width: 100%;
   opacity: 0;
   transform: translateY(30px);
   animation: floatFadeUp 1.2s ease-out forwards;
   animation-delay: 1.2s;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
 }
 
 .character-card {
-  display: flex;
+  display: grid;
+  border-radius: 1rem;
+  padding: 1rem;
   flex-direction: column;
   align-items: center;
   transition: transform 0.3s ease;
@@ -131,8 +147,8 @@ body.fade-out {
 }
 
 .character-card img {
-  width: 250px;
-  height: 350px;
+  width: 200px;
+  height: 250px;
   border-radius: 12px;
   transition: transform 0.3s ease, filter 0.3s ease;
 }
@@ -140,10 +156,11 @@ body.fade-out {
 .character-name {
   font-size: 20px;
   color: #fcebb4;
-  font-family: 'Cinzel', serif;
+  font-family: "Cinzel", serif;
   text-align: center;
   text-shadow: 2px 2px 4px #000;
-  background: url('Assets/GUI/UI board Small  parchment.png') no-repeat center center;
+  background: url("Assets/GUI/UI board Small  parchment.png") no-repeat center
+    center;
   background-size: 100% 100%;
   padding: 12px 24px;
   display: inline-block;
@@ -183,7 +200,7 @@ body.fade-out {
   top: -6px;
   left: 50%;
   transform: translateX(-50%);
-  font-family: 'serif';
+  font-family: "serif";
   font-size: 14px;
   color: #473e07;
   text-shadow: 0 0 6px #50460f, 0 0 12px #463a0c;
@@ -198,16 +215,18 @@ body.fade-out {
 
 .character-card:hover img {
   transform: scale(1.15);
-  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 18px rgba(0, 0, 0, 0.4));
+  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.6))
+    drop-shadow(0 0 18px rgba(0, 0, 0, 0.4));
 }
 
 .character-card.selected img {
-  filter: drop-shadow(0 0 12px rgba(0, 0, 0, 0.75)) drop-shadow(0 0 24px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 36px rgba(0, 0, 0, 0.35));
+  filter: drop-shadow(0 0 12px rgba(0, 0, 0, 0.75))
+    drop-shadow(0 0 24px rgba(0, 0, 0, 0.5))
+    drop-shadow(0 0 36px rgba(0, 0, 0, 0.35));
   transform: scale(1.12);
 }
 
 @keyframes parchmentFloat {
-
   0%,
   100% {
     transform: scaleY(1) translateY(0);
@@ -220,15 +239,19 @@ body.fade-out {
 
 /* Button Styling */
 .buttons {
-  margin-top: 30px;
+  width: 200px;
+  max-width: 100%;
+  height: auto;
+  margin: 30px auto 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
+  gap: 10vh;
   opacity: 0;
   transform: translateY(30px);
   animation: floatFadeUp 1.2s ease-out forwards;
   animation-delay: 1.2s;
+  cursor: pointer;
 }
 
 /* Intro & Error Styling */
@@ -251,12 +274,22 @@ body.fade-out {
   text-align: center;
   animation: fadeUp 1.5s ease forwards;
 }
+.intro-content,
+.menu {
+  width: 90%;
+  max-width: 1200px;
+  padding: 2rem;
+  box-sizing: border-box;
+  text-align: center;
+  color: white;
+}
 
 .intro-title {
   font-size: 64px;
-  font-family: 'Cinzel', serif;
+  font-family: "Cinzel", serif;
   color: #f4ecd8;
-  text-shadow: 0 0 10px rgba(255, 230, 180, 0.8), 0 0 20px rgba(255, 190, 130, 0.6);
+  text-shadow: 0 0 10px rgba(255, 230, 180, 0.8),
+    0 0 20px rgba(255, 190, 130, 0.6);
   opacity: 0;
   animation: inkReveal 2.5s ease-out forwards;
 }
@@ -275,7 +308,9 @@ body.fade-out {
   text-shadow: 0 0 6px #000;
   opacity: 0;
   pointer-events: none;
-  animation: fadeInText 1s ease forwards 2.5s, float 3s ease-in-out infinite 3.5s;
+  animation: fadeInText 1s ease forwards 2.5s,
+    float 3s ease-in-out infinite 3.5s;
+  pointer-events: auto;
 }
 
 @keyframes runeGlowRed {
@@ -292,7 +327,8 @@ body.fade-out {
   color: #ff3c3c;
   font-size: 25px;
   font-style: italic;
-  text-shadow: 0 0 10px rgba(255, 230, 180, 0.8), 0 0 20px rgba(255, 190, 130, 0.6);
+  text-shadow: 0 0 10px rgba(255, 230, 180, 0.8),
+    0 0 20px rgba(255, 190, 130, 0.6);
   margin-top: 5px;
   display: none;
   animation: flickerRed 0.8s infinite alternate;
@@ -347,7 +383,6 @@ body.fade-out {
 }
 
 @keyframes float {
-
   0%,
   100% {
     transform: translateY(0);
@@ -367,5 +402,19 @@ body.fade-out {
   100% {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .intro-title {
+    font-size: 1.5rem;
+  }
+
+  .character-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .buttons img {
+    width: 150px;
   }
 }
