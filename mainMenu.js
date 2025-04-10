@@ -73,20 +73,36 @@ startButton.addEventListener("click", function () {
     const characterData = characterStats[characterId];
 
     const playerStats = {
-      food: Math.round(
-        (characterData.food.current / characterData.food.max) * 100
-      ),
-      stamina: Math.round(
-        (characterData.stamina.current / characterData.stamina.max) * 100
-      ),
-      hygiene: Math.round(
-        (characterData.hygiene.current / characterData.hygiene.max) * 100
-      ),
-      happiness: Math.round(
-        (characterData.happiness.current / characterData.happiness.max) * 100
-      ),
-      health: 100,
+      food: {
+        currentStat: Math.round(
+          (characterData.food.current / characterData.food.max) * 100
+        ),
+        max: 100 // or you can set this to a specific max value, depending on your game logic
+      },
+      stamina: {
+        currentStat: Math.round(
+          (characterData.stamina.current / characterData.stamina.max) * 100
+        ),
+        max: 100 // or the max value for stamina
+      },
+      hygiene: {
+        currentStat: Math.round(
+          (characterData.hygiene.current / characterData.hygiene.max) * 100
+        ),
+        max: 100 // max value for hygiene
+      },
+      happiness: {
+        currentStat: Math.round(
+          (characterData.happiness.current / characterData.happiness.max) * 100
+        ),
+        max: 100 // max value for happiness
+      },
+      health: {
+        currentStat: 100, // or calculate the health percentage if needed
+        max: 100
+      }
     };
+    
 
     localStorage.setItem("playerStats", JSON.stringify(playerStats));
     localStorage.setItem("playerName", playerName);

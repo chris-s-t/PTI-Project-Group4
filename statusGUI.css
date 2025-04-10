@@ -22,6 +22,51 @@
   align-items: flex-start;
   z-index: 5;
 }
+#overlay {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: rgb(0, 0, 0); /* Black background */
+  opacity: 0; /* Initial opacity */
+  z-index: -1;
+  cursor: pointer;
+  transition: opacity 1s ease; /* Smooth opacity transition */
+}
+
+.clock {
+  position: absolute;
+  margin-top: 10px;
+  right: -500px;
+  width: 200px;
+  height: 50px;
+  text-align: center;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+.clock img {
+  width: 80%;
+  height: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.time {
+  position: absolute;
+  top: 25%;
+  font-size: 32px;
+  font-weight: bold;
+  color: white;
+  z-index: 2;
+}
+
 .avatar-section {
   display: flex;
   align-items: center;
@@ -334,4 +379,30 @@
   100% {
     background-position: 100% 0;
   }
+}
+
+#popupBox {
+  position: fixed; /* Fixed position relative to the viewport */
+  top: 50%; /* Position in the vertical middle */
+  left: 50%; /* Position in the horizontal middle */
+  transform: translate(-50%, -50%); /* Adjust position to truly center it */
+  min-width: 250px; /* Minimum width to avoid very small boxes */
+  min-height: 100px; /* Minimum height */
+  background-size: cover; /* Ensure the image covers the box */
+  background-position: center; /* Center the image */
+  opacity: 0.9;
+  display: none; /* Initially hidden */
+  color: white;
+  padding: 15px; /* Add padding around the text */
+  box-sizing: border-box;
+  text-align: center;
+  font-size: 16px; /* Make the text more readable */
+  border-radius: 10px;
+  z-index: 99; /* Ensure it appears on top of other content */
+  word-wrap: break-word; /* Ensure long text wraps inside the box */
+  white-space: normal; /* Ensure text wraps correctly */
+}
+
+#popupBox p {
+  margin: 0;
 }

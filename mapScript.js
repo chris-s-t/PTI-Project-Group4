@@ -4,7 +4,9 @@ const ctx = canvas.getContext("2d");
 
 const zoom = 2;
 
-const playerImg = new Image()
+const playerImg = new Image();
+const exclamationPromptImg = new Image();
+const exclamationActiveImg = new Image();
 
 document.addEventListener("DOMContentLoaded", () => {
   const characterId = localStorage.getItem("characterId");
@@ -15,6 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
   playerImg.src = `Assets/Characters/Mini${characterId.replaceAll(" ", "")}.png`;
   player.stats = stats;
 
+  exclamationPromptImg.src = "Assets/GUI/Exclamation_Gray.png";
+  exclamationActiveImg.src = "Assets/GUI/Exclamation_Red.png";
 });
 
 const mapImg = new Image();
@@ -65,7 +69,7 @@ if (mapNum == "1") {
     [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
     [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 1, 1, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
     [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 1, 1, 1, 0, 0, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 2, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+    [1, 1, 1, 1, 1, 4, 4, 1, 1, 0, 0, 2, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
     [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0],
@@ -85,7 +89,7 @@ if (mapNum == "1") {
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
@@ -294,8 +298,45 @@ function isColliding(a, b) {
 
 const keys = {};
 
+//Interactions control
 let interactCooldown = false;
 let zKeyPressed = false;
+let speed = 1;
+let inCutscene = false;
+let showExclamation = false;
+let timeout = null;
+//stops from moving
+function cutsceneToggle(cutsceneDuration, cooldownDuration, displayText){ //cooldownDuration determines when you can interact again
+  inCutscene = true;
+  interactCooldown = true;
+  speed = 0;
+  setTimeout(() => {
+    inCutscene = false;
+    speed = 1;
+  }, cutsceneDuration);
+  setTimeout(() => {
+    interactCooldown = false;
+  }, cooldownDuration);
+
+  const event = new CustomEvent("showBox", {
+  detail: {
+    message: displayText,  // Pass the text value here
+    imageUrl: "Assets/GUI/UI_board_small_stone.png", // Set the path to your image here
+    }
+  });
+  window.dispatchEvent(event);  // Dispatch event to window object
+}
+function drawExclamation(duration){
+  showExclamation = true;
+  clearTimeout(timeout);
+  timeout = setTimeout(() => {
+    showExclamation = false;
+  }, duration);
+}
+
+document.addEventListener("cutscene", function () {
+  
+});
 
 document.addEventListener("keydown", function (e) {
   keys[e.key] = true; // Mark the key as pressed
@@ -305,14 +346,29 @@ document.addEventListener("keyup", function (e) {
   keys[e.key] = false; // Mark the key as released
   if (e.key === "z") {
     zKeyPressed = false;
-    interactCooldown = false;
   }
 });
+
+//Use this whenever money needs changing :money_face: 
+function moneyChange(amount) {
+  let changeMoney = parseInt(localStorage.getItem('playerMoney'));
+  changeMoney += amount;
+  localStorage.setItem('playerMoney', changeMoney);
+  const moneyChangeEvent = new Event("playerMoneyChanged");
+  window.dispatchEvent(moneyChangeEvent);
+}
+//Use this whenever stats needs changing :heart:
+function statChange(statName, amount){
+  let stats = JSON.parse(localStorage.getItem("playerStats"));
+  stats[statName].currentStat += amount;
+  localStorage.setItem("playerStats", JSON.stringify(stats));
+  const statChangeEvent = new Event("playerStatChanged");
+  window.dispatchEvent(statChangeEvent);
+}
 
 function updatePlayerPosition() {
   const lastX = player.x;
   const lastY = player.y;
-  const speed = 1;
 
   let moved = false;
 
@@ -359,11 +415,25 @@ function updatePlayerPosition() {
       } else if(collision.type == "interact"){
         //wip
 
-      } else if(collision.type == "fishing" && zKeyPressed && !interactCooldown){
-        interactCooldown = true;
-        let changeMoney = parseInt(localStorage.getItem('playerMoney'));
-        changeMoney += 100;
-        localStorage.setItem('playerMoney', changeMoney);
+      } else if(collision.type == "fishing"){
+        drawExclamation(0);
+        if(zKeyPressed && !interactCooldown && !inCutscene){
+          drawExclamation(1000);
+          let rarity = Math.floor(Math.random() * 100);
+          if(rarity == 99){
+            statChange("happiness", 10);
+            moneyChange(1000);
+            cutsceneToggle(1000, 2000, "You caught a RARE fish!");
+          } else if(rarity <= 65){
+            statChange("happiness", 5);
+            moneyChange(100);
+            cutsceneToggle(1000, 2000, "You caught a fish!");
+          }
+          else{
+            statChange("happiness", -15);
+            cutsceneToggle(1000, 2000, "You caught trash hahahahahaha!");
+          }
+        }
       }
       
     }
@@ -418,6 +488,19 @@ function drawPlayer() {
   }
 
   ctx.restore(); // Restore canvas state
+  
+  //For interaction sprite
+  if (showExclamation) {
+    const exWidth = 32 * zoom/2;
+    const exHeight = 32 * zoom/2;
+    const exX = ((player.x - player.hitbox.offsetX - camera.x) * zoom) + 32;
+    const exY = ((player.y - player.hitbox.offsetY - camera.y) * zoom) + 16;
+    if (inCutscene){ //Draws the red mark when in a cutscene
+      ctx.drawImage(exclamationActiveImg, exX, exY, exWidth, exHeight);
+    } else if(!interactCooldown){ //Draw the grey for prompting when interactable again
+      ctx.drawImage(exclamationPromptImg, exX, exY, exWidth, exHeight);
+    }
+  }
 }
 function drawMap() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -455,7 +538,6 @@ mapImg.onload = () => {
 window.addEventListener('DOMContentLoaded', () => {
   const playerName = localStorage.getItem('playerName');
   const characterId = localStorage.getItem('characterId');
-  const playerMoney = localStorage.getItem("playerMoney");
 
   if (!playerName || !characterId) {
     window.location.href = 'mainMenu.html';
