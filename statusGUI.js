@@ -43,7 +43,7 @@ function calculateOpacity(hours, minutes) {
   if (hours >= 12 && hours < 20) {
     // Gradually darken from 12:00 (opacity 1) to 20:00 (opacity 0.5)
     const timePassed = (hours - 12) * 60 + minutes; // Total minutes since 12:00
-    opacity = 1 - (timePassed / (8 * 60)); // 8 hours from 12:00 to 20:00
+    opacity = (timePassed / (8 * 60)) * 0.5; // 8 hours from 12:00 to 20:00
   }
   // If the time is between 20:00 and 4:00, keep the opacity at 0.5
   else if (hours >= 20 || hours < 4) {
