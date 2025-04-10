@@ -98,8 +98,8 @@ if (mapNum == "1") {
     frameDelay: 10,
     frameTimer: 0,
     hitbox: {
-      offsetX: 7,
-      offsetY: 15,
+      offsetX: 10,
+      offsetY: 20,
       width: 18,
       height: 20,
     },
@@ -200,7 +200,7 @@ if (mapNum == "1") {
     [2, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   )
 }else if(mapNum == "4"){
-  zoom = 1.89;
+  zoom = 2;
   scaleFactor = 4;
   player = {
     x: 45,
@@ -213,8 +213,8 @@ if (mapNum == "1") {
     frameDelay: 10,
     frameTimer: 0,
     hitbox: {
-      offsetX: 7,
-      offsetY: 15,
+      offsetX: 10,
+      offsetY: 20,
       width: 18,
       height: 20,
     },
@@ -256,10 +256,10 @@ if (mapNum == "1") {
     frameDelay: 10,
     frameTimer: 0,
     hitbox: {
-      offsetX: 7,
-      offsetY: 15,
+      offsetX: 30,
+      offsetY: 50,
       width: 18,
-      height: 20,
+      height: 30,
     },
   };
   mapImg.src = 'map4.jpg';
