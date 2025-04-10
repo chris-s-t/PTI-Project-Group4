@@ -2,7 +2,7 @@ const canvas = document.getElementById("gameCanvas");
 const mapNum = canvas.getAttribute("mapNum");
 const ctx = canvas.getContext("2d");
 
-let zoom = 2;
+let zoom;
 
 const playerImg = new Image();
 const zPromptImg = new Image();
@@ -26,6 +26,7 @@ const mapGrid = [];
 let scaleFactor = 3;
 
 if (mapNum == "1") {
+  zoom = 2;
   player = {
     x: 100,
     y: 190,
@@ -84,6 +85,7 @@ if (mapNum == "1") {
     [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,92,92,92, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
   )
 } else if (mapNum == "2") {
+  zoom = 2;
   scaleFactor = 4;
   player = {
     x: 290,
@@ -126,6 +128,7 @@ if (mapNum == "1") {
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1], 
   )
 } else if (mapNum == "3") {
+  zoom = 2;
   player = {
     x: 100,
     y: 190,
