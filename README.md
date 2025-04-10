@@ -17,6 +17,8 @@ Game 2D bertema kerajaan abad pertengahan di mana kamu memilih karakter dan bert
 
 ## 🎮 Gameplay Overview
 
+!!Game harus dijalankan dengan Live Server !!
+
 Kamu akan memilih satu dari enam karakter unik dan memulai petualangan di berbagai peta kerajaan. Setiap karakter memiliki status awal dan kekayaan yang berbeda, memengaruhi strategi bertahan hidup kamu!
 
 ## 🎯 Tujuan Utama
