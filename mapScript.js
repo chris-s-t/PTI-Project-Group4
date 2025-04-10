@@ -73,7 +73,7 @@ if (mapNum == "1") {
     [1, 0, 0, 0, 0, 0, 0, 94,1, 0, 0, 2, 1, 1, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
     [1, 0, 0, 0, 0, 0, 0, 94,1, 0, 0, 2, 1, 1, 1, 0, 0, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
     [1, 1, 1, 0, 3, 1, 1, 1, 1, 0, 0, 2, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-    [95,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+    [95,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
     [95,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
     [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0],
     [1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
@@ -95,9 +95,9 @@ if (mapNum == "1") {
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 0, 4, 4, 4, 4, 4, 4, 4, 1, 2, 4, 4, 4, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 1, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 2, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 1, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
     [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
     [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
@@ -122,14 +122,14 @@ if (mapNum == "1") {
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1],            
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1],            
     [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],            
-    [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],            
+    [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 6, 0, 0, 0, 0, 0, 0, 1, 1],            
     [93,0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],            
     [93,0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1],            
     [93,0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],           
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],            
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],            
-    [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],            
-    [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],            
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],            
+    [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 1, 1],            
+    [1, 0, 0, 1, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],            
     [1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],            
     [1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],            
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],            
@@ -217,11 +217,11 @@ if (mapNum == "1") {
     [0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0],         
     [0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0],         
     [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],         
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 1, 0, 0],           
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0],         
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],         
-    [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0],         
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 0, 0, 1],            
+    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 1, 0, 0],           
+    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 5, 1, 1, 1, 0, 0, 0],         
+    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 5, 1, 0, 0, 0, 0, 0],         
+    [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 5, 1, 1, 1, 1, 1, 0],         
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 0, 1],            
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],         
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],         
     [1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 0, 0, 0, 0, 1],         
@@ -258,7 +258,7 @@ if (mapNum == "1") {
     [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
     [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
     [2, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
-    [2, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+    [2, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 7, 0, 0, 0, 0, 2],
     [2, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
     [2, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2],
     [2, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2],
@@ -284,8 +284,12 @@ if (mapNum == "1") {
     [2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
     [2, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,93,93,93,93,93,93,93,93,93, 1, 1, 1, 2],
   )
+} else if(mapNum == "6"){
+  zoom = 2;
+  scaleFactor = 2;
+  mapImg.src = 'map6.jpg';
+  alert("YOU DIED FOREVER");
 }
-
 let isMapTransitionDialogActive = false; // Track dialog state
 
 const hitbox = {
@@ -366,7 +370,23 @@ for (let row = 0; row < mapGrid.length; row++) {
         type: "sleep"
       });
       
-    } else if (String(mapGrid[row][col]).startsWith("9")) { // Map transition block
+    }else if (mapGrid[row][col] === 6) { // Digging interaction
+      collisions.push({
+        x: startX + col * tileWidth,
+        y: startY + row * tileHeight,
+        width: tileWidth,
+        height: tileHeight,
+        type: "digging"
+      });
+    } else if (mapGrid[row][col] === 7) { // Buying interaction
+      collisions.push({
+        x: startX + col * tileWidth,
+        y: startY + row * tileHeight,
+        width: tileWidth,
+        height: tileHeight,
+        type: "buying"
+      });
+    }else if (String(mapGrid[row][col]).startsWith("9")) { // Map transition block
       const mapNum = parseInt(tile.slice(1)); // the map type written after 9
       const targetMap = `map${mapNum}.html`; // and then jadi deh html
       collisions.push({
@@ -398,8 +418,8 @@ let speed = 1;
 let inCutscene = false;
 let showExclamation = false;
 let timeout = null;
-//stops from moving                                //set displayText to null if you dont want popups
-function cutsceneToggle(cutsceneDuration, cooldownDuration, displayText){ //cooldownDuration determines when you can interact again
+//stops from moving            //imgSrc is string of the asset path.
+function cutsceneToggle(cutsceneDuration, cooldownDuration, displayText, imgSrc){ //cooldownDuration determines when you can interact again
   inCutscene = true;
   interactCooldown = true;
   speed = 0;
@@ -411,13 +431,16 @@ function cutsceneToggle(cutsceneDuration, cooldownDuration, displayText){ //cool
     interactCooldown = false;
   }, cooldownDuration);
 
-  const event = new CustomEvent("showBox", {
-  detail: {
-    message: displayText,  // Pass the text value here
-    imageUrl: "Assets/GUI/UI_board_small_stone.png", // Set the path to your image here
-    }
-  });
-  window.dispatchEvent(event);  // Dispatch event to window object
+  if ((displayText != undefined) || (imgSrc != undefined)){
+    const event = new CustomEvent("showBox", {
+    detail: {
+      message: displayText,  // Pass the text value here
+      imageUrl: imgSrc, // Set the path to your image here
+      imageDuration: cutsceneDuration,
+      }
+    });
+    window.dispatchEvent(event);  // Dispatch event to window object
+  }
 }
 function drawExclamation(duration){
   showExclamation = true;
@@ -515,21 +538,63 @@ function updatePlayerPosition() {
           if (rarity == 99) {
             statChange("happiness", 10);
             moneyChange(1000);
-            cutsceneToggle(1000, 2000, "You caught a RARE fish!");
+            cutsceneToggle(1000, 2000, "You caught a RARE fish!"),"Assets/GUI/UI_board_small_stone.png";
           } else if (rarity <= 65) {
             statChange("happiness", 5);
             moneyChange(100);
-            cutsceneToggle(1000, 2000, "You caught a fish!");
+            cutsceneToggle(1000, 2000, "You caught a fish!","Assets/GUI/UI_board_small_stone.png");
           } else {
             statChange("happiness", -15);
-            cutsceneToggle(1000, 2000, "You caught trash hahahahahaha!");
+            cutsceneToggle(1000, 2000, "You caught trash hahahahahaha!","Assets/GUI/UI_board_small_stone.png");
+          }
+        }
+      } else if (collision.type === "digging") {  // Digging behavior
+        drawExclamation(0);
+        if (zKeyPressed && !interactCooldown && !inCutscene) {
+          drawExclamation(1000);
+          let rarity = Math.floor(Math.random() * 100);
+          statChange("stamina", -4);
+          statChange("hygiene", -4);
+          if (rarity == 99) {
+            statChange("happiness", 30);
+            moneyChange(50000);
+            cutsceneToggle(1000, 2000, "You dug out Legendary artifacts!"),"Assets/GUI/UI_board_small_stone.png";
+          } else if (rarity <= 65) {
+            statChange("food", 5);
+            statChange("happiness", 5);
+            cutsceneToggle(1000, 2000, "You dug some crabs, and ate them","Assets/GUI/UI_board_small_stone.png");
+          } else {
+            statChange("happiness", -5);
+            statChange("stamina", -5);
+            cutsceneToggle(1000, 2000, "The crabs bit you.","Assets/GUI/UI_board_small_stone.png");
+          }
+        }
+      } else if (collision.type === "buying") {  // Buying behavior
+        drawExclamation(0);
+        if (zKeyPressed && !interactCooldown && !inCutscene) {
+          drawExclamation(1000);
+          let rarity = Math.floor(Math.random() * 100);
+          statChange("stamina", -4);
+          statChange("hygiene", -4);
+          if (rarity == 99) {
+            statChange("happiness", 30);
+            moneyChange(50000);
+            cutsceneToggle(1000, 2000, "You stole..."),"Assets/GUI/UI_board_small_stone.png";
+          } else if (rarity <= 65) {
+            moneyChange(-10000000)
+            cutsceneToggle(1000, 2000, "You gave all your money for charity","Assets/GUI/UI_board_small_stone.png");
+          } else {
+            moneyChange(-100)
+            cutsceneToggle(1000, 2000, "You gave your money for charity","Assets/GUI/UI_board_small_stone.png");
           }
         }
       } else if(collision.type == "sleep"){  // Sleep behavior
         drawExclamation(0);
         if(zKeyPressed && !interactCooldown && !inCutscene){
-          cutsceneToggle(1000, 1000, );
+          cutsceneToggle(5000, 6000, "You tidy up and rest for a bit...","Assets/GUI/UI_board_small_stone.png");
+          const overlay = document.getElementById("overlay");
           statChange("food", -5);
+          statChange("hygiene", 30);
           statChange("stamina", 50);
           statChange("happiness", 30);
         }
@@ -611,6 +676,7 @@ function drawPlayer() {
       ctx.drawImage(exclamationActiveImg, exX, exY, exWidth, exHeight);
     } else if(!interactCooldown){ //Draw the grey for prompting when interactable again
       ctx.drawImage(zPromptImg, exX, exY, exWidth, exHeight);
+      ctx.drawImage(zPromptImg, exX, exY, exWidth, exHeight);
     }
   }
 }
@@ -630,6 +696,7 @@ function showMapTransitionDialog(nextMap) {
     window.location.href = nextMap; // Redirect to the next map
   };
 
+
   // Handle "No" button click
   noButton.onclick = () => {
     dialog.classList.add("hidden"); // Hide the dialog
@@ -648,7 +715,7 @@ function drawMap() {
 
   // color hitboxes
   for (let box of collisions) {
-    if (box.type == "interact" || box.type == "fishing"){
+    if (box.type == "sleep" || box.type == "fishing"){
       ctx.strokeStyle = 'blue';
       ctx.strokeRect(box.x, box.y, box.width, box.height);
     } else if (box.type == "wall"){
@@ -687,4 +754,9 @@ window.addEventListener('DOMContentLoaded', () => {
   console.log("Selected Character ID:", characterId);
 
   // You can now use these to set up the game state
+});
+
+//death
+window.addEventListener("dead", function () {
+  window.location.href = "map6.html";
 });

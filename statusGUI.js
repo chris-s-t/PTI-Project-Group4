@@ -135,6 +135,8 @@ function updateClock() {
   if (day > 10) {
     resetTime();
   }
+
+ 
   // Update the display
   timeElement.textContent = formatTime(hours, minutes);
   dayElement.textContent = `${getDayOfWeek(day)} - Day ${day}`;
@@ -182,10 +184,9 @@ function updateStatusBar(stat, currentValue, maxValue) {
     changeStats[stat].currentStat = maxValue;
     localStorage.setItem("playerStats", JSON.stringify(changeStats));
   } else if (currentValue < 0) {
-    let changeStats = JSON.parse(localStorage.getItem("playerStats"));
-    currentValue = 0;
-    changeStats[stat].currentStat = 0;
-    localStorage.setItem("playerStats", JSON.stringify(changeStats));
+      const event = new CustomEvent("dead", {
+      });
+      window.dispatchEvent(event);  // Dispatch event to window object
   }
 
   const percent = Math.max(0, Math.min(80, currentValue)); // Fixed to 100 max
