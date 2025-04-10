@@ -188,6 +188,10 @@ function updateStatusBar(stat, currentValue, maxValue) {
     localStorage.setItem("playerStats", JSON.stringify(changeStats));
   }
 
+  if (currentValue === 0) {
+    triggerGameOver(stat);
+  }
+
   const percent = Math.max(0, Math.min(80, currentValue)); // Fixed to 100 max
   const prevValue = previousStats[stat] || 0;
   const diff = percent - prevValue;
@@ -207,6 +211,16 @@ function updateStatusBar(stat, currentValue, maxValue) {
     fill.style.animation = diff > 0 ? "flashGreen 0.3s" : "flashRed 0.3s";
     setTimeout(() => (fill.style.animation = ""), 300);
   }
+}
+function triggerGameOver(stat) {
+  alert(`Game Over! Your ${stat} dropped to zero.`);
+  
+  // Optional: Clear localStorage or reset game state
+  localStorage.clear(); 
+
+  // Optional: Redirect or reload
+  // window.location.href = "gameover.html";
+  window.location.href = "mainmenu.html";
 }
 function updateStatusBars(stats) {
   for (const stat in stats) {
