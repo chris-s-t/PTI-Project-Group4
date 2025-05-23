@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Petualangan Abad Pertengahan</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="mainMenu.css">
+</head>
+
+<body>
+
+  <div id="intro-screen">
+    <div class="intro-content">
+      <h1 class="intro-title">Petualangan Abad Pertengahan</h1>
+      <p class="click-to-begin" id="clickToBegin">Click to Begin</p>
+    </div>
+  </div>
+
+  <div class="menu">
+    <div class="character-selection">
+      <h1>Choose Your Character</h1>
+      <br><br>
+      <div class="name-input">
+        <input type="text" placeholder="Enter your name..." id="playerName">
+      </div>
+    </div>
+
+    <div id="characterError">⚠ Please choose a character to continue.</div>
+
+    <div class="character-grid">
+
+      <div class="character-card" data-character-id="Noble Man">
+        <img src="Assets/Avatars/MiniNobleManCrop.png" alt="Noble Man">
+        <div class="character-divider"></div>
+        <div class="character-name">Noble Man</div>
+      </div>
+
+      <div class="character-card" data-character-id="Noble Woman">
+        <img src="Assets/Avatars/MiniNobleWomanCrop.png" alt="Noble Woman">
+        <div class="character-divider"></div>
+        <div class="character-name">Noble Woman</div>
+      </div>
+
+      <div class="character-card" data-character-id="Old Man">
+        <img src="Assets/Avatars/MiniOldManCrop.png" alt="Old Man">
+        <div class="character-divider"></div>
+        <div class="character-name">Old Man</div>
+      </div>
+
+      <div class="character-card" data-character-id="Peasant">
+        <img src="Assets/Avatars/MiniPeasantCrop.png" alt="Peasant">
+        <div class="character-divider"></div>
+        <div class="character-name">Peasant</div>
+      </div>
+
+      <div class="character-card" data-character-id="Princess">
+        <img src="Assets/Avatars/MiniPrincessCrop.png" alt="Princess">
+        <div class="character-divider"></div>
+        <div class="character-name">Princess</div>
+      </div>
+
+      <div class="character-card" data-character-id="Queen">
+        <img src="Assets/Avatars/MiniQueenCrop.png" alt="Queen">
+        <div class="character-divider"></div>
+        <div class="character-name">Queen</div>
+      </div>
+
+    </div>
+
+    <div class="buttons">
+      <img src="Assets/GUI/start_Unpress.png" class="menu-button-img" id="startBtn" alt="Start Game">
+    </div>
+
+  </div>
+  <script src="mainMenu.js"></script>
+</body>
+</html>
