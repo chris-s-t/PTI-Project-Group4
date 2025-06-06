@@ -36,7 +36,6 @@ body.fade-out {
   overflow-x: auto;
   max-height: 100vh;
   text-align: center;
-  scrollbar-width: none;
   transition: transform 0.3s ease;
 }
 
@@ -456,5 +455,30 @@ body.fade-out {
 @media screen and (min-width: 3500px) {
   .intro-title {
     font-size: 10rem;
+  }
+}
+
+/* Add fade-in and fade-out classes */
+.intro {
+  opacity: 1;
+  transition: opacity 1s ease;
+}
+
+.fade-in {
+  opacity: 1;
+}
+
+.fade-out {
+  opacity: 0;
+}
+
+.menu.fade-in {
+  opacity: 0;
+  animation: fadeInMenu 1s forwards;
+}
+
+@keyframes fadeInMenu {
+  to {
+    opacity: 1;
   }
 }

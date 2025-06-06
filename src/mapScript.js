@@ -759,3 +759,24 @@ window.addEventListener('DOMContentLoaded', () => {
 window.addEventListener("dead", function () {
   window.location.href = "map6.html";
 });
+
+// Inside mapScript.js, when a map transition should occur:
+function requestMapTransition(nextMapFileName) {
+  window.dispatchEvent(new CustomEvent('showMapTransitionDialog', {
+    detail: { nextMap: nextMapFileName } // e.g., 'map2', 'map3'
+  }));
+}
+// Inside mapScript.js, when a stat changes:
+function updateFood(newValue) {
+  // ... game logic ...
+  window.dispatchEvent(new CustomEvent('updatePlayerStatus', {
+    detail: { type: 'food', value: newValue }
+  }));
+}
+
+function updateMoney(newMoney) {
+  // ... game logic ...
+  window.dispatchEvent(new CustomEvent('updatePlayerMoney', {
+    detail: { value: newMoney }
+  }));
+}
