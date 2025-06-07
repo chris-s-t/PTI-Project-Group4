@@ -1,4 +1,3 @@
-// src/components/IntroScreen.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css"; // Ensure App.css is imported for styling

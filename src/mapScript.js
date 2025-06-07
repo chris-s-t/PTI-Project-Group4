@@ -1,55 +1,726 @@
-const canvas = document.getElementById("gameCanvas");
-const mapNum = canvas.getAttribute("mapNum");
-const ctx = canvas.getContext("2d");
-
+let canvas, ctx;
+let player = {};
 let zoom;
+let mapNum; // This will be assigned in initGameMap
+let mapLayers = [];
+let tilesetsData = [];
+let tilesetImages = {};
+let tileWidth, tileHeight; // Declared here, assigned in initGameMap after parsing mapData
 
+// Declare your global image objects here, as they are used across functions
 const playerImg = new Image();
 const zPromptImg = new Image();
 const exclamationActiveImg = new Image();
-
-document.addEventListener("DOMContentLoaded", () => {
-  const characterId = localStorage.getItem("characterId");
-  const playerName = localStorage.getItem("playerName");
-
-  const stats = JSON.parse(localStorage.getItem("playerStats"));
-
-  playerImg.src = `Assets/Characters/Mini${characterId.replaceAll(" ", "")}.png`;
-  player.stats = stats;
-
-  zPromptImg.src = "Assets/Buttons/z-icon.png";
-  exclamationActiveImg.src = "Assets/GUI/Exclamation_Red.png";
-});
-
 const mapImg = new Image();
-const mapGrid = [];
-let scaleFactor = 3;
+let isMapTransitionDialogActive = false;
+const keys = {};
+let interactCooldown = false;
+let zKeyPressed = false;
+let speed = 1;
+let inCutscene = false;
+let showExclamation = false;
+let timeout = null;
+let totalGameMinutes = 0;
+let currentDayNumber = 1;
+let clockInterval = null;
 
-//default player value. the x and y posisiton here is the starting position after starting game.
-player = {
-  x: 100,
-  y: 190,
-  width: 32,
-  height: 32,
-  frameX: 0,
-  frameY: 0,
-  maxFrame: 3,   // number of animation frames per row
-  frameDelay: 10,
-  frameTimer: 0,
-  hitbox: {
-    offsetX: 7,
-    offsetY: 15,
-    width: 18,
-    height: 20,
-  },
+// Asset Paths Map
+const ASSET_PATHS = {
+    player: (charId) => `/Assets/Characters/Mini${charId.replaceAll(" ", "")}.png`,
+    zPrompt: "/Assets/Buttons/z-icon.png",
+    exclamationActive: "/Assets/GUI/Exclamation_Red.png",
+    // mapImage: (mapNumber) => `/Assets/Maps/map${mapNumber}.jpg`,
+    mapJson: (mapNumber) => `/Assets/Maps/map${mapNumber}.tmj`,
 };
+
+// Game Functions
 function fixMapPosition(x, y){
   player.x = x;
   player.y = y;
 }
- // for setting player posisiton appropriately according to last visited map. switch case in each ifs
-const previousMap = localStorage.getItem("previousMap").match(/\d+/)[0];
-console.log("Selected Map ID:", previousMap);
+function isColliding(a, b) {
+  return a.x < b.x + b.width &&
+    a.x + a.width > b.x &&
+    a.y < b.y + b.height &&
+    a.y + a.height > b.y;
+}
+function cutsceneToggle(cutsceneDuration, cooldownDuration, displayText, imgSrc){ //cooldownDuration determines when you can interact again
+  inCutscene = true;
+  interactCooldown = true;
+  speed = 0;
+  setTimeout(() => {
+    inCutscene = false;
+    speed = 1;
+  }, cutsceneDuration);
+  setTimeout(() => {
+    interactCooldown = false;
+  }, cooldownDuration);
+
+  if ((displayText != undefined) || (imgSrc != undefined)){
+    const event = new CustomEvent("showBox", {
+    detail: {
+      message: displayText,  // Pass the text value here
+      imageUrl: imgSrc, // Set the path to your image here
+      imageDuration: cutsceneDuration,
+      }
+    });
+    window.dispatchEvent(event);  // Dispatch event to window object
+  }
+}
+function drawExclamation(duration){
+  showExclamation = true;
+  clearTimeout(timeout);
+  timeout = setTimeout(() => {
+    showExclamation = false;
+  }, duration);
+}
+function updatePlayerPosition() {
+  const lastX = player.x;
+  const lastY = player.y;
+
+  let moved = false;
+
+  if (keys["ArrowUp"]) {
+    player.y -= speed;
+    player.frameY = 1;
+    moved = true;
+  }
+  if (keys["ArrowDown"]) {
+    player.y += speed;
+    player.frameY = 1;
+    moved = true;
+  }
+  if (keys["ArrowLeft"]) {
+    player.x -= speed;
+    player.frameY = 1;
+    moved = true;
+    facingLeft = true;
+  }
+  if (keys["ArrowRight"]) {
+    player.x += speed;
+    player.frameY = 1;
+    moved = true;
+    facingLeft = false;
+  }
+  if (keys["z"] && !zKeyPressed) {  
+    zKeyPressed = true;
+  }
+
+  hitbox.x = player.x + player.hitbox.offsetX;
+  hitbox.y = player.y + player.hitbox.offsetY;
+
+  // Check for collision and interactables
+  for (let collision of collisions) {
+    if (isColliding(hitbox, collision)) {
+      if (collision.type === "wall") {
+        player.x = lastX;
+        player.y = lastY;
+        hitbox.x = lastX + player.hitbox.offsetX;
+        hitbox.y = lastY + player.hitbox.offsetY;
+        moved = false;
+        break;
+      } else if (collision.type === "interact") {
+        // Handle interaction logic here
+      } else if (collision.type === "fishing") {  // Fishing behavior
+        drawExclamation(0);
+        if (zKeyPressed && !interactCooldown && !inCutscene) {
+          drawExclamation(1000);
+          let rarity = Math.floor(Math.random() * 100);
+          statChange("stamina", -2);
+          if (rarity == 99) {
+            statChange("happiness", 10);
+            moneyChange(1000);
+            cutsceneToggle(1000, 2000, "You caught a RARE fish!"),"Assets/GUI/UI_board_small_stone.png";
+          } else if (rarity <= 65) {
+            statChange("happiness", 5);
+            moneyChange(100);
+            cutsceneToggle(1000, 2000, "You caught a fish!","Assets/GUI/UI_board_small_stone.png");
+          } else {
+            statChange("happiness", -15);
+            cutsceneToggle(1000, 2000, "You caught trash hahahahahaha!","Assets/GUI/UI_board_small_stone.png");
+          }
+        }
+      } else if (collision.type === "digging") {  // Digging behavior
+        drawExclamation(0);
+        if (zKeyPressed && !interactCooldown && !inCutscene) {
+          drawExclamation(1000);
+          let rarity = Math.floor(Math.random() * 100);
+          statChange("stamina", -4);
+          statChange("hygiene", -4);
+          if (rarity == 99) {
+            statChange("happiness", 30);
+            moneyChange(50000);
+            cutsceneToggle(1000, 2000, "You dug out Legendary artifacts!"),"Assets/GUI/UI_board_small_stone.png";
+          } else if (rarity <= 65) {
+            statChange("food", 5);
+            statChange("happiness", 5);
+            cutsceneToggle(1000, 2000, "You dug some crabs, and ate them","Assets/GUI/UI_board_small_stone.png");
+          } else {
+            statChange("happiness", -5);
+            statChange("stamina", -5);
+            cutsceneToggle(1000, 2000, "The crabs bit you.","Assets/GUI/UI_board_small_stone.png");
+          }
+        }
+      } else if (collision.type === "buying") {  // Buying behavior
+        drawExclamation(0);
+        if (zKeyPressed && !interactCooldown && !inCutscene) {
+          drawExclamation(1000);
+          let rarity = Math.floor(Math.random() * 100);
+          statChange("stamina", -4);
+          statChange("hygiene", -4);
+          if (rarity == 99) {
+            statChange("happiness", 30);
+            moneyChange(50000);
+            cutsceneToggle(1000, 2000, "You stole..."),"Assets/GUI/UI_board_small_stone.png";
+          } else if (rarity <= 65) {
+            moneyChange(-10000000)
+            cutsceneToggle(1000, 2000, "You gave all your money for charity","Assets/GUI/UI_board_small_stone.png");
+          } else {
+            moneyChange(-100)
+            cutsceneToggle(1000, 2000, "You gave your money for charity","Assets/GUI/UI_board_small_stone.png");
+          }
+        }
+      } else if(collision.type == "sleep"){  // Sleep behavior
+        drawExclamation(0);
+        if(zKeyPressed && !interactCooldown && !inCutscene){
+          cutsceneToggle(5000, 6000, "You tidy up and rest for a bit...","Assets/GUI/UI_board_small_stone.png");
+          const overlay = document.getElementById("overlay");
+          statChange("food", -5);
+          statChange("hygiene", 30);
+          statChange("stamina", 50);
+          statChange("happiness", 30);
+        }
+
+      } else if (collision.type === "mapTransition") {
+        if (!collision.inside && !isMapTransitionDialogActive) {
+          collision.inside = true; // Mark the player as inside the block
+          speed = 0; // and disables movement
+          isMapTransitionDialogActive = true;
+          showMapTransitionDialog(collision.targetMap);
+          return;
+        }
+      }
+    } else {
+      // Reset the `inside` property when the player leaves the block
+      if (collision.type === "mapTransition") {
+        collision.inside = false;
+      }
+    }
+  }
+}
+function drawPlayer() {
+  const drawX = (player.x - player.hitbox.offsetX - camera.x) * zoom;
+  const drawY = (player.y - player.hitbox.offsetY - camera.y) * zoom;
+  const drawWidth = player.width * scaleFactor;
+  const drawHeight = player.height * scaleFactor;
+
+  ctx.save();
+
+  if (facingLeft) {
+    ctx.translate(drawX + drawWidth, drawY); // Move to the player's position
+    ctx.scale(-1, 1); // Flip horizontally
+    ctx.drawImage(
+      playerImg,
+      player.frameX * player.width,
+      player.frameY * player.height,
+      player.width,
+      player.height,
+      0, 0,
+      drawWidth,
+      drawHeight
+    );
+  }
+  else {
+    ctx.translate(drawX, drawY);
+    ctx.drawImage(
+      playerImg,
+      player.frameX * player.width,
+      player.frameY * player.height,
+      player.width,
+      player.height,
+      0, 0,
+      drawWidth,
+      drawHeight
+    );
+  }
+  ctx.restore();
+  
+  //For interaction sprite
+  if (showExclamation) {
+    const exWidth = 32 * zoom/2;
+    const exHeight = 32 * zoom/2;
+    const exX = ((player.x - player.hitbox.offsetX - camera.x) * zoom) + 32;
+    const exY = ((player.y - player.hitbox.offsetY - camera.y) * zoom) + 16;
+    if (inCutscene){ //Draws the red mark when in a cutscene
+      ctx.drawImage(exclamationActiveImg, exX, exY, exWidth, exHeight);
+    } 
+    else if(!interactCooldown){ //Draw the grey for prompting when interactable again
+      ctx.drawImage(zPromptImg, exX, exY, exWidth, exHeight);
+      ctx.drawImage(zPromptImg, exX, exY, exWidth, exHeight);
+    }
+  }
+}
+function drawMap() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.save();
+  ctx.scale(zoom, zoom);
+  ctx.translate(-camera.x, -camera.y);
+
+// Iterate through each layer in the Tiled map data
+    mapLayers.forEach(layer => {
+        if (layer.type === "tilelayer" && layer.visible) {
+            // Get the corresponding tileset for this layer's tiles
+            const tileset = tilesetsData.find(ts => ts.firstgid <= layer.data.length && ts.firstgid + ts.tilecount > layer.data.length); // This lookup might need refinement for multiple tilesets
+
+            // Find the correct tileset image for this tileset
+            const tilesetImage = tilesetImages[tileset.firstgid];
+
+            if (tilesetImage) {
+                // Iterate through the tile data (flat array)
+                for (let i = 0; i < layer.data.length; i++) {
+                    const gid = layer.data[i]; // Global ID of the tile
+                    if (gid === 0) continue; // 0 means no tile
+
+                    const tileIndex = gid - tileset.firstgid; // Local index within the tileset
+                    const tileXInTileset = (tileIndex % tileset.columns) * tileset.tilewidth;
+                    const tileYInTileset = Math.floor(tileIndex / tileset.columns) * tileset.tileheight;
+
+                    // Calculate position on the map
+                    const col = i % layer.width;
+                    const row = Math.floor(i / layer.width);
+                    const drawX = col * tileset.tilewidth;
+                    const drawY = row * tileset.tileheight;
+
+                    ctx.drawImage(
+                        tilesetImage,
+                        tileXInTileset,
+                        tileYInTileset,
+                        tileset.tilewidth,
+                        tileset.tileheight,
+                        drawX,
+                        drawY,
+                        tileset.tilewidth,
+                        tileset.tileheight
+                    );
+                }
+            } else {
+                console.warn(`Tileset image not loaded for tileset with firstgid ${tileset.firstgid}`);
+            }
+        }
+        // If you have object layers for drawing, you'd handle them here too
+    });
+
+
+    // Draw hitboxes (keep this as it uses your `collisions` array)
+    for (let box of collisions) {
+        if (box.type === "sleep" || box.type === "fishing" || box.type === "digging" || box.type === "buying") {
+            ctx.strokeStyle = 'blue';
+            ctx.strokeRect(box.x, box.y, box.width, box.height);
+        } else if (box.type === "wall" || box.type === "obstacle") { // Also draw wall/obstacle types
+            ctx.strokeStyle = 'red';
+            ctx.strokeRect(box.x, box.y, box.width, box.height);
+        } else if (box.type === "mapTransition") {
+            ctx.strokeStyle = 'green';
+            ctx.strokeRect(box.x, box.y, box.width, box.height);
+        }
+    }
+  /*
+  ctx.drawImage(mapImg, 0, 0);
+  //---- Color Hitboxes ----//
+  for (let box of collisions) {
+    if (box.type == "sleep" || box.type == "fishing"){
+      ctx.strokeStyle = 'blue';
+      ctx.strokeRect(box.x, box.y, box.width, box.height);
+    } 
+      else if (box.type == "wall"){
+      ctx.strokeStyle = 'red';
+      ctx.strokeRect(box.x, box.y, box.width, box.height);
+     
+    } else if (box.type == "mapTransition"){
+      ctx.strokeStyle = 'green';
+      ctx.strokeRect(box.x, box.y, box.width, box.height);
+    }
+  }
+  */
+  ctx.restore();
+}
+function loadTilesetImage(path, firstgid) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+            tilesetImages[firstgid] = img;
+            resolve();
+        };
+        img.onerror = reject;
+        // Adjust path if needed. If Tiled points to e.g., "../tiles.png", it means relative to the .tmj.
+        // But in Vite, it will be relative to public root.
+        // Assuming your tileset images are in public/Assets/Tilesets/ (or similar)
+        // You might need to parse `path` from the .tmj to get the actual file name.
+        const fileName = path.split('/').pop(); // "tiles.png"
+        img.src = `/Assets/Tilesets/${fileName}`; // Adjust this path to where your actual tileset images are
+    });
+}
+function gameLoop() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  updatePlayerPosition();
+  drawMap();
+  drawPlayer();
+  requestAnimationFrame(gameLoop);
+}
+function moneyChange(amount) {
+  let changeMoney = parseInt(localStorage.getItem('playerMoney'));
+  changeMoney += amount;
+  localStorage.setItem('playerMoney', changeMoney);
+  const moneyChangeEvent = new Event("playerMoneyChanged");
+  window.dispatchEvent(new CustomEvent('updatePlayerMoney', { detail: { value: amount } }));
+}
+
+function statChange(statName, amount){
+  let stats = JSON.parse(localStorage.getItem("playerStats"));
+  stats[statName].currentStat += amount;
+  localStorage.setItem("playerStats", JSON.stringify(stats));
+  const statChangeEvent = new Event("playerStatChanged");
+  window.dispatchEvent(new CustomEvent('updatePlayerStatus', { detail: { type: statName, value: amount } }));
+}
+function updateGameClock() {
+    totalGameMinutes++;
+
+    const hours = Math.floor(totalGameMinutes / 60) % 24;
+    const minutes = totalGameMinutes % 60;
+    const formattedTime = (hours < 10 ? '0' : '') + hours + ':' + (minutes < 10 ? '0' : '') + minutes;
+
+    // --- DAILY EVENTS --- \\
+    if (totalGameMinutes % (24 * 60) === 0 && totalGameMinutes !== 0) {
+        currentDayNumber++;
+    }
+
+    window.dispatchEvent(new CustomEvent('updateClock', {
+        detail: {
+            time: formattedTime,
+            day: `Day ${currentDayNumber}`
+        }
+    }));
+
+    localStorage.setItem('totalGameMinutes', totalGameMinutes.toString());
+    localStorage.setItem('currentDayNumber', currentDayNumber.toString());
+}
+//--------------------------------------------------------------//
+//-------------- Primary Initialization Function ---------------//
+//--------------------------------------------------------------//
+window.initGameMap = async function(canvasElement, currentMapNum, playerSavedStats, playerCharacterId, playerPreviousMap) {
+    canvas = canvasElement;
+    ctx = canvas.getContext("2d");
+    mapNum = String(currentMapNum);
+    previousMap = playerPreviousMap.match(/\d+/)[0];
+    console.log("mapScript.js initialized. Map:", mapNum, "Previous Map:", previousMap);
+
+    // Initialize player state (Will be modified)
+    player = {
+      x: 0,
+      y: 0,
+      width: 32, height: 32,
+      frameX: 0, frameY: 0, maxFrame: 3,
+      frameDelay: 10, frameTimer: 0,
+      hitbox: { offsetX: 7, offsetY: 15, width: 18, height: 20 },
+      stats: playerSavedStats
+    };
+
+    // --- IMAGE INIT --- \\
+    const imageLoadPromises = [];
+    imageLoadPromises.push(new Promise(resolve => {
+        playerImg.onload = resolve;
+        playerImg.src = ASSET_PATHS.player(playerCharacterId);
+    }));
+    imageLoadPromises.push(new Promise(resolve => {
+        zPromptImg.onload = resolve;
+        zPromptImg.src = ASSET_PATHS.zPrompt;
+    }));
+    imageLoadPromises.push(new Promise(resolve => {
+        exclamationActiveImg.onload = resolve;
+        exclamationActiveImg.src = ASSET_PATHS.exclamationActive;
+    }));
+
+    // --- CLOCK INIT --- \\
+    if (clockInterval) {
+        clearInterval(clockInterval);
+    }
+    totalGameMinutes = parseInt(localStorage.getItem('totalGameMinutes') || '0');
+    currentDayNumber = parseInt(localStorage.getItem('currentDayNumber') || '1');
+
+    clockInterval = setInterval(() => { totalGameMinutes++; updateGameClock(); }, 1000);
+    updateGameClock();
+
+    // --- MAP INIT --- \\
+    let mapData;
+    try {
+        const response = await fetch(ASSET_PATHS.mapJson(mapNum));
+        if (!response.ok) {
+            throw new Error(`Failed to load map TMJ for map${mapNum}: ${response.statusText}`);
+        }
+        mapData = await response.json();
+        console.log(`Map data for map${mapNum}.tmj loaded.`, mapData);
+
+        tileWidth = mapData.tilewidth;
+        tileHeight = mapData.tileheight;
+        mapLayers = mapData.layers;
+        tilesetsData = mapData.tilesets;
+
+        tilesetsData.forEach(ts => {
+            imageLoadPromises.push(loadTilesetImage(ts.image, ts.firstgid));
+        });
+
+        collisions = [];
+        // The startX, startY from your original script were likely offsets for the map drawing.
+        // In Tiled, objects and tiles usually start at (0,0) relative to the map.
+        // You'll need to define how player start position is determined in Tiled (e.g., an object layer)
+        let playerStartX = 100; // Default or read from Tiled object layer
+        let playerStartY = 190; // Default or read from Tiled object layer
+
+        // Iterate through layers to find tile data and collision objects
+        mapLayers.forEach(layer => {
+            if (layer.type === "tilelayer" && layer.visible) {
+                // This layer is for drawing the background tiles
+                // mapGrid will be processed during drawing
+            } else if (layer.type === "objectgroup" && layer.visible) {
+                // This layer contains collision objects, interaction points, etc.
+                layer.objects.forEach(obj => {
+                    const collisionObject = {
+                        x: obj.x,
+                        y: obj.y,
+                        width: obj.width,
+                        height: obj.height,
+                        type: obj.type || "wall", // Use Tiled object type, default to "wall"
+                        properties: obj.properties // Custom properties from Tiled if any
+                    };
+
+                    if (obj.name === "player_start" && mapNum === previousMap) {
+                        // If this object is named "player_start" and it's the map we came from
+                        playerStartX = obj.x;
+                        playerStartY = obj.y;
+                    }
+                    // For map transitions, Tiled objects are better
+                    if (obj.type === "mapTransition") {
+                         // Get target map from Tiled object properties or name
+                         const targetMap = obj.properties?.targetMap || obj.name.replace('exit_to_', ''); // Assuming naming 'exit_to_map2'
+                         collisions.push({
+                            ...collisionObject,
+                            type: "mapTransition",
+                            targetMap: targetMap, // e.g., "map2"
+                            inside: false
+                         });
+                    } else if (obj.type === "wall" || obj.type === "obstacle") {
+                        collisions.push(collisionObject);
+                    }
+                    // Add other interaction types as Tiled object types (fishing, digging, sleep, buying)
+                    else if (['fishing', 'digging', 'sleep', 'buying'].includes(obj.type)) {
+                        collisions.push(collisionObject);
+                    }
+                });
+            }
+        });
+        // Set player position after parsing map objects
+        player.x = playerStartX;
+        player.y = playerStartY;
+
+        // Apply fixMapPosition based on previous map only if no explicit start point from Tiled was used for prev map
+        if (playerPreviousMap) { // Only apply if coming from a previous map
+            const prevMapNum = parseInt(playerPreviousMap.match(/\d+/)[0]);
+            // This logic might need to be refined. If Tiled maps have specific 'entry' objects, use those.
+            // For now, retaining your fixMapPosition based on mapNum and previousMap.
+            // However, your fixMapPosition values are absolute pixels, which might not align with Tiled's grid.
+            // You might need to change fixMapPosition to take grid coordinates or calculate from Tiled's objects.
+            // For simplicity, I'm keeping it as is, but be aware of this potential mismatch.
+             if (mapNum === "1") {
+                switch (prevMapNum) {
+                    case 2: fixMapPosition(315, 680); break;
+                    case 4: fixMapPosition(80, 180); break;
+                    case 5: fixMapPosition(50, 190); break;
+                }
+            } else if (mapNum === "2") {
+                switch (prevMapNum) {
+                    case 1: fixMapPosition(290, 70); break;
+                    case 3: fixMapPosition(40, 150); break;
+                }
+            } else if (mapNum === "3") {
+                switch (prevMapNum) {
+                    case 2: fixMapPosition(960, 540); break;
+                    case 5: fixMapPosition(40, 190); break;
+                }
+            } else if (mapNum === "5") {
+                switch (prevMapNum) {
+                    case 1: fixMapPosition(260, 70); break;
+                    case 3: fixMapPosition(580, 600); break;
+                }
+            }
+        }
+
+    } catch (error) {
+        console.error("Error fetching or parsing TMJ map:", error);
+        window.dispatchEvent(new CustomEvent('gameOver', { detail: { reason: "Map data error." } }));
+        return;
+    }
+
+    // Wait for all images (player, UI, and tilesets) to load
+    try {
+        await Promise.all(imageLoadPromises);
+        console.log("All map assets loaded. Starting game loop.");
+        gameLoop();
+    } catch (error) {
+        console.error("Error loading map assets:", error);
+        window.dispatchEvent(new CustomEvent('gameOver', { detail: { reason: "Failed to load game assets." } }));
+    }
+
+    /*
+    // Map Setup
+    mapGrid = [];
+    let currentMapFileName;
+
+    if (mapNum === "1") {
+        zoom = 2;
+        switch (previousMap) {
+          case "2":
+            fixMapPosition(315, 680);
+            break;
+          case "4":
+            fixMapPosition(80, 180);
+            break;
+          case "5":
+            fixMapPosition(50, 190);
+            break;
+        }
+        currentMapFileName = 'map.jpg';
+        mapGrid.push(
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            // ... full map1 grid ...
+        );
+    } else if (mapNum === "2") {
+        zoom = 2;
+        scaleFactor = 4;
+        switch (previousMap) { }
+        currentMapFileName = 'map2.jpg';
+        mapGrid.push(
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,91,91,91,91,91, 1, 1, 1, 1, 1],
+            // ... full map2 grid ...
+        );
+    } else if (mapNum === "3") {
+        zoom = 2;
+        switch (previousMap) { }
+        currentMapFileName = 'map3.jpg';
+        mapGrid.push(
+            [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 2],
+            // ... full map3 grid ...
+        );
+    } else if (mapNum === "4"){
+        zoom = 1.89;
+        scaleFactor = 4;
+        player.hitbox.offsetX = 10;
+        player.hitbox.offsetY = 20;
+        switch (previousMap) { }
+        currentMapFileName = 'map4.jpg';
+        mapGrid.push(
+            [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            // ... full map4 grid ...
+        );
+    } else if(mapNum === "5"){
+        zoom = 1;
+        scaleFactor = 4;
+        player.hitbox.offsetX = 30;
+        player.hitbox.offsetY = 50;
+        player.hitbox.width = 18;
+        player.hitbox.height = 30;
+        switch (previousMap) { }
+        currentMapFileName = 'map5.jpg';
+        mapGrid.push(
+            [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,91,91,91,91, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+            // ... full map5 grid ...
+        );
+    } else if(mapNum === "6"){
+        zoom = 2;
+        scaleFactor = 2;
+        currentMapFileName = 'map6.jpg';
+        alert("YOU DIED FOREVER"); // This will stop the game, consider a proper React component for "Game Over"
+    }
+
+
+    // Collisions based on the chosen map
+    collisions = []; // Clear previous collisions
+    const tileWidth = 20; // Ensure these are defined within the scope
+    const tileHeight = 20;
+    const startX = 20;
+    const startY = 45;
+    for (let row = 0; row < mapGrid.length; row++) {
+        for (let col = 0; col < mapGrid[row].length; col++) {
+            const tile = String(mapGrid[row][col]);
+            if (mapGrid[row][col] === 1) {
+                collisions.push({ x: startX + col * tileWidth, y: startY + row * tileHeight, width: tileWidth, height: tileHeight, type: "wall" });
+            } else if (mapGrid[row][col] === 2) {
+                collisions.push({ x: startX + col * tileWidth - 10, y: startY + row * tileHeight, width: tileWidth, height: tileHeight, type: "wall" });
+            } else if (mapGrid[row][col] === 3) {
+                collisions.push({ x: startX + col * tileWidth + 10, y: startY + row * tileHeight, width: tileWidth, height: tileHeight, type: "wall" });
+            } else if (mapGrid[row][col] === 4) {
+                collisions.push({ x: startX + col * tileWidth, y: startY + row * tileHeight, width: tileWidth, height: tileHeight, type: "fishing" });
+            } else if (mapGrid[row][col] === 5) {
+                collisions.push({ x: startX + col * tileWidth, y: startY + row * tileHeight, width: tileWidth, height: tileHeight, type: "sleep" });
+            } else if (mapGrid[row][col] === 6) {
+                collisions.push({ x: startX + col * tileWidth, y: startY + row * tileHeight, width: tileWidth, height: tileHeight, type: "digging" });
+            } else if (mapGrid[row][col] === 7) {
+                collisions.push({ x: startX + col * tileWidth, y: startY + row * tileHeight, width: tileWidth, height: tileHeight, type: "buying" });
+            } else if (String(mapGrid[row][col]).startsWith("9")) {
+                const transitionMapNum = parseInt(tile.slice(1));
+                const targetMap = `map${transitionMapNum}`;
+                collisions.push({ x: startX + col * tileWidth -20, y: startY + row * tileHeight, width: tileWidth, height: tileHeight, type: "mapTransition", targetMap: targetMap, inside: false });
+            }
+        }
+    }
+    
+    imageLoadPromises.push(new Promise(resolve => {
+        mapImg.onload = resolve;
+        mapImg.src = ASSET_PATHS.map(currentMapFileName.replace('.jpg', ''));
+    }));
+
+    Promise.all(imageLoadPromises)
+      .then(() => {
+          console.log("All map assets loaded. Starting game loop.");
+          gameLoop();
+      })
+      .catch(error => {
+          console.error("Error loading map assets:", error);
+      });
+    */
+};
+
+window.cleanupGameMap = function() {
+    if (clockInterval) {
+        clearInterval(clockInterval);
+        clockInterval = null;
+    }
+};
+function showMapTransitionDialog(nextMap) {
+  const dialog = document.getElementById("mapTransitionDialog");
+  const yesButton = document.getElementById("yesButton");
+  const noButton = document.getElementById("noButton");
+
+  dialog.classList.remove("hidden");
+
+  yesButton.onclick = () => {
+    const currentMap = window.location.pathname.split('/').pop();
+    localStorage.setItem("previousMap", currentMap);
+    window.dispatchEvent(new CustomEvent('showMapTransitionDialog', {
+        detail: { nextMap: nextMap }
+    }));
+  };
+
+  noButton.onclick = () => {
+    dialog.classList.add("hidden"); 
+    isMapTransitionDialogActive = false; 
+    speed = 1;
+  };
+}
+window.addEventListener("dead", function () {
+    window.dispatchEvent(new CustomEvent('gameOver', { detail: { reason: "dead" } }));
+});
+
+/*
 if (mapNum == "1") {
   zoom = 2;
   switch (previousMap) {
@@ -323,7 +994,7 @@ const startY = 45;
 let facingLeft = false;
 let isIdle = true;
 
-const collisions = [];
+collisions = [];
 
 for (let row = 0; row < mapGrid.length; row++) {
   for (let col = 0; col < mapGrid[row].length; col++) {
@@ -418,36 +1089,7 @@ let inCutscene = false;
 let showExclamation = false;
 let timeout = null;
 //stops from moving            //imgSrc is string of the asset path.
-function cutsceneToggle(cutsceneDuration, cooldownDuration, displayText, imgSrc){ //cooldownDuration determines when you can interact again
-  inCutscene = true;
-  interactCooldown = true;
-  speed = 0;
-  setTimeout(() => {
-    inCutscene = false;
-    speed = 1;
-  }, cutsceneDuration);
-  setTimeout(() => {
-    interactCooldown = false;
-  }, cooldownDuration);
 
-  if ((displayText != undefined) || (imgSrc != undefined)){
-    const event = new CustomEvent("showBox", {
-    detail: {
-      message: displayText,  // Pass the text value here
-      imageUrl: imgSrc, // Set the path to your image here
-      imageDuration: cutsceneDuration,
-      }
-    });
-    window.dispatchEvent(event);  // Dispatch event to window object
-  }
-}
-function drawExclamation(duration){
-  showExclamation = true;
-  clearTimeout(timeout);
-  timeout = setTimeout(() => {
-    showExclamation = false;
-  }, duration);
-}
 
 document.addEventListener("cutscene", function () {
   
@@ -463,157 +1105,6 @@ document.addEventListener("keyup", function (e) {
     zKeyPressed = false;
   }
 });
-
-//Use this whenever money needs changing :money_face: 
-function moneyChange(amount) {
-  let changeMoney = parseInt(localStorage.getItem('playerMoney'));
-  changeMoney += amount;
-  localStorage.setItem('playerMoney', changeMoney);
-  const moneyChangeEvent = new Event("playerMoneyChanged");
-  window.dispatchEvent(moneyChangeEvent);
-}
-//Use this whenever stats needs changing :heart:
-function statChange(statName, amount){
-  let stats = JSON.parse(localStorage.getItem("playerStats"));
-  stats[statName].currentStat += amount;
-  localStorage.setItem("playerStats", JSON.stringify(stats));
-  const statChangeEvent = new Event("playerStatChanged");
-  window.dispatchEvent(statChangeEvent);
-}
-
-function updatePlayerPosition() {
-  const lastX = player.x;
-  const lastY = player.y;
-
-  let moved = false;
-
-  if (keys["ArrowUp"]) {
-    player.y -= speed;
-    player.frameY = 1; // Row for "up" animation
-    moved = true;
-  }
-  if (keys["ArrowDown"]) {
-    player.y += speed;
-    player.frameY = 1; // Row for "down" animation
-    moved = true;
-  }
-  if (keys["ArrowLeft"]) {
-    player.x -= speed;
-    player.frameY = 1; // Row for "left" animation
-    moved = true;
-    facingLeft = true;
-  }
-  if (keys["ArrowRight"]) {
-    player.x += speed;
-    player.frameY = 1; // Row for "right" animation
-    moved = true;
-    facingLeft = false;
-  }
-  if (keys["z"] && !zKeyPressed) {  
-    zKeyPressed = true;
-  }
-
-  hitbox.x = player.x + player.hitbox.offsetX;
-  hitbox.y = player.y + player.hitbox.offsetY;
-
-  // Check for collision and interactables
-  for (let collision of collisions) {
-    if (isColliding(hitbox, collision)) {
-      if (collision.type === "wall") {
-        player.x = lastX;
-        player.y = lastY;
-        hitbox.x = lastX + player.hitbox.offsetX;
-        hitbox.y = lastY + player.hitbox.offsetY;
-        moved = false;
-        break;
-      } else if (collision.type === "interact") {
-        // Handle interaction logic here
-      } else if (collision.type === "fishing") {  // Fishing behavior
-        drawExclamation(0);
-        if (zKeyPressed && !interactCooldown && !inCutscene) {
-          drawExclamation(1000);
-          let rarity = Math.floor(Math.random() * 100);
-          statChange("stamina", -2);
-          if (rarity == 99) {
-            statChange("happiness", 10);
-            moneyChange(1000);
-            cutsceneToggle(1000, 2000, "You caught a RARE fish!"),"Assets/GUI/UI_board_small_stone.png";
-          } else if (rarity <= 65) {
-            statChange("happiness", 5);
-            moneyChange(100);
-            cutsceneToggle(1000, 2000, "You caught a fish!","Assets/GUI/UI_board_small_stone.png");
-          } else {
-            statChange("happiness", -15);
-            cutsceneToggle(1000, 2000, "You caught trash hahahahahaha!","Assets/GUI/UI_board_small_stone.png");
-          }
-        }
-      } else if (collision.type === "digging") {  // Digging behavior
-        drawExclamation(0);
-        if (zKeyPressed && !interactCooldown && !inCutscene) {
-          drawExclamation(1000);
-          let rarity = Math.floor(Math.random() * 100);
-          statChange("stamina", -4);
-          statChange("hygiene", -4);
-          if (rarity == 99) {
-            statChange("happiness", 30);
-            moneyChange(50000);
-            cutsceneToggle(1000, 2000, "You dug out Legendary artifacts!"),"Assets/GUI/UI_board_small_stone.png";
-          } else if (rarity <= 65) {
-            statChange("food", 5);
-            statChange("happiness", 5);
-            cutsceneToggle(1000, 2000, "You dug some crabs, and ate them","Assets/GUI/UI_board_small_stone.png");
-          } else {
-            statChange("happiness", -5);
-            statChange("stamina", -5);
-            cutsceneToggle(1000, 2000, "The crabs bit you.","Assets/GUI/UI_board_small_stone.png");
-          }
-        }
-      } else if (collision.type === "buying") {  // Buying behavior
-        drawExclamation(0);
-        if (zKeyPressed && !interactCooldown && !inCutscene) {
-          drawExclamation(1000);
-          let rarity = Math.floor(Math.random() * 100);
-          statChange("stamina", -4);
-          statChange("hygiene", -4);
-          if (rarity == 99) {
-            statChange("happiness", 30);
-            moneyChange(50000);
-            cutsceneToggle(1000, 2000, "You stole..."),"Assets/GUI/UI_board_small_stone.png";
-          } else if (rarity <= 65) {
-            moneyChange(-10000000)
-            cutsceneToggle(1000, 2000, "You gave all your money for charity","Assets/GUI/UI_board_small_stone.png");
-          } else {
-            moneyChange(-100)
-            cutsceneToggle(1000, 2000, "You gave your money for charity","Assets/GUI/UI_board_small_stone.png");
-          }
-        }
-      } else if(collision.type == "sleep"){  // Sleep behavior
-        drawExclamation(0);
-        if(zKeyPressed && !interactCooldown && !inCutscene){
-          cutsceneToggle(5000, 6000, "You tidy up and rest for a bit...","Assets/GUI/UI_board_small_stone.png");
-          const overlay = document.getElementById("overlay");
-          statChange("food", -5);
-          statChange("hygiene", 30);
-          statChange("stamina", 50);
-          statChange("happiness", 30);
-        }
-
-      } else if (collision.type === "mapTransition") {
-        if (!collision.inside && !isMapTransitionDialogActive) {
-          collision.inside = true; // Mark the player as inside the block
-          speed = 0; // and disables movement
-          isMapTransitionDialogActive = true;
-          showMapTransitionDialog(collision.targetMap);
-          return;
-        }
-      }
-    } else {
-      // Reset the `inside` property when the player leaves the block
-      if (collision.type === "mapTransition") {
-        collision.inside = false;
-      }
-    }
-  }
 
   if (moved) {
     player.frameTimer++;
@@ -680,62 +1171,6 @@ function drawPlayer() {
   }
 }
 
-function showMapTransitionDialog(nextMap) {
-  const dialog = document.getElementById("mapTransitionDialog");
-  const yesButton = document.getElementById("yesButton");
-  const noButton = document.getElementById("noButton");
-
-  // Show the dialog
-  dialog.classList.remove("hidden");
-
-  // Handle "Yes" button click
-  yesButton.onclick = () => {
-    const currentMap = window.location.pathname.split('/').pop();
-    localStorage.setItem("previousMap", currentMap);
-    window.location.href = nextMap; // Redirect to the next map
-  };
-
-
-  // Handle "No" button click
-  noButton.onclick = () => {
-    dialog.classList.add("hidden"); // Hide the dialog
-    isMapTransitionDialogActive = false; // Reset dialog state
-    speed = 1; // an reenables movement
-  };
-}
-
-function drawMap() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.save();
-  ctx.scale(zoom, zoom);
-  ctx.translate(-camera.x, -camera.y);
-
-  ctx.drawImage(mapImg, 0, 0);
-
-  // color hitboxes
-  for (let box of collisions) {
-    if (box.type == "sleep" || box.type == "fishing"){
-      ctx.strokeStyle = 'blue';
-      ctx.strokeRect(box.x, box.y, box.width, box.height);
-    //} else if (box.type == "wall"){
-     // ctx.strokeStyle = 'red';
-     // ctx.strokeRect(box.x, box.y, box.width, box.height);
-    } else if (box.type == "mapTransition"){
-      ctx.strokeStyle = 'green';
-      ctx.strokeRect(box.x, box.y, box.width, box.height);
-    }
-  }
-  
-
-  ctx.restore();
-}
-function gameLoop() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  updatePlayerPosition();
-  drawMap();
-  drawPlayer();
-  requestAnimationFrame(gameLoop);
-}
 mapImg.onload = () => {
   gameLoop();
 };
@@ -753,11 +1188,6 @@ window.addEventListener('DOMContentLoaded', () => {
   console.log("Selected Character ID:", characterId);
 
   // You can now use these to set up the game state
-});
-
-//death
-window.addEventListener("dead", function () {
-  window.location.href = "map6.html";
 });
 
 // Inside mapScript.js, when a map transition should occur:
@@ -780,3 +1210,4 @@ function updateMoney(newMoney) {
     detail: { value: newMoney }
   }));
 }
+  */

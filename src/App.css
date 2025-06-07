@@ -23,9 +23,8 @@ body.fade-out {
 /* Menu Styling */
 .menu {
   width: 100%;
-  position: absolute;
   box-sizing: border-box;
-  display: none;
+  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -128,16 +127,18 @@ body.fade-out {
 }
 
 .character-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 5rem;
+  display: grid;
+  /* flex-wrap: wrap; /* Remove this as it's for flexbox */
+  justify-content: center; /* This might still work, but grid has its own alignment */
+  gap: 5rem; /* Keep this for spacing */
   width: 100%;
   opacity: 0;
   transform: translateY(30px);
   animation: floatFadeUp 1.2s ease-out forwards;
   animation-delay: 1.2s;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Keep this for grid columns */
+  /* If auto-fit minmax doesn't give desired columns, use fixed values */
+  /* e.g., grid-template-columns: repeat(3, 1fr); for 3 columns */
 }
 
 .character-card {

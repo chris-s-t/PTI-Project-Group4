@@ -1,18 +1,23 @@
-// src/components/MainMenu.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "../App.css"; // Ensure App.css is imported for styling
+import "../App.css";
 import startUnpress from "../Assets/GUI/start_Unpress.png";
 import startPress from "../Assets/GUI/start_Press.png";
 
-// Import character images dynamically
+import nobleManImg from "../Assets/Avatars/MiniNobleManCrop.png";
+import nobleWomanImg from "../Assets/Avatars/MiniNobleWomanCrop.png";
+import oldManImg from "../Assets/Avatars/MiniOldManCrop.png";
+import peasantImg from "../Assets/Avatars/MiniPeasantCrop.png";
+import princessImg from "../Assets/Avatars/MiniPrincessCrop.png";
+import queenImg from "../Assets/Avatars/MiniQueenCrop.png";
+
 const characterImages = {
-  "Noble Man": require("../Assets/Avatars/MiniNobleManCrop.png"),
-  "Noble Woman": require("../Assets/Avatars/MiniNobleWomanCrop.png"),
-  "Old Man": require("../Assets/Avatars/MiniOldManCrop.png"),
-  Peasant: require("../Assets/Avatars/MiniPeasantCrop.png"),
-  Princess: require("../Assets/Avatars/MiniPrincessCrop.png"),
-  Queen: require("../Assets/Avatars/MiniQueenCrop.png"),
+  "Noble Man": nobleManImg,
+  "Noble Woman": nobleWomanImg,
+  "Old Man": oldManImg,
+  "Peasant": peasantImg,
+  "Princess": princessImg,
+  "Queen": queenImg,
 };
 
 const characterStats = {

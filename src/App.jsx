@@ -5,7 +5,7 @@ import "./App.css";
 import IntroScreen from "./components/IntroScreen";
 import MainMenu from "./components/MainMenu";
 import GameMap from "./components/GameMap";
-import StatusGUI from "./components/StatusGUI"; // We'll create this later
+import StatusGUI from "./components/StatusGUI";
 
 function App() {
   const [showIntro, setShowIntro] = useState(true);
@@ -20,7 +20,6 @@ function App() {
     return savedMoney ? parseInt(savedMoney) : 0;
   });
 
-  // Effect to load player name and selected character from localStorage on initial load
   useEffect(() => {
     const savedPlayerName = localStorage.getItem("playerName");
     const savedCharacterId = localStorage.getItem("characterId");

@@ -1,27 +1,29 @@
-// src/components/StatusGUI.jsx
 import React, { useState, useEffect } from 'react';
 import '../statusGUI.css';
 
-// Import all necessary images
-import ClockIcon from '../Assets/GUI/Clock.png';
+import ClockIcon from '../Assets/StatusGUI/Clock.png';
 import AvatarBack from '../Assets/StatusGUI/avatarBack.png';
 import AvatarFront from '../Assets/StatusGUI/avatarFront.png';
-import CoinIcon from '../Assets/Minerals/Icon10.png'; // Assuming this is the new money icon
+import CoinIcon from '../Assets/StatusGUI/Icon.png';
 import HealthIcon from '../Assets/StatusGUI/healthIcon.png';
 import FoodIcon from '../Assets/StatusGUI/foodIcon.png';
 import StaminaIcon from '../Assets/StatusGUI/staminaIcon.png';
 import HappinessIcon from '../Assets/StatusGUI/happyIcon.png';
 import HygieneIcon from '../Assets/StatusGUI/hygieneIcon.png';
+import nobleManImg from "../Assets/Avatars/MiniNobleManCrop.png";
+import nobleWomanImg from "../Assets/Avatars/MiniNobleWomanCrop.png";
+import oldManImg from "../Assets/Avatars/MiniOldManCrop.png";
+import peasantImg from "../Assets/Avatars/MiniPeasantCrop.png";
+import princessImg from "../Assets/Avatars/MiniPrincessCrop.png";
+import queenImg from "../Assets/Avatars/MiniQueenCrop.png";
 
-// Character avatar images (you'll need to expand this as you add more)
 const characterAvatars = {
-    "Noble Man": require("../Assets/Avatars/MiniNobleManCrop.png"),
-    "Noble Woman": require("../Assets/Avatars/MiniNobleWomanCrop.png"),
-    "Old Man": require("../Assets/Avatars/MiniOldManCrop.png"),
-    "Peasant": require("../Assets/Avatars/MiniPeasantCrop.png"),
-    "Princess": require("../Assets/Avatars/MiniPrincessCrop.png"),
-    "Queen": require("../Assets/Avatars/MiniQueenCrop.png"),
-    // Add more character images here if you have them
+  "Noble Man": nobleManImg,
+  "Noble Woman": nobleWomanImg,
+  "Old Man": oldManImg,
+  "Peasant": peasantImg,
+  "Princess": princessImg,
+  "Queen": queenImg,
 };
 
 function StatusGUI() {
@@ -30,7 +32,7 @@ function StatusGUI() {
     const [greeting, setGreeting] = useState("");
     const [playerName, setPlayerName] = useState("Player");
     const [playerMoney, setPlayerMoney] = useState(0);
-    const [playerAvatarSrc, setPlayerAvatarSrc] = useState(""); // State for player avatar
+    const [playerAvatarSrc, setPlayerAvatarSrc] = useState("NobleMan");
     const [playerStats, setPlayerStats] = useState({
         health: { currentStat: 100, max: 100 },
         food: { currentStat: 100, max: 100 },
@@ -129,8 +131,7 @@ function StatusGUI() {
                 <div className="avatar-section">
                     <div className="avatar-stack">
                         <img src={AvatarBack} className="avatar-ring back" alt="Avatar Back Ring" />
-                        <div className="avatar-mask">
-                            {/* Player avatar will be rendered here dynamically */}
+                        <div className="avatar-mask">                
                             <img id="playerAvatar" src={playerAvatarSrc} className="avatar-core" alt="Player Avatar" />
                         </div>
                         <img src={AvatarFront} className="avatar-ring front" alt="Avatar Front Ring" />
