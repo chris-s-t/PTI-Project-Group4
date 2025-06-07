@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import '../statusGUI.css';
 
-import ClockIcon from '../Assets/StatusGUI/Clock.png';
-import AvatarBack from '../Assets/StatusGUI/avatarBack.png';
-import AvatarFront from '../Assets/StatusGUI/avatarFront.png';
-import CoinIcon from '../Assets/StatusGUI/Icon.png';
-import HealthIcon from '../Assets/StatusGUI/healthIcon.png';
-import FoodIcon from '../Assets/StatusGUI/foodIcon.png';
-import StaminaIcon from '../Assets/StatusGUI/staminaIcon.png';
-import HappinessIcon from '../Assets/StatusGUI/happyIcon.png';
-import HygieneIcon from '../Assets/StatusGUI/hygieneIcon.png';
-import nobleManImg from "../Assets/Avatars/MiniNobleManCrop.png";
-import nobleWomanImg from "../Assets/Avatars/MiniNobleWomanCrop.png";
-import oldManImg from "../Assets/Avatars/MiniOldManCrop.png";
-import peasantImg from "../Assets/Avatars/MiniPeasantCrop.png";
-import princessImg from "../Assets/Avatars/MiniPrincessCrop.png";
-import queenImg from "../Assets/Avatars/MiniQueenCrop.png";
+import ClockIcon from '/Assets/StatusGUI/Clock.png';
+import AvatarBack from '/Assets/StatusGUI/avatarBack.png';
+import AvatarFront from '/Assets/StatusGUI/avatarFront.png';
+import CoinIcon from '/Assets/StatusGUI/Icon.png';
+import HealthIcon from '/Assets/StatusGUI/healthIcon.png';
+import FoodIcon from '/Assets/StatusGUI/foodIcon.png';
+import StaminaIcon from '/Assets/StatusGUI/staminaIcon.png';
+import HappinessIcon from '/Assets/StatusGUI/happyIcon.png';
+import HygieneIcon from '/Assets/StatusGUI/hygieneIcon.png';
+import nobleManImg from "/Assets/Avatars/MiniNobleManCrop.png";
+import nobleWomanImg from "/Assets/Avatars/MiniNobleWomanCrop.png";
+import oldManImg from "/Assets/Avatars/MiniOldManCrop.png";
+import peasantImg from "/Assets/Avatars/MiniPeasantCrop.png";
+import princessImg from "/Assets/Avatars/MiniPrincessCrop.png";
+import queenImg from "/Assets/Avatars/MiniQueenCrop.png";
 
 const characterAvatars = {
   "Noble Man": nobleManImg,

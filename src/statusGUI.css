@@ -39,11 +39,11 @@ body {
   top: 10px;
   left: 10px;
   z-index: 1000;
-  pointer-events: none; /* UI doesn't block game unless needed */
+  pointer-events: none;
 }
 
 #status-container * {
-  pointer-events: auto; /* Allow interactions inside the status */
+  pointer-events: auto;
 }
 .info-container {
   margin-top: 120px;
@@ -58,11 +58,11 @@ body {
   height: 100%;
   top: 0;
   left: 0;
-  background-color: rgb(0, 0, 0); /* Black background */
-  opacity: 0; /* Initial opacity */
+  background-color: rgb(0, 0, 0);
+  opacity: 0;
   z-index: -1;
   cursor: pointer;
-  transition: opacity 1s ease; /* Smooth opacity transition */
+  transition: opacity 1s ease;
 }
 
 .clock {

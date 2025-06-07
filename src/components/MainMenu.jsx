@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
-import startUnpress from "../Assets/GUI/start_Unpress.png";
-import startPress from "../Assets/GUI/start_Press.png";
+import startUnpress from "/Assets/GUI/start_Unpress.png";
+import startPress from "/Assets/GUI/start_Press.png";
 
-import nobleManImg from "../Assets/Avatars/MiniNobleManCrop.png";
-import nobleWomanImg from "../Assets/Avatars/MiniNobleWomanCrop.png";
-import oldManImg from "../Assets/Avatars/MiniOldManCrop.png";
-import peasantImg from "../Assets/Avatars/MiniPeasantCrop.png";
-import princessImg from "../Assets/Avatars/MiniPrincessCrop.png";
-import queenImg from "../Assets/Avatars/MiniQueenCrop.png";
+import nobleManImg from "/Assets/Avatars/MiniNobleManCrop.png";
+import nobleWomanImg from "/Assets/Avatars/MiniNobleWomanCrop.png";
+import oldManImg from "/Assets/Avatars/MiniOldManCrop.png";
+import peasantImg from "/Assets/Avatars/MiniPeasantCrop.png";
+import princessImg from "/Assets/Avatars/MiniPrincessCrop.png";
+import queenImg from "/Assets/Avatars/MiniQueenCrop.png";
 
 const characterImages = {
   "Noble Man": nobleManImg,
@@ -128,10 +128,10 @@ function MainMenu({ playerName, setPlayerName, selectedCharacter, setSelectedCha
 
       onStartGame(playerName, selectedCharacter, playerStats, characterData.moneyOwned);
 
-      document.body.classList.add("fade-out"); // Apply fade-out to body
+      document.body.classList.add("fade-out");
       setTimeout(() => {
-        navigate("/map1"); // Navigate to the first map
-      }, 500); // Match CSS transition duration
+        navigate("/map1");
+      }, 500);
     }
   };
 

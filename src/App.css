@@ -2,12 +2,11 @@ body {
   margin: 0;
   padding: 0;
   font-family: "Cinzel", serif;
-  background: url("Assets/Backgrounds/menuBackground.jpg") center center / cover
+  background: url("/Assets/Backgrounds/menuBackground.jpg") center center / cover
     no-repeat;
   background-attachment: scroll;
   min-height: 100vh;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -26,14 +25,15 @@ body.fade-out {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
   align-items: center;
   justify-content: center;
   opacity: 0;
   margin: 0;
-  padding: 0;
+  padding: 2rem;
   overflow-y: auto;
   overflow-x: auto;
-  max-height: 100vh;
+  max-width: 1200px;
   text-align: center;
   transition: transform 0.3s ease;
 }
@@ -55,17 +55,12 @@ body.fade-out {
 }
 
 .menu-button-img:hover {
-  content: url("Assets/GUI/start_Press.png");
   transform: scale(0.9);
-}
-
-.menu-button-img:active {
-  content: url("Assets/GUI/start_Unpress.png");
 }
 
 /* Input Styling */
 .name-input {
-  margin-bottom: 100px;
+  margin-bottom: 2rem;
   opacity: 0;
   transform: translateY(30px);
   animation: floatFadeUp 1.2s ease-out forwards;
@@ -73,18 +68,16 @@ body.fade-out {
 }
 
 .name-input input {
-  width: 100%;
-  max-width: 300px;
+  width: 90%;
+  max-width: 320px;
   padding: 0.5rem;
   border: none;
   border-radius: 12px;
-  background: url("Assets/GUI/UI board Small  parchment.png") no-repeat center
-    center;
+  background: url("Assets/GUI/UI board Small  parchment.png") center;
   background-size: 100% 100%;
   color: #fcebb4;
   font-family: "Cinzel", serif;
   font-size: 1rem;
-  width: 320px;
   text-align: center;
   text-shadow: 1px 1px 0 #000, -1px 1px 0 #000, 1px -1px 0 #000,
     -1px -1px 0 #000;
@@ -117,7 +110,7 @@ body.fade-out {
 .character-selection {
   text-align: center;
   padding: 7vh 4vw;
-  max-width: 600px;
+  max-width: 1000px;
   margin: auto;
 }
 
@@ -128,32 +121,37 @@ body.fade-out {
 
 .character-grid {
   display: grid;
-  /* flex-wrap: wrap; /* Remove this as it's for flexbox */
-  justify-content: center; /* This might still work, but grid has its own alignment */
-  gap: 5rem; /* Keep this for spacing */
+  justify-content: center;
+  gap: 2rem 3rem;
   width: 100%;
   opacity: 0;
   transform: translateY(30px);
   animation: floatFadeUp 1.2s ease-out forwards;
   animation-delay: 1.2s;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Keep this for grid columns */
-  /* If auto-fit minmax doesn't give desired columns, use fixed values */
-  /* e.g., grid-template-columns: repeat(3, 1fr); for 3 columns */
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  padding: 0 1rem;
+  box-sizing: border-box;
+  max-width: 1000px;
+  margin-top: 2rem;
 }
 
 .character-card {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   border-radius: 1rem;
-  padding: 1rem;
+  box-sizing: border-box;
+  padding: 0.5rem;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
   transition: transform 0.3s ease;
   cursor: pointer;
 }
 
 .character-card img {
-  width: 200px;
-  height: 250px;
+  width: 100%;
+  max-width: 200px;
+  height: auto;
   border-radius: 12px;
   transition: transform 0.3s ease, filter 0.3s ease;
 }
@@ -244,19 +242,24 @@ body.fade-out {
 
 /* Button Styling */
 .buttons {
-  width: 200px;
-  max-width: 100%;
+  width: 100%;
+  max-width: 200px;
   height: auto;
   margin: 30px auto 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10vh;
+  gap: 5vh;
   opacity: 0;
   transform: translateY(30px);
   animation: floatFadeUp 1.2s ease-out forwards;
   animation-delay: 1.2s;
   cursor: pointer;
+}
+.buttons img {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
 }
 
 /* Intro & Error Styling */
@@ -411,55 +414,51 @@ body.fade-out {
   }
 }
 
+@media screen and (max-width: 480px) {
+  .character-grid {
+    gap: 1rem 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+  .menu h1 {
+    font-size: 32px;
+  }
+  .character-selection {
+    padding: 4vh 2vw;
+  }
+}
 @media screen and (max-width: 768px) {
   .intro-title {
-    font-size: 1rem;
+    font-size: 1.5rem;
   }
-
   .character-grid {
-    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   }
-
+  .character-name {
+    font-size: 16px;
+    padding: 8px 16px;
+  }
   .buttons img {
-    width: 150px;
+    width: 120px;
+  }
+  .name-input input {
+    font-size: 0.9rem;
+    padding: 0.4rem;
   }
 }
 @media screen and (min-width: 1400px) {
   .intro-title {
-    font-size: 2rem;
+    font-size: 3rem;
   }
   .character-grid {
-    grid-template-columns: repeat(2, 3fr);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 3rem 4rem;
   }
   .menu {
-    transform: scale(1.2);
-  }
-}
-@media screen and (min-width: 1800px) {
-  .intro-title {
-    font-size: 6rem;
-  }
-  .menu {
-    transform: scale(1.3);
-  }
-}
-@media screen and (min-width: 2200px) {
-  .intro-title {
-    font-size: 6rem;
-  }
-}
-@media screen and (min-width: 2400px) {
-  .intro-title {
-    font-size: 6rem;
-  }
-}
-@media screen and (min-width: 3500px) {
-  .intro-title {
-    font-size: 10rem;
+    transform: scale(1);
   }
 }
 
-/* Add fade-in and fade-out classes */
 .intro {
   opacity: 1;
   transition: opacity 1s ease;
@@ -476,6 +475,7 @@ body.fade-out {
 .menu.fade-in {
   opacity: 0;
   animation: fadeInMenu 1s forwards;
+  width: 100%;
 }
 
 @keyframes fadeInMenu {
