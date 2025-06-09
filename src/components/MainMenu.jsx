@@ -73,7 +73,7 @@ function MainMenu({ playerName, setPlayerName, selectedCharacter, setSelectedCha
 
   const handleCharacterSelect = (characterId) => {
     setSelectedCharacter(characterId);
-    setCharacterSelectError(false); // Clear error when a character is selected
+    setCharacterSelectError(false);
   };
 
   const handleStartGameClick = () => {
@@ -94,6 +94,8 @@ function MainMenu({ playerName, setPlayerName, selectedCharacter, setSelectedCha
     }
 
     if (valid) {
+      console.log("Validation passed. Attempting fade-out and navigation."); 
+
       const characterData = characterStats[selectedCharacter];
       const playerStats = {
         food: {
@@ -127,11 +129,15 @@ function MainMenu({ playerName, setPlayerName, selectedCharacter, setSelectedCha
       };
 
       onStartGame(playerName, selectedCharacter, playerStats, characterData.moneyOwned);
-
+      console.log("Adding fade-out class to body");
       document.body.classList.add("fade-out");
       setTimeout(() => {
+        console.log("Fade-out complete. Navigating to /map1");
         navigate("/map1");
       }, 500);
+    }
+    else {
+      console.log("Validation failed. Not performing fade-out or navigation.");
     }
   };
 
@@ -149,7 +155,7 @@ function MainMenu({ playerName, setPlayerName, selectedCharacter, setSelectedCha
             value={playerName}
             onChange={(e) => {
               setPlayerName(e.target.value);
-              if (e.target.value.trim()) setNameError(false); // Clear error on input
+              if (e.target.value.trim()) setNameError(false);
             }}
             className={nameError ? "input-error" : ""}
           />

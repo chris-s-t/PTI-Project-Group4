@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import StatusGUI from "./StatusGUI"; // Import the React StatusGUI component
-import "../App.css"; // Ensure App.css is imported for styling
+import StatusGUI from "./StatusGUI";
+import "../App.css";
 
 declare global {
   interface Window {
@@ -11,7 +11,7 @@ declare global {
       playerStats: any,
       characterId: string,
       previousMap: string
-    ) => void;
+    ) => Promise<void>;
     cleanupGameMap?: () => void;
   }
 }
@@ -26,30 +26,44 @@ function GameMap({ mapNum }) {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {
+      console.error("Canvas element not found in DOM.");
+      return;
+    }
+    console.log("Canvas found. Attempting to load mapScript.js.");
 
     const script = document.createElement("script");
-    script.src = "/src/mapScript.js";
+    script.src = "/mapScript.js";
+    script.type = "module";
+
     script.onload = () => {
       console.log(`mapScript.js loaded for map ${mapNum}`);
 
       if (window.initGameMap) {
+        console.log(
+          "window.initGameMap function found. Initializing game map."
+        );
         const playerStats = JSON.parse(
           localStorage.getItem("playerStats") || "{}"
         );
-        const characterId = localStorage.getItem("characterId") || "";
+        const characterId = localStorage.getItem("characterId") || "Noble Man";
         const previousMap = localStorage.getItem("previousMap") || "map1.html";
 
-        window.initGameMap(
-          canvas,
-          String(mapNum),
-          playerStats,
-          characterId,
-          previousMap
-        );
+        window
+          .initGameMap(
+            canvas,
+            String(mapNum),
+            playerStats,
+            characterId,
+            previousMap
+          )
+          .then(() => console.log("initGameMap finished successfully."))
+          .catch((error) =>
+            console.error("initGameMap encountered an error:", error)
+          );
       } else {
-        console.warn(
-          "initGameMap function not found in mapScript.js after loading."
+        console.error(
+          "ERROR: window.initGameMap function not found in mapScript.js!"
         );
       }
     };
@@ -64,9 +78,8 @@ function GameMap({ mapNum }) {
         window.cleanupGameMap();
       }
     };
-  }, [mapNum]);
+  }, [mapNum, navigate]);
 
-  // Handle map transitions initiated by mapScript.js
   useEffect(() => {
     const handleMapTransitionRequest = (event) => {
       const { nextMap } = event.detail;
@@ -99,7 +112,7 @@ function GameMap({ mapNum }) {
 
   return (
     <div id="gameContainer">
-      <canvas id="gameCanvas" ref={canvasRef}></canvas>
+      <canvas id="gameCanvas" ref={canvasRef} width="800" height="736"></canvas>
       <div id="status-container">
         <StatusGUI />
       </div>

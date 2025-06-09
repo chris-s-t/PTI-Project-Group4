@@ -1,4 +1,3 @@
-// App.jsx
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import "./App.css";
@@ -8,7 +7,6 @@ import GameMap from "./components/GameMap";
 import StatusGUI from "./components/StatusGUI";
 
 function App() {
-  const [showIntro, setShowIntro] = useState(true);
   const [playerName, setPlayerName] = useState("");
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [playerStats, setPlayerStats] = useState(() => {
@@ -43,7 +41,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<IntroScreen setShowIntro={setShowIntro} />} />
+        <Route path="/" element={<IntroScreen />} />
         <Route
           path="/menu"
           element={

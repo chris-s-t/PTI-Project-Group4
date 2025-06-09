@@ -42,7 +42,6 @@ function StatusGUI() {
     });
 
     useEffect(() => {
-        // Load initial data from localStorage
         const savedPlayerName = localStorage.getItem("playerName");
         const savedPlayerMoney = localStorage.getItem("playerMoney");
         const savedPlayerStats = localStorage.getItem("playerStats");
@@ -61,10 +60,9 @@ function StatusGUI() {
             setPlayerStats(prevStats => {
                 const newStats = { ...prevStats };
                 if (newStats[type]) {
-                    // Ensure stat doesn't go below 0 or above max
                     newStats[type].currentStat = Math.max(0, Math.min(newStats[type].max, value));
                 }
-                localStorage.setItem("playerStats", JSON.stringify(newStats)); // Persist immediately
+                localStorage.setItem("playerStats", JSON.stringify(newStats));
                 return newStats;
             });
         };
@@ -72,7 +70,7 @@ function StatusGUI() {
         const handleUpdateMoney = (event) => {
             const { value } = event.detail;
             setPlayerMoney(value);
-            localStorage.setItem("playerMoney", value.toString()); // Persist immediately
+            localStorage.setItem("playerMoney", value.toString());
         };
 
         const handleUpdateClock = (event) => {
@@ -109,12 +107,11 @@ function StatusGUI() {
         };
     }, []);
 
-    // Function to determine the color of the status bar fill
     const getStatusColor = (current, max) => {
         const percentage = (current / max) * 100;
-        if (percentage > 70) return '#4CAF50'; // Green
-        if (percentage > 40) return '#FFEB3B'; // Yellow
-        return '#F44336'; // Red
+        if (percentage > 70) return '#4CAF50';
+        if (percentage > 40) return '#FFEB3B';
+        return '#F44336';
     };
 
     return (
@@ -146,19 +143,18 @@ function StatusGUI() {
                     </div>
                 </div>
 
-                {/* Status Bars */}
                 {Object.entries(playerStats).map(([statName, stat]) => (
                     <div className={`status-bar status-bar-${statName}`} key={statName}>
                         <div className="bar-container">
                             <div className="floating-text-container"></div>
-                            <div className="bar-bg"></div> {/* This will need a background image in CSS */}
+                            <div className="bar-bg"></div> 
                             <img
                                 src={
                                     statName === 'health' ? HealthIcon :
                                     statName === 'food' ? FoodIcon :
                                     statName === 'stamina' ? StaminaIcon :
                                     statName === 'happiness' ? HappinessIcon :
-                                    HygieneIcon // Default for hygiene
+                                    HygieneIcon
                                 }
                                 className="status-icon"
                                 alt={`${statName} Icon`}
@@ -176,7 +172,6 @@ function StatusGUI() {
                 ))}
             </div>
 
-            {/* Medieval Joystick (if this is part of the persistent UI, otherwise move it to GameMap) */}
             <div className="medieval-joystick">
                 <button className="arrow up" data-key="ArrowUp">▲</button>
                 <div className="middle-row">
@@ -186,13 +181,11 @@ function StatusGUI() {
                 <button className="arrow down" data-key="ArrowDown">▼</button>
             </div>
 
-            {/* Popup Box and Overlay (if they are global UI elements) */}
-            {/* These might be better handled as separate components or within GameMap for context-specific popups */}
-            <div id="popupBox" style={{display: 'none'}}> {/* Initially hidden, control with state */}
+            <div id="popupBox" style={{display: 'none'}}>
                 <p id="popupText"></p>
             </div>
 
-            <div id="overlay" style={{display: 'none'}}></div> {/* Initially hidden, control with state */}
+            <div id="overlay" style={{display: 'none'}}></div>
         </>
     );
 }

@@ -5,7 +5,8 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 3000, // Try a different port, like 3000 or 8080
+    port: 3000,
     open: true,
+    historyApiFallback: true,
   },
 });

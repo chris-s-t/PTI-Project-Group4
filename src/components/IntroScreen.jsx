@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "../App.css"; // Ensure App.css is imported for styling
+import "../App.css";
 
-function IntroScreen({ setShowIntro }) {
+function IntroScreen() {
   const [clickEnabled, setClickEnabled] = useState(false);
   const [isFadingOut, setIsFadingOut] = useState(false);
   const navigate = useNavigate();
 
-  // Enable click after 3.5 seconds
   useEffect(() => {
     const timer = setTimeout(() => setClickEnabled(true), 3500);
     return () => clearTimeout(timer);
@@ -16,12 +15,11 @@ function IntroScreen({ setShowIntro }) {
   const handleIntroClick = () => {
     if (!clickEnabled) return;
 
-    setIsFadingOut(true); // Start fade-out animation
+    setIsFadingOut(true);
 
     setTimeout(() => {
-      setShowIntro(false); // This prop might not be strictly needed if using router, but good for clarity
-      navigate("/menu"); // Navigate to the main menu
-    }, 1000); // Same as CSS transition duration
+      navigate("/menu");
+    }, 1000);
   };
 
   return (
