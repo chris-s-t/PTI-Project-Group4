@@ -1,31 +1,39 @@
 body {
-    margin: 0;
-    padding: 0;
-    font-family: "Cinzel", serif;
-    background: url("/Assets/Backgrounds/menuBackground.jpg") center center / cover no-repeat;
-    background-attachment: scroll;
-    min-height: 100vh;
-    width: 100%;
-    height: 100%;
-    overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  font-family: "Cinzel", serif;
+  background: url("/Assets/Backgrounds/menuBackground.jpg") center center /
+    cover no-repeat;
+  background-attachment: scroll;
+  min-height: 100vh;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
 }
 #status-gui {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 100;
-    background-color: rgba(0, 0, 0, 0.7);
-    border-radius: 10px;
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-    color: white;
-    font-family: "Cinzel", serif;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-    width: fit-content;
-    max-width: 300px;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 10px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  color: white;
+  font-family: "Cinzel", serif;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+  width: clamp(
+    180px,
+    20vw,
+    300px
+  ); /* Min 180px, ideal 20% of viewport width, Max 300px */
+  max-height: 95vh; /* Ensure it doesn't exceed viewport height */
+  overflow-y: auto; /* Enable scrolling if content overflows vertically */
+  overflow-x: hidden; /* Prevent horizontal overflow */
+  box-sizing: border-box; /* Include padding in width/height calculations */
 }
 
 #gameContainer {
@@ -67,7 +75,7 @@ body {
 
 .clock {
   position: relative;
-  margin-top: 18px;
+  margin-top: 100px;
   margin-bottom: 10px;
   right: -520px;
   width: 100%;
@@ -100,7 +108,8 @@ body {
   opacity: 1;
 }
 
-.time, .day {
+.time,
+.day {
   position: relative;
   top: auto;
   right: auto;
@@ -119,15 +128,14 @@ body {
 .day {
   position: absolute;
   top: 6rem;
-  
 }
 #greeting {
-  background-image: url('Assets/GUI/UI_board_small_stone.png');
+  background-image: url("Assets/GUI/UI_board_small_stone.png");
   background-repeat: no-repeat;
   background-size: 100% 100%;
   background-position: center;
   padding: 10px 15px;
-  font-family: 'Cinzel Decorative', serif;
+  font-family: "Cinzel Decorative", serif;
   font-size: 1.2rem;
   color: #f9e2af;
   text-align: center;
@@ -157,7 +165,8 @@ body {
 }
 
 @keyframes glowCycle {
-  0%, 100% {
+  0%,
+  100% {
     text-shadow: 0 0 5px #ffdd99, 0 0 10px #eec37b;
   }
   50% {
@@ -190,10 +199,12 @@ body {
     text-shadow: 0 0 6px #a5a5a5, 0 0 12px #000000, 0 0 18px #777777;
   }
 }
+
 .avatar-section {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 0px;
+  gap: 10px;
   margin-bottom: 5px;
   width: 100%;
   justify-content: center;
@@ -201,13 +212,14 @@ body {
 
 .avatar-stack {
   position: relative;
-  width: 64px;
-  height: 64px;
+  width: clamp(60px, 8vw, 80px);
+  height: clamp(60px, 8vw, 80px);
+  margin-bottom: 5px;
 }
 
 .avatar-mask {
-  width: 80px;
-  height: 80px;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   border-radius: 50%;
   position: absolute;
@@ -216,18 +228,18 @@ body {
 }
 
 .avatar-core {
-  width: 80px;
-  height: 80px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   object-position: center top;
   position: absolute;
-  top: 10px;
+  top: 8px;
   left: 0;
 }
 
 .avatar-ring {
-  width: 80px;
-  height: 80px;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   position: absolute;
   top: 0;
@@ -238,9 +250,10 @@ body {
 .name-money-container {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  margin-top: 21px;
-  margin-left: 20px;
+  gap: 10px;
+  width: 100%;
+  margin-top: 0;
+  margin-left: 0;
 }
 
 .name-box,
@@ -249,11 +262,16 @@ body {
   background-size: 100% 100%;
   padding: 4px 10px;
   font-family: "Cinzel", serif;
-  font-size: 16px;
+  font-size: clamp(12px, 2vw, 16px);;
   color: #f1f1ee;
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  height: 26px;
+  justify-content: center;
+  height: clamp(20px, 3vw, 26px);
+  width: 90%; /* Max width for these boxes within the container */
+  max-width: 200px; /* Limits absolute max size */
+  box-sizing: border-box;
+  text-align: center; /* Fallback for text alignment */
 }
 
 .coin-icon {
@@ -535,8 +553,8 @@ body {
 }
 
 .medieval-joystick {
-  position: fixed;
-  bottom: 20px;
+  position: absolute;
+  bottom: 0;
   right: 20px;
   display: flex;
   flex-direction: column;
@@ -577,7 +595,8 @@ body {
   background: linear-gradient(145deg, #4a3624, #2a1e15);
 }
 @keyframes glowPulse {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 10px rgba(255, 223, 133, 0.3), inset 0 0 3px #b9935d;
   }
   50% {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "../App.css";
+import "../styles/App.css";
+import "../styles/intro.css";
 
 function IntroScreen() {
   const [clickEnabled, setClickEnabled] = useState(false);

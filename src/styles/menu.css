@@ -1,25 +1,3 @@
-body {
-  margin: 0;
-  padding: 0;
-  font-family: "Cinzel", serif;
-  background: url("/Assets/Backgrounds/menuBackground.jpg") center center / cover
-    no-repeat;
-  background-attachment: scroll;
-  min-height: 100vh;
-  width: 100vw;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  overflow-x: hidden;
-}
-
-body.fade-out {
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-
-/* Menu Styling */
 .menu {
   width: 100%;
   box-sizing: border-box;
@@ -32,8 +10,9 @@ body.fade-out {
   margin: 0;
   padding: 2rem;
   overflow-y: auto;
-  overflow-x: auto;
+  overflow-x: hidden;
   max-width: 1200px;
+  max-height: 100vh;
   text-align: center;
   transition: transform 0.3s ease;
 }
@@ -54,6 +33,7 @@ body.fade-out {
   cursor: pointer;
 }
 
+/* Hover/active states are handled in React component, no content:url() needed */
 .menu-button-img:hover {
   transform: scale(0.9);
 }
@@ -73,7 +53,8 @@ body.fade-out {
   padding: 0.5rem;
   border: none;
   border-radius: 12px;
-  background: url("Assets/GUI/UI board Small parchment.png") center;
+  background: url("/Assets/GUI/UI board Small  parchment.png") no-repeat center
+    center; /* Corrected path */
   background-size: 100% 100%;
   color: #fcebb4;
   font-family: "Cinzel", serif;
@@ -85,6 +66,7 @@ body.fade-out {
     inset 0 0 10px rgba(0, 0, 0, 0.4);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
   margin: 0 auto;
+  box-sizing: border-box; /* Ensures padding/border are included in width */
 }
 
 .name-input input:focus {
@@ -92,18 +74,6 @@ body.fade-out {
   transform: scale(1.05);
   box-shadow: 0 0 16px rgba(255, 235, 180, 0.8),
     0 0 28px rgba(255, 245, 200, 0.6), inset 0 0 12px rgba(0, 0, 0, 0.4);
-}
-
-@keyframes floatFadeUp {
-  0% {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 /* Character Select Styling */
@@ -122,13 +92,16 @@ body.fade-out {
 .character-grid {
   display: grid;
   justify-content: center;
-  gap: 2rem 3rem;
+  gap: 1.5rem; /* Default smaller gap */
   width: 100%;
   opacity: 0;
   transform: translateY(30px);
   animation: floatFadeUp 1.2s ease-out forwards;
   animation-delay: 1.2s;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(160px, 1fr)
+  ); /* Adjusted default min-width */
   padding: 0 1rem;
   box-sizing: border-box;
   max-width: 1000px;
@@ -138,12 +111,11 @@ body.fade-out {
 .character-card {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
   border-radius: 1rem;
   box-sizing: border-box;
   padding: 0.5rem;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
   transition: transform 0.3s ease;
   cursor: pointer;
 }
@@ -152,6 +124,7 @@ body.fade-out {
   width: 100%;
   max-width: 200px;
   height: auto;
+  object-fit: cover;
   border-radius: 12px;
   transition: transform 0.3s ease, filter 0.3s ease;
 }
@@ -162,8 +135,8 @@ body.fade-out {
   font-family: "Cinzel", serif;
   text-align: center;
   text-shadow: 2px 2px 4px #000;
-  background: url("Assets/GUI/UI board Small  parchment.png") no-repeat center
-    center;
+  background: url("/Assets/GUI/UI board Small  parchment.png") no-repeat center
+    center; /* Corrected path */
   background-size: 100% 100%;
   padding: 12px 24px;
   display: inline-block;
@@ -192,7 +165,8 @@ body.fade-out {
   position: relative;
   background: linear-gradient(to right, #d4af37, #c58f0a, #d4af37);
   border-radius: 6px;
-  box-shadow: 0 0 10px #d4af37aa, 0 0 20px #c58f0a88;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 220, 150, 0.5),
+    inset 0 0 10px rgba(0, 0, 0, 0.4);
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -203,7 +177,7 @@ body.fade-out {
   top: -6px;
   left: 50%;
   transform: translateX(-50%);
-  font-family: "serif";
+  font-family: "serif"; /* Using generic serif as "Cinzel" may not be loaded for all browsers without import */
   font-size: 14px;
   color: #473e07;
   text-shadow: 0 0 6px #50460f, 0 0 12px #463a0c;
@@ -229,17 +203,6 @@ body.fade-out {
   transform: scale(1.12);
 }
 
-@keyframes parchmentFloat {
-  0%,
-  100% {
-    transform: scaleY(1) translateY(0);
-  }
-
-  50% {
-    transform: scaleY(1) translateY(-3px);
-  }
-}
-
 /* Button Styling */
 .buttons {
   width: 100%;
@@ -256,80 +219,11 @@ body.fade-out {
   animation-delay: 1.2s;
   cursor: pointer;
 }
+
 .buttons img {
   width: 100%;
   max-width: 200px;
   height: auto;
-}
-
-/* Intro & Error Styling */
-#intro-screen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(ellipse at center, #1b1a17 0%, #0d0c0b 100%);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  z-index: 10;
-  transition: opacity 1s ease;
-}
-
-.intro-content {
-  text-align: center;
-  animation: fadeUp 1.5s ease forwards;
-}
-.intro-content,
-.menu {
-  width: 90%;
-  max-width: 1200px;
-  padding: 2rem;
-  box-sizing: border-box;
-  text-align: center;
-  color: white;
-}
-
-.intro-title {
-  font-size: 64px;
-  font-family: "Cinzel", serif;
-  color: #f4ecd8;
-  text-shadow: 0 0 10px rgba(255, 230, 180, 0.8),
-    0 0 20px rgba(255, 190, 130, 0.6);
-  opacity: 0;
-  animation: inkReveal 2.5s ease-out forwards;
-  text-align: center;
-}
-
-.input-error {
-  border: 2px solid #ff3c3c;
-  box-shadow: 0 0 8px 2px rgba(255, 60, 60, 0.8);
-  background-color: rgba(255, 230, 230, 0.05);
-  animation: runeGlowRed 1s infinite alternate;
-}
-
-.click-to-begin {
-  margin-top: 20px;
-  font-size: 24px;
-  color: #e0d6c3;
-  text-shadow: 0 0 6px #000;
-  opacity: 0;
-  pointer-events: none;
-  animation: fadeInText 1s ease forwards 2.5s,
-    float 3s ease-in-out infinite 3.5s;
-  pointer-events: auto;
-}
-
-@keyframes runeGlowRed {
-  0% {
-    box-shadow: 0 0 8px 2px rgba(255, 60, 60, 0.6);
-  }
-
-  100% {
-    box-shadow: 0 0 12px 4px rgba(255, 10, 10, 0.9);
-  }
 }
 
 #characterError {
@@ -343,6 +237,53 @@ body.fade-out {
   animation: flickerRed 0.8s infinite alternate;
 }
 
+.input-error {
+  border: 2px solid #ff3c3c;
+  box-shadow: 0 0 8px 2px rgba(255, 60, 60, 0.8);
+  background-color: rgba(255, 230, 230, 0.05);
+  animation: runeGlowRed 1s infinite alternate;
+}
+
+/* Menu specific fade class (used by MainMenu.jsx) */
+.menu.fade-in {
+  opacity: 0;
+  animation: fadeInMenu 1s forwards;
+}
+
+/* Keyframes for Menu */
+@keyframes floatFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes parchmentFloat {
+  0%,
+  100% {
+    transform: scaleY(1) translateY(0);
+  }
+
+  50% {
+    transform: scaleY(1) translateY(-3px);
+  }
+}
+
+@keyframes runeGlowRed {
+  0% {
+    box-shadow: 0 0 8px 2px rgba(255, 60, 60, 0.6);
+  }
+
+  100% {
+    box-shadow: 0 0 12px 4px rgba(255, 10, 10, 0.9);
+  }
+}
+
 @keyframes flickerRed {
   from {
     opacity: 1;
@@ -353,86 +294,46 @@ body.fade-out {
   }
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-
+@keyframes fadeInMenu {
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
-@keyframes fadeInText {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes inkReveal {
-  0% {
-    opacity: 0;
-    transform: translateY(50px) scale(0.8);
-    filter: blur(10px);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0);
-  }
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-8px);
-  }
-}
-
-@keyframes fadeUp {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
+/* Media Queries for Menu */
 @media screen and (max-width: 480px) {
+  .menu {
+    max-height: 90vh;
+    padding: 0.5rem;
+  }
   .character-grid {
-    gap: 1rem 1rem;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    padding: 0 0.25rem;
   }
   .menu h1 {
-    font-size: 32px;
+    font-size: 28px;
   }
   .character-selection {
-    padding: 4vh 2vw;
+    padding: 2vh 1vw;
+  }
+  .buttons img {
+    width: 100px;
+  }
+  .character-card img {
+    max-width: 150px;
   }
 }
+
 @media screen and (max-width: 768px) {
-  .intro-title {
-    font-size: 1.5rem;
+  .menu {
+    max-height: 95vh;
+    padding: 1rem;
   }
   .character-grid {
-    gap: 1.5rem 1.5rem;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    padding: 0 0.5rem;
   }
   .character-name {
     font-size: 16px;
@@ -446,40 +347,15 @@ body.fade-out {
     padding: 0.4rem;
   }
 }
+
 @media screen and (min-width: 1400px) {
-  .intro-title {
-    font-size: 3rem;
-  }
   .character-grid {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 3rem 4rem;
   }
   .menu {
     transform: scale(1);
-  }
-}
-
-.intro {
-  opacity: 1;
-  transition: opacity 1s ease;
-}
-
-.fade-in {
-  opacity: 1;
-}
-
-.fade-out {
-  opacity: 0;
-}
-
-.menu.fade-in {
-  opacity: 0;
-  animation: fadeInMenu 1s forwards;
-  width: 100%;
-}
-
-@keyframes fadeInMenu {
-  to {
-    opacity: 1;
+    padding: 2rem 4rem;
+    max-height: 100vh;
   }
 }

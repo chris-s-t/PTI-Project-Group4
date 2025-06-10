@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import StatusGUI from "./StatusGUI";
-import "../App.css";
+import "../styles/App.css";
+import "../styles/gameCanvas.css";
+
 
 declare global {
   interface Window {
@@ -18,8 +20,6 @@ declare global {
 
 function GameMap({ mapNum }) {
   const canvasRef = useRef(null);
-  const statusContainerRef = useRef(null);
-  const mapTransitionDialogRef = useRef(null);
   const navigate = useNavigate();
   const [showDialog, setShowDialog] = useState(false);
   const [dialogTargetMap, setDialogTargetMap] = useState("");
@@ -40,9 +40,7 @@ function GameMap({ mapNum }) {
       console.log(`mapScript.js loaded for map ${mapNum}`);
 
       if (window.initGameMap) {
-        console.log(
-          "window.initGameMap function found. Initializing game map."
-        );
+        console.log("window.initGameMap function found. Initializing game map.");
         const playerStats = JSON.parse(
           localStorage.getItem("playerStats") || "{}"
         );
@@ -112,7 +110,7 @@ function GameMap({ mapNum }) {
 
   return (
     <div id="gameContainer">
-      <canvas id="gameCanvas" ref={canvasRef} width="800" height="736"></canvas>
+      <canvas id="gameCanvas" ref={canvasRef} width="800" height="736"></canvas> 
       <div id="status-container">
         <StatusGUI />
       </div>
@@ -155,7 +153,7 @@ function GameMap({ mapNum }) {
           border-radius: 10px;
           text-align: center;
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-          color: black; /* Ensure text is visible against white background */
+          color: black;
         }
 
         .dialog-content button {

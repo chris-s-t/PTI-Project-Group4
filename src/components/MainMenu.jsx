@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "../App.css";
+import "../styles/App.css";
+import "../styles/menu.css";
+
 import startUnpress from "/Assets/GUI/start_Unpress.png";
 import startPress from "/Assets/GUI/start_Press.png";
-
 import nobleManImg from "/Assets/Avatars/MiniNobleManCrop.png";
 import nobleWomanImg from "/Assets/Avatars/MiniNobleWomanCrop.png";
 import oldManImg from "/Assets/Avatars/MiniOldManCrop.png";

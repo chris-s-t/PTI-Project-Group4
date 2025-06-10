@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
-import "./App.css";
+import "./styles/App.css";
 import IntroScreen from "./components/IntroScreen";
 import MainMenu from "./components/MainMenu";
 import GameMap from "./components/GameMap";
-import StatusGUI from "./components/StatusGUI";
+import StatusGUI from "./components/StatusGUI"; // Still imports its own statusGUI.css
 
 function App() {
   const [playerName, setPlayerName] = useState("");

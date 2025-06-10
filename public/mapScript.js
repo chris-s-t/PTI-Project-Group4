@@ -1,55 +1,61 @@
-let canvas, ctx;
+let canvas, ctx, zoom;
 let player = {};
 let camera = {};
 let hitbox = {};
-let zoom;
-let mapNum;
-let mapLayers = [];
-let tilesetsData = [];
-let collisions = [];
-let tilesetImages = {};
-let tileWidth, tileHeight;
+const keys = {};
+let speed = 1;
+
+// Booleans
+let inCutscene = false;
+let showExclamation = false;
+let facingLeft = false;
+let interactCooldown = false;
+let zKeyPressed = false;
+let isGameInitialized = false;
+
+// Images
 const playerImg = new Image();
 const zPromptImg = new Image();
 const exclamationActiveImg = new Image();
 const mapImg = new Image();
+
+// Map & Tilesets
+let mapNum, mapData, tileWidth, tileHeight, previousMap, scaleFactor;
 let isMapTransitionDialogActive = false;
-const keys = {};
-let interactCooldown = false;
-let zKeyPressed = false;
-let speed = 1;
-let inCutscene = false;
-let showExclamation = false;
-let facingLeft = false;
+let mapLayers = [];
+let tilesetsData = [];
+let collisions = [];
+let tilesetImages = {};
+
+// Time Interval
 let timeout = null;
 let totalGameMinutes = 0;
 let currentDayNumber = 1;
 let clockInterval = null;
-let previousMap;
-let scaleFactor;
-let mapData;
 
-// Asset Paths Map
+// Asset Paths Map \\
 const ASSET_PATHS = {
-  player: (charId) =>
-    `/Assets/Characters/Mini${charId.replaceAll(" ", "")}.png`,
+  player: (charId) => `/Assets/Characters/Mini${charId.replaceAll(" ", "")}.png`,
   zPrompt: "/Assets/Buttons/z-icon.png",
   exclamationActive: "/Assets/GUI/Exclamation_Red.png",
   mapJson: (mapNumber) => {
     if (mapNumber === "1") {
       return `/Assets/Maps/map.tmj`;
     }
-    return `/Assets/Maps/map${mapNumber}.tmj`;
+    else {
+      return `/Assets/Maps/map${mapNumber}.tmj`;
+    }
   },
   tilesetDefinition: (fileName) => `/Assets/Tilesets/${fileName}`,
   tilesetImage: (fileName) => `/Assets/Tilesets/${fileName}`,
 };
 
-// Game Functions
+// Game Functions \\
 function fixMapPosition(x, y) {
   player.x = x;
   player.y = y;
 }
+
 function isColliding(a, b) {
   return (
     a.x < b.x + b.width &&
@@ -58,20 +64,17 @@ function isColliding(a, b) {
     a.y + a.height > b.y
   );
 }
-function cutsceneToggle(
-  cutsceneDuration,
-  cooldownDuration,
-  displayText,
-  imgSrc
-) {
-  //cooldownDuration determines when you can interact again
+
+function cutsceneToggle(cutsceneDuration, cooldownDuration, displayText, imgSrc) {
   inCutscene = true;
   interactCooldown = true;
   speed = 0;
+
   setTimeout(() => {
     inCutscene = false;
     speed = 1;
   }, cutsceneDuration);
+
   setTimeout(() => {
     interactCooldown = false;
   }, cooldownDuration);
@@ -79,14 +82,15 @@ function cutsceneToggle(
   if (displayText != undefined || imgSrc != undefined) {
     const event = new CustomEvent("showBox", {
       detail: {
-        message: displayText, // Pass the text value here
-        imageUrl: imgSrc, // Set the path to your image here
+        message: displayText,
+        imageUrl: imgSrc,
         imageDuration: cutsceneDuration,
       },
     });
-    window.dispatchEvent(event); // Dispatch event to window object
+    window.dispatchEvent(event);
   }
 }
+
 function drawExclamation(duration) {
   showExclamation = true;
   clearTimeout(timeout);
@@ -94,6 +98,7 @@ function drawExclamation(duration) {
     showExclamation = false;
   }, duration);
 }
+
 function updatePlayerPosition() {
   const lastX = player.x;
   const lastY = player.y;
@@ -139,9 +144,11 @@ function updatePlayerPosition() {
         hitbox.y = lastY + player.hitbox.offsetY;
         moved = false;
         break;
-      } else if (collision.type === "interact") {
+      } 
+      else if (collision.type === "interact") {
         // Handle interaction logic here
-      } else if (collision.type === "fishing") {
+      } 
+      else if (collision.type === "fishing") {
         // Fishing behavior
         drawExclamation(0);
         if (zKeyPressed && !interactCooldown && !inCutscene) {
@@ -152,7 +159,7 @@ function updatePlayerPosition() {
             statChange("happiness", 10);
             moneyChange(1000);
             cutsceneToggle(1000, 2000, "You caught a RARE fish!"),
-              "Assets/GUI/UI_board_small_stone.png";
+              "/Assets/GUI/UI_board_small_stone.png";
           } else if (rarity <= 65) {
             statChange("happiness", 5);
             moneyChange(100);
@@ -160,7 +167,7 @@ function updatePlayerPosition() {
               1000,
               2000,
               "You caught a fish!",
-              "Assets/GUI/UI_board_small_stone.png"
+              "/Assets/GUI/UI_board_small_stone.png"
             );
           } else {
             statChange("happiness", -15);
@@ -168,11 +175,12 @@ function updatePlayerPosition() {
               1000,
               2000,
               "You caught trash hahahahahaha!",
-              "Assets/GUI/UI_board_small_stone.png"
+              "/Assets/GUI/UI_board_small_stone.png"
             );
           }
         }
-      } else if (collision.type === "digging") {
+      } 
+      else if (collision.type === "digging") {
         // Digging behavior
         drawExclamation(0);
         if (zKeyPressed && !interactCooldown && !inCutscene) {
@@ -205,7 +213,8 @@ function updatePlayerPosition() {
             );
           }
         }
-      } else if (collision.type === "buying") {
+      } 
+      else if (collision.type === "buying") {
         // Buying behavior
         drawExclamation(0);
         if (zKeyPressed && !interactCooldown && !inCutscene) {
@@ -236,7 +245,8 @@ function updatePlayerPosition() {
             );
           }
         }
-      } else if (collision.type == "sleep") {
+      } 
+      else if (collision.type == "sleep") {
         // Sleep behavior
         drawExclamation(0);
         if (zKeyPressed && !interactCooldown && !inCutscene) {
@@ -252,10 +262,11 @@ function updatePlayerPosition() {
           statChange("stamina", 50);
           statChange("happiness", 30);
         }
-      } else if (collision.type === "mapTransition") {
+      } 
+      else if (collision.type === "mapTransition") {
         if (!collision.inside && !isMapTransitionDialogActive) {
-          collision.inside = true; // Mark the player as inside the block
-          speed = 0; // and disables movement
+          collision.inside = true;
+          speed = 0;
           isMapTransitionDialogActive = true;
           showMapTransitionDialog(collision.targetMap);
           return;
@@ -274,11 +285,12 @@ function updatePlayerPosition() {
         player.frameTimer = 0;
       }
     } else {
-      player.frameX = 0; // Reset to idle frame if not moving
+      player.frameX = 0;
     }
   }
   camera.update();
 }
+
 function drawPlayer() {
   scaleFactor = 4;
   const drawX = (player.x - player.hitbox.offsetX - camera.x) * zoom;
@@ -289,8 +301,8 @@ function drawPlayer() {
   ctx.save();
 
   if (facingLeft) {
-    ctx.translate(drawX + drawWidth, drawY); // Move to the player's position
-    ctx.scale(-1, 1); // Flip horizontally
+    ctx.translate(drawX + drawWidth, drawY);
+    ctx.scale(-1, 1);
     ctx.drawImage(
       playerImg,
       player.frameX * player.width,
@@ -334,60 +346,48 @@ function drawPlayer() {
     }
   }
 }
-function drawMap() {
-  console.log("drawMap() called.");
-  console.log("Is ctx valid?", !!ctx); // Should log 'true'
-  console.log("Canvas element:", canvas); // Should log the <canvas> element
-  console.log("Canvas width:", canvas.width, "Canvas height:", canvas.height); // Should be numbers > 0
 
+function drawMap() {
+  /* Debugging
+  console.log("drawMap() called.");
+  console.log("Is ctx valid?", !!ctx);
+  console.log("Canvas element:", canvas);
+  console.log("Canvas width:", canvas.width, "Canvas height:", canvas.height);
+  */
   if (!ctx || !mapLayers.length || !Object.keys(tilesetImages).length) {
     console.warn(
-      "drawMap: Not ready to draw. Missing ctx, layers, or tilesets.",
+      "Function [drawMap]: Failed. Missing ctx layers, or tilesets.",
       { ctx, mapLayers, tilesetImages }
     );
     return;
   }
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.scale(zoom, zoom);
   ctx.translate(-camera.x, -camera.y);
-  console.log(
-    "Canvas width:",
-    canvas.width,
-    "Canvas height:",
-    canvas.height,
-    "Zoom:",
-    zoom,
-    "Camera:",
-    camera.x,
-    camera.y
-  );
-  console.log("Global tileWidth:", tileWidth, "Global tileHeight:", tileHeight);
+
+  //console.log("Canvas width:", canvas.width, "Canvas height:", canvas.height, "Zoom:", zoom, "Camera:", camera.x, camera.y);
+  //console.log("Global tileWidth:", tileWidth, "Global tileHeight:", tileHeight);
+
   mapLayers.forEach((layer) => {
     if (layer.type === "tilelayer" && layer.visible) {
-      // Removed the `layerTileset` lookup here.
-      // All tiles are now processed individually against all loaded tilesets.
-
-      // mapData.width and mapData.height are the map's dimensions in tiles
       const mapTileWidth = mapData.width;
-      // const mapTileHeight = mapData.height; // Not directly needed in this loop but good to have
 
       for (let i = 0; i < layer.data.length; i++) {
-        const gid = layer.data[i];
-        if (gid === 0) continue; // Skip empty tiles
 
-        // This is the correct and only lookup needed per tile
+        const gid = layer.data[i];
+        if (gid === 0) continue;
+
         const currentTileset = Object.values(tilesetImages).find(
           (ts) => gid >= ts.firstgid && gid < ts.firstgid + ts.tilecount
         );
 
         if (!currentTileset || !currentTileset.image) {
-          // This warning is fine for debugging, but ensure it doesn't halt the game.
-          // It means a tile ID exists in your map data but its image is not loaded.
           console.warn(
             `Skipping GID ${gid} in Layer '${layer.name}' (index ${i}): No loaded tileset image found for this GID.`
           );
-          continue; // Skip drawing this tile if its tileset isn't loaded or found
+          continue;
         }
 
         const tileIndex = gid - currentTileset.firstgid;
@@ -397,17 +397,11 @@ function drawMap() {
           Math.floor(tileIndex / currentTileset.columns) *
           currentTileset.tileheight;
 
-        const col = i % mapTileWidth; // Use map's width for column calculation
-        const row = Math.floor(i / mapTileWidth); // Use map's width for row calculation
+        const col = i % mapTileWidth;
+        const row = Math.floor(i / mapTileWidth);
 
-        const drawX = col * tileWidth; // Use global tileWidth/Height (from mapData)
+        const drawX = col * tileWidth;
         const drawY = row * tileHeight;
-
-        console.log(
-          `Drawing GID ${gid}: Image src: ${currentTileset.image.src}, Complete: ${currentTileset.image.complete}, ` +
-            `Source (sx,sy,sw,sh): (${tileXInTileset}, ${tileYInTileset}, ${currentTileset.tilewidth}, ${currentTileset.tileheight}), ` +
-            `Dest (dx,dy,dw,dh): (${drawX}, ${drawY}, ${tileWidth}, ${tileHeight})`
-        );
 
         ctx.drawImage(
           currentTileset.image,
@@ -417,14 +411,13 @@ function drawMap() {
           currentTileset.tileheight,
           drawX,
           drawY,
-          tileWidth, // Draw at the map's global tile dimensions
+          tileWidth,
           tileHeight
         );
       }
     }
   });
 
-  // Draw hitboxes (keep this as it uses your `collisions` array)
   for (let box of collisions) {
     if (
       box.type === "sleep" ||
@@ -435,7 +428,6 @@ function drawMap() {
       ctx.strokeStyle = "blue";
       ctx.strokeRect(box.x, box.y, box.width, box.height);
     } else if (box.type === "wall" || box.type === "obstacle") {
-      // Also draw wall/obstacle types
       ctx.strokeStyle = "red";
       ctx.strokeRect(box.x, box.y, box.width, box.height);
     } else if (box.type === "mapTransition") {
@@ -443,26 +435,9 @@ function drawMap() {
       ctx.strokeRect(box.x, box.y, box.width, box.height);
     }
   }
-  /*
-  ctx.drawImage(mapImg, 0, 0);
-  //---- Color Hitboxes ----//
-  for (let box of collisions) {
-    if (box.type == "sleep" || box.type == "fishing"){
-      ctx.strokeStyle = 'blue';
-      ctx.strokeRect(box.x, box.y, box.width, box.height);
-    } 
-      else if (box.type == "wall"){
-      ctx.strokeStyle = 'red';
-      ctx.strokeRect(box.x, box.y, box.width, box.height);
-     
-    } else if (box.type == "mapTransition"){
-      ctx.strokeStyle = 'green';
-      ctx.strokeRect(box.x, box.y, box.width, box.height);
-    }
-  }
-  */
   ctx.restore();
 }
+
 async function loadTilesetAndImage(tilesetSource, firstgid) {
   try {
     const response = await fetch(ASSET_PATHS.tilesetDefinition(tilesetSource));
@@ -517,7 +492,6 @@ async function loadTilesetAndImage(tilesetSource, firstgid) {
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.onload = () => {
-        // Store the Image object along with its crucial properties
         tilesetImages[firstgid] = {
           image: img,
           tilewidth: tilewidth,
@@ -544,19 +518,21 @@ async function loadTilesetAndImage(tilesetSource, firstgid) {
     throw error;
   }
 }
+
 function gameLoop() {
-  console.log("gameLoop executing...");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   updatePlayerPosition();
   drawMap();
   drawPlayer();
   requestAnimationFrame(gameLoop);
 }
+
 function moneyChange(amount) {
   let changeMoney = parseInt(localStorage.getItem("playerMoney"));
   changeMoney += amount;
   localStorage.setItem("playerMoney", changeMoney);
   const moneyChangeEvent = new Event("playerMoneyChanged");
+
   window.dispatchEvent(
     new CustomEvent("updatePlayerMoney", { detail: { value: amount } })
   );
@@ -567,19 +543,20 @@ function statChange(statName, amount) {
   stats[statName].currentStat += amount;
   localStorage.setItem("playerStats", JSON.stringify(stats));
   const statChangeEvent = new Event("playerStatChanged");
+
   window.dispatchEvent(
     new CustomEvent("updatePlayerStatus", {
       detail: { type: statName, value: amount },
     })
   );
 }
+
 function updateGameClock() {
   totalGameMinutes++;
 
   const hours = Math.floor(totalGameMinutes / 60) % 24;
   const minutes = totalGameMinutes % 60;
-  const formattedTime =
-    (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes;
+  const formattedTime = (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes;
 
   // --- DAILY EVENTS --- \\
   if (totalGameMinutes % (24 * 60) === 0 && totalGameMinutes !== 0) {
@@ -598,22 +575,18 @@ function updateGameClock() {
   localStorage.setItem("totalGameMinutes", totalGameMinutes.toString());
   localStorage.setItem("currentDayNumber", currentDayNumber.toString());
 }
+
 //--------------------------------------------------------------//
 //-------------- Primary Initialization Function ---------------//
 //--------------------------------------------------------------//
-window.initGameMap = async function (
-  canvasElement,
-  currentMapNum,
-  playerSavedStats,
-  playerCharacterId,
-  playerPreviousMapParam
-) {
-  console.log(
-    "initGameMap STARTING. Canvas:",
-    canvasElement,
-    "MapNum:",
-    currentMapNum
-  );
+window.initGameMap = async function (canvasElement, currentMapNum, playerSavedStats, playerCharacterId, playerPreviousMapParam) {
+  if (isGameInitialized) {
+    console.warn("initGameMap called again in development mode, skipping initialization.");
+    return;
+  }
+  isGameInitialized = true; // Mark as initialized
+
+  console.log("initGameMap STARTING. Canvas:", canvasElement, "MapNum:", currentMapNum);
   canvas = canvasElement;
   ctx = canvas.getContext("2d");
 
@@ -621,14 +594,10 @@ window.initGameMap = async function (
     console.error("Failed to get 2D rendering context for canvas.");
     return;
   }
+
   mapNum = String(currentMapNum);
   previousMap = playerPreviousMapParam.match(/\d+/)[0];
-  console.log(
-    "mapScript.js initialized. Map:",
-    mapNum,
-    "Previous Map:",
-    previousMap
-  );
+  console.log("Initializing Map:", mapNum, "Previous Map:", previousMap);
 
   player = {
     x: 0,
@@ -703,10 +672,8 @@ window.initGameMap = async function (
   currentDayNumber = parseInt(localStorage.getItem("currentDayNumber") || "1");
 
   clockInterval = setInterval(() => {
-    totalGameMinutes++;
     updateGameClock();
   }, 1000);
-  updateGameClock();
 
   // --- MAP INIT --- \\
   try {
@@ -727,33 +694,9 @@ window.initGameMap = async function (
     mapData.tilesets.forEach((ts) => {
       imageLoadPromises.push(loadTilesetAndImage(ts.source, ts.firstgid));
     });
-    /*
-    tilesetsData.forEach((ts) => {
-      imageLoadPromises.push(loadTilesetImage(ts.image, ts.firstgid));
-    });
-    */
 
     collisions = [];
-    let playerStartX;
-    let playerStartY;
-    // The startX, startY from your original script were likely offsets for the map drawing.
-    // In Tiled, objects and tiles usually start at (0,0) relative to the map.
-    // You'll need to define how player start position is determined in Tiled (e.g., an object layer)
-    if (mapNum === "1") {
-      playerStartX = 200; // Default X for map 1 if not coming from another map
-      playerStartY = 400; // Default Y for map 1 if not coming from another map
-      // You might also adjust player.hitbox.offsetX/Y/width/height here if map 1 has unique player dimensions
-    } else if (mapNum === "2") {
-      playerStartX = 400; // Example default X for map 2
-      playerStartY = 300; // Example default Y for map 2
-      // ...
-    } else if (mapNum === "3") {
-      playerStartX = 200; // Example default X for map 3
-      playerStartY = 250; // Example default Y for map 3
-      // ...
-    }
 
-    // Iterate through layers to find tile data and collision objects
     mapLayers.forEach((layer) => {
       if (layer.type === "tilelayer" && layer.visible) {
         // This layer is for drawing the background tiles
@@ -798,6 +741,31 @@ window.initGameMap = async function (
         });
       }
     });
+    let playerStartX;
+    let playerStartY;
+    
+    if (mapNum === "1") {
+      playerStartX = 200;
+      playerStartY = 400;
+      // Maybe adjust player.hitbox.offsetX/Y/width/height here if map 1 has unique player dimensions
+    } 
+    else if (mapNum === "2") {
+      playerStartX = 400;
+      playerStartY = 300;
+    } 
+    else if (mapNum === "3") {
+      playerStartX = 200;
+      playerStartY = 250;
+    }
+    else if (mapNum === "4") {
+      playerStartX = 200;
+      playerStartY = 250;
+    }
+    else if (mapNum === "5") {
+      playerStartX = 200;
+      playerStartY = 250;
+    }
+    
     player.x = playerStartX;
     player.y = playerStartY;
 
@@ -816,7 +784,8 @@ window.initGameMap = async function (
             fixMapPosition(50, 190);
             break;
         }
-      } else if (mapNum === "2") {
+      } 
+      else if (mapNum === "2") {
         switch (prevMapNum) {
           case 1:
             fixMapPosition(290, 70);
@@ -825,7 +794,8 @@ window.initGameMap = async function (
             fixMapPosition(40, 150);
             break;
         }
-      } else if (mapNum === "3") {
+      } 
+      else if (mapNum === "3") {
         switch (prevMapNum) {
           case 2:
             fixMapPosition(960, 540);
@@ -834,7 +804,8 @@ window.initGameMap = async function (
             fixMapPosition(40, 190);
             break;
         }
-      } else if (mapNum === "5") {
+      } 
+      else if (mapNum === "5") {
         switch (prevMapNum) {
           case 1:
             fixMapPosition(260, 70);
@@ -844,7 +815,7 @@ window.initGameMap = async function (
             break;
         }
       }
-    }
+    } 
   } catch (error) {
     console.error("Error fetching or parsing TMJ map:", error);
     window.dispatchEvent(
@@ -855,27 +826,27 @@ window.initGameMap = async function (
 
   try {
     await Promise.all(imageLoadPromises);
-    console.log(
-      "FINAL LOADED TILESET IMAGES (tilesetImages object):",
-      tilesetImages
-    );
+    console.log("FINAL LOADED TILESET IMAGES (tilesetImages object):", tilesetImages);
+
+    /* Debugging
     Object.keys(tilesetImages).forEach((firstgid) => {
       console.log(`  Tileset GID ${firstgid}:`, tilesetImages[firstgid]);
       console.log(
         `    Image property type:`,
         typeof tilesetImages[firstgid]?.image
-      ); // Should be 'object'
+      );
       console.log(
         `    Image instance:`,
         tilesetImages[firstgid]?.image instanceof HTMLImageElement
-      ); // Should be true
-      console.log(`    Image src:`, tilesetImages[firstgid]?.image?.src); // Check if the source path is valid
+      );
+      console.log(`    Image src:`, tilesetImages[firstgid]?.image?.src);
       console.log(
         `    Image complete:`,
         tilesetImages[firstgid]?.image?.complete
-      ); // Should be true
-      console.log(`    Image width:`, tilesetImages[firstgid]?.image?.width); // Should be > 0
+      );
+      console.log(`    Image width:`, tilesetImages[firstgid]?.image?.width);
     });
+    */
     gameLoop();
   } catch (error) {
     console.error("Error loading map assets:", error);
@@ -892,6 +863,7 @@ window.cleanupGameMap = function () {
     clockInterval = null;
   }
 };
+
 function showMapTransitionDialog(nextMap) {
   const dialog = document.getElementById("mapTransitionDialog");
   const yesButton = document.getElementById("yesButton");
