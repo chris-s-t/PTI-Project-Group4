@@ -623,7 +623,7 @@ window.initGameMap = async function (canvasElement, currentMapNum, playerSavedSt
     maxFrame: 3,
     frameDelay: 10,
     frameTimer: 0,
-    hitbox: { offsetX: 22, offsetY: 38, width: 18, height: 20 },
+    hitbox: { offsetX: 22, offsetY: 28, width: 18, height: 40 },
     stats: playerSavedStats,
   };
   zoom = 1;
