@@ -42,7 +42,7 @@ const ASSET_PATHS = {
   exclamationActive: "/Assets/GUI/Exclamation_Red.png",
   mapJson: (mapNumber) => {
     if (mapNumber === "1") {
-      return `/Assets/Maps/map.tmj`;
+      return `/Assets/Maps/map1.tmj`;
     }
     else {
       return `/Assets/Maps/map${mapNumber}.tmj`;
@@ -288,6 +288,12 @@ function updatePlayerPosition() {
       }
     } else {
       player.frameX = 0;
+    }
+    if (zKeyPressed && isColliding(hitbox, collision)) {
+      if (collision.type === "teleport") {
+        teleport(collision.targetMap, collision.targetX, collision.targetY);
+        return;
+      }
     }
   }
   camera.update();
@@ -795,32 +801,30 @@ window.initGameMap = async function (canvasElement, currentMapNum, playerSavedSt
           };
 
           // 🚀 Tentukan jenis interaksi berdasarkan data tile
-          switch (tileValue) {
-            case 1:
-              obj.type = "teleport";
-              obj.targetMap = "map2"; // Atau ambil dari properti nanti
-              break;
-            case 2:
-              obj.type = "fishing";
-              break;
-            case 3:
-              obj.type = "digging";
-              break;
-            case 4:
-              obj.type = "sleep";
-              break;
-            case 5:
-              obj.type = "buying";
-              break;
-            default:
-              obj.type = "custom";
-              break;
+          if (tileValue === 33 || tileValue === 770) {
+            obj.type = "teleport";
+            obj.targetMap = "map2";
+            obj.targetX = 200;
+            obj.targetY = 250;
+            
+            collisions.push(obj);
+            
+          } else if (tileValue === 2) {
+            obj.type = "fishing";
+          } else if (tileValue === 3) {
+            obj.type = "digging";
+          } else if (tileValue === 4) {
+            obj.type = "sleep";
+          } else if (tileValue === 5) {
+            obj.type = "buying";
+          } else {
+            obj.type = "custom";
           }
 
-          collisions.push(obj); // atau simpan di array terpisah jika ingin dipisahkan
-        }
-  }
-}
+          collisions.push(obj);
+            }
+      }
+    }
   });
     let playerStartX;
     let playerStartY;
@@ -985,3 +989,10 @@ window.addEventListener("keyup", (e) => {
     zKeyPressed = false; // Reset agar bisa dipakai ulang
   }
 });
+
+function teleport(targetMap, targetX, targetY) {
+  localStorage.setItem("previousMap", `map${mapNum}`);
+  localStorage.setItem("teleportX", targetX);
+  localStorage.setItem("teleportY", targetY);
+  window.location.href = `/${targetMap}`;
+}
