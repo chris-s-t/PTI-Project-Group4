@@ -41,7 +41,7 @@ function GameMap({ mapNum }) {
       if (window.initGameMap) {
         const playerStats = JSON.parse(localStorage.getItem("playerStats") || "{}");
         const characterId = localStorage.getItem("characterId") || "Noble Man";
-        const previousMap = localStorage.getItem("previousMap") || "map1.html";
+        const previousMap = localStorage.getItem("previousMap") || `/map${mapNum}.html`;
 
         window
           .initGameMap(canvas, String(mapNum), playerStats, characterId, previousMap)

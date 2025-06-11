@@ -299,7 +299,6 @@ function drawPlayer() {
   const drawY = (player.y - player.hitbox.offsetY - camera.y) * zoom;
   const drawWidth = player.width * scaleFactor;
   const drawHeight = player.height * scaleFactor;
-
   ctx.save();
 
   if (facingLeft) {
@@ -627,6 +626,7 @@ window.initGameMap = async function (canvasElement, currentMapNum, playerSavedSt
     hitbox: { offsetX: 7, offsetY: 15, width: 18, height: 20 },
     stats: playerSavedStats,
   };
+  zoom = 1;
 
   hitbox = {
     x: player.x + player.hitbox.offsetX,
@@ -653,7 +653,9 @@ window.initGameMap = async function (canvasElement, currentMapNum, playerSavedSt
 
       camera.x = targetX;
       camera.y = targetY;
+      console.log(`[CAMERA] X: ${camera.x.toFixed(2)} | Y: ${camera.y.toFixed(2)} | Player: (${player.x}, ${player.y})`);
     },
+    
   };
 
   collisions = [];
@@ -761,7 +763,7 @@ window.initGameMap = async function (canvasElement, currentMapNum, playerSavedSt
     
     if (mapNum === "1") {
       playerStartX = 200;
-      playerStartY = 400;
+      playerStartY = 200;
       // Maybe adjust player.hitbox.offsetX/Y/width/height here if map 1 has unique player dimensions
     } 
     else if (mapNum === "2") {
@@ -780,7 +782,7 @@ window.initGameMap = async function (canvasElement, currentMapNum, playerSavedSt
       playerStartX = 200;
       playerStartY = 250;
     }
-    
+    console.log("Player starting at:", playerStartX, playerStartY);
     player.x = playerStartX;
     player.y = playerStartY;
 
@@ -907,4 +909,15 @@ window.addEventListener("dead", function () {
   window.dispatchEvent(
     new CustomEvent("gameOver", { detail: { reason: "dead" } })
   );
+});
+
+window.addEventListener("keydown", (e) => {
+  keys[e.key] = true;
+});
+
+window.addEventListener("keyup", (e) => {
+  keys[e.key] = false;
+  if (e.key === "z") {
+    zKeyPressed = false; // Reset agar bisa dipakai ulang
+  }
 });
