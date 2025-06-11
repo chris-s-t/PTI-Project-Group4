@@ -4,7 +4,6 @@ import StatusGUI from "./StatusGUI";
 import "../styles/App.css";
 import "../styles/gameCanvas.css";
 
-
 declare global {
   interface Window {
     initGameMap: (
@@ -30,44 +29,41 @@ function GameMap({ mapNum }) {
       console.error("Canvas element not found in DOM.");
       return;
     }
+
     console.log("Canvas found. Attempting to load mapScript.js.");
 
     const script = document.createElement("script");
     script.src = "/mapScript.js";
     script.type = "module";
+    script.async = true;
 
-    script.onload = () => {
-      console.log(`mapScript.js loaded for map ${mapNum}`);
-
+    const waitForInitGameMap = () => {
       if (window.initGameMap) {
-        console.log("window.initGameMap function found. Initializing game map.");
-        const playerStats = JSON.parse(
-          localStorage.getItem("playerStats") || "{}"
-        );
+        const playerStats = JSON.parse(localStorage.getItem("playerStats") || "{}");
         const characterId = localStorage.getItem("characterId") || "Noble Man";
         const previousMap = localStorage.getItem("previousMap") || "map1.html";
 
         window
-          .initGameMap(
-            canvas,
-            String(mapNum),
-            playerStats,
-            characterId,
-            previousMap
-          )
-          .then(() => console.log("initGameMap finished successfully."))
+          .initGameMap(canvas, String(mapNum), playerStats, characterId, previousMap)
+          .then(() => console.log("✅ initGameMap finished successfully."))
           .catch((error) =>
-            console.error("initGameMap encountered an error:", error)
+            console.error("❌ initGameMap encountered an error:", error)
           );
       } else {
-        console.error(
-          "ERROR: window.initGameMap function not found in mapScript.js!"
-        );
+        console.log("⏳ Waiting for initGameMap to be defined...");
+        setTimeout(waitForInitGameMap, 50); // check again after 50ms
       }
     };
-    script.onerror = (e) => {
-      console.error("Failed to load mapScript.js:", e);
+
+    script.onload = () => {
+      console.log("✅ mapScript.js loaded.");
+      waitForInitGameMap();
     };
+
+    script.onerror = (e) => {
+      console.error("❌ Failed to load mapScript.js:", e);
+    };
+
     document.body.appendChild(script);
 
     return () => {
@@ -85,16 +81,10 @@ function GameMap({ mapNum }) {
       setShowDialog(true);
     };
 
-    window.addEventListener(
-      "showMapTransitionDialog",
-      handleMapTransitionRequest
-    );
+    window.addEventListener("showMapTransitionDialog", handleMapTransitionRequest);
 
     return () => {
-      window.removeEventListener(
-        "showMapTransitionDialog",
-        handleMapTransitionRequest
-      );
+      window.removeEventListener("showMapTransitionDialog", handleMapTransitionRequest);
     };
   }, []);
 
@@ -110,7 +100,7 @@ function GameMap({ mapNum }) {
 
   return (
     <div id="gameContainer">
-      <canvas id="gameCanvas" ref={canvasRef} width="800" height="736"></canvas> 
+      <canvas id="gameCanvas" ref={canvasRef} width="800" height="736"></canvas>
       <div id="status-container">
         <StatusGUI />
       </div>

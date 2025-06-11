@@ -4,6 +4,7 @@ let camera = {};
 let hitbox = {};
 const keys = {};
 let speed = 1;
+let frameCount = 0;
 
 // Booleans
 let inCutscene = false;
@@ -11,7 +12,7 @@ let showExclamation = false;
 let facingLeft = false;
 let interactCooldown = false;
 let zKeyPressed = false;
-let isGameInitialized = false;
+let isGameInitialized;
 
 // Images
 const playerImg = new Image();
@@ -32,6 +33,7 @@ let timeout = null;
 let totalGameMinutes = 0;
 let currentDayNumber = 1;
 let clockInterval = null;
+
 
 // Asset Paths Map \\
 const ASSET_PATHS = {
@@ -520,13 +522,25 @@ async function loadTilesetAndImage(tilesetSource, firstgid) {
 }
 
 function gameLoop() {
+  if (!ctx) {
+    console.warn("gameLoop skipped: ctx not ready");
+    requestAnimationFrame(gameLoop); // ⬅ Tetap panggil untuk cek ulang nanti
+    return;
+  }
+
+  frameCount++;
+  if (frameCount % 60 === 0) {
+    console.log(`🎮 gameLoop running, frame ${frameCount}`);
+  }
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   updatePlayerPosition();
+  camera.update(); // ⬅ jangan lupa panggil ini!
   drawMap();
   drawPlayer();
+
   requestAnimationFrame(gameLoop);
 }
-
 function moneyChange(amount) {
   let changeMoney = parseInt(localStorage.getItem("playerMoney"));
   changeMoney += amount;
@@ -579,6 +593,7 @@ function updateGameClock() {
 //--------------------------------------------------------------//
 //-------------- Primary Initialization Function ---------------//
 //--------------------------------------------------------------//
+window.isGameInitialized = false;
 window.initGameMap = async function (canvasElement, currentMapNum, playerSavedStats, playerCharacterId, playerPreviousMapParam) {
   if (isGameInitialized) {
     console.warn("initGameMap called again in development mode, skipping initialization.");
@@ -862,6 +877,7 @@ window.cleanupGameMap = function () {
     clearInterval(clockInterval);
     clockInterval = null;
   }
+  window.isGameInitialized = false;
 };
 
 function showMapTransitionDialog(nextMap) {
