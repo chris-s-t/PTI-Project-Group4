@@ -48,7 +48,7 @@
          "name":"Tile Layer 3",
          "opacity":0.9,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":40,
          "x":0,
          "y":0
@@ -99,7 +99,7 @@
          "name":"Tile Layer 1",
          "opacity":1,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":40,
          "x":0,
          "y":0
@@ -150,7 +150,7 @@
          "name":"Tile Layer 2",
          "opacity":1,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":40,
          "x":0,
          "y":0
