@@ -434,8 +434,6 @@ function drawMap() {
       ctx.strokeRect(box.x, box.y, box.width, box.height);
     }
   }
-  ctx.strokeStyle = "red";
-  ctx.strokeRect(box.x, box.y, box.width, box.height);
   ctx.restore();
   
 }
