@@ -294,7 +294,7 @@ function updatePlayerPosition() {
 }
 
 function drawPlayer() {
-  scaleFactor = 4;
+  scaleFactor = 3;
   const drawX = player.x - player.hitbox.offsetX;
   const drawY = player.y - player.hitbox.offsetY;
   const drawWidth = player.width * scaleFactor;
@@ -434,7 +434,10 @@ function drawMap() {
       ctx.strokeRect(box.x, box.y, box.width, box.height);
     }
   }
+  ctx.strokeStyle = "red";
+  ctx.strokeRect(box.x, box.y, box.width, box.height);
   ctx.restore();
+  
 }
 
 
@@ -714,56 +717,78 @@ window.initGameMap = async function (canvasElement, currentMapNum, playerSavedSt
 
     collisions = [];
 
-    mapLayers.forEach((layer) => {
-      if (layer.type === "tilelayer" && layer.visible) {
-        // This layer is for drawing the background tiles
-        // mapGrid will be processed during drawing
-      } else if (layer.type === "objectgroup" && layer.visible) {
-        // This layer contains collision objects, interaction points, etc.
-        layer.objects.forEach((obj) => {
+   mapLayers.forEach((layer) => {
+    if (layer.type === "tilelayer" && layer.id === 2) {
+      const mapTileWidth = mapData.width;
+
+      for (let i = 0; i < layer.data.length; i++) {
+        const tileValue = layer.data[i];
+        if (tileValue >= 1) {
+          const col = i % mapTileWidth;
+          const row = Math.floor(i / mapTileWidth);
+
           const collisionObject = {
-            x: obj.x,
-            y: obj.y,
-            width: obj.width,
-            height: obj.height,
-            type: obj.type || "wall", // Use Tiled object type, default to "wall"
-            properties: obj.properties, // Custom properties from Tiled if any
+            x: col * tileWidth,
+            y: row * tileHeight,
+            width: tileWidth,
+            height: tileHeight,
+            type: "wall",
           };
 
-          if (obj.name === "player_start" && mapNum === previousMap) {
-            // If this object is named "player_start" and it's the map we came from
-            playerStartX = obj.x;
-            playerStartY = obj.y;
-          }
-          // For map transitions, Tiled objects are better
-          if (obj.type === "mapTransition") {
-            // Get target map from Tiled object properties or name
-            const targetMap =
-              obj.properties?.targetMap || obj.name.replace("exit_to_", ""); // Assuming naming 'exit_to_map2'
-            collisions.push({
-              ...collisionObject,
-              type: "mapTransition",
-              targetMap: targetMap, // e.g., "map2"
-              inside: false,
-            });
-          } else if (obj.type === "wall" || obj.type === "obstacle") {
-            collisions.push(collisionObject);
-          }
-          // Add other interaction types as Tiled object types (fishing, digging, sleep, buying)
-          else if (
-            ["fishing", "digging", "sleep", "buying"].includes(obj.type)
-          ) {
-            collisions.push(collisionObject);
-          }
-        });
+          collisions.push(collisionObject);
+        }
       }
-    });
+    }
+
+    else if (layer.type === "objectgroup" && layer.visible) {
+      layer.objects.forEach((obj) => {
+        const collisionObject = {
+          x: obj.x,
+          y: obj.y,
+          width: obj.width,
+          height: obj.height,
+          type: obj.type || "wall",
+          properties: obj.properties,
+        };
+
+        // Posisi awal player
+        if (obj.name === "player_start" && mapNum === previousMap) {
+          playerStartX = obj.x;
+          playerStartY = obj.y;
+        }
+
+        // Map transition
+        if (obj.type === "mapTransition") {
+          const targetMap =
+            obj.properties?.targetMap || obj.name.replace("exit_to_", "");
+          collisions.push({
+            ...collisionObject,
+            type: "mapTransition",
+            targetMap: targetMap,
+            inside: false,
+          });
+        }
+
+        // Interaksi lain (fishing, digging, dll)
+        else if (
+          ["fishing", "digging", "sleep", "buying"].includes(obj.type)
+        ) {
+          collisions.push(collisionObject);
+        }
+
+        // ❌ Jangan tambahkan lagi wall/obstacle dari object
+        // else if (obj.type === "wall" || obj.type === "obstacle") {
+        //   collisions.push(collisionObject);
+        // }
+      });
+    }
+  });
     let playerStartX;
     let playerStartY;
     
     if (mapNum === "1") {
       playerStartX = 200;
-      playerStartY = 200;
+      playerStartY = 550;
       // Maybe adjust player.hitbox.offsetX/Y/width/height here if map 1 has unique player dimensions
     } 
     else if (mapNum === "2") {
