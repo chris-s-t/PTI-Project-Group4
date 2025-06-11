@@ -295,10 +295,11 @@ function updatePlayerPosition() {
 
 function drawPlayer() {
   scaleFactor = 4;
-  const drawX = (player.x - player.hitbox.offsetX - camera.x) * zoom;
-  const drawY = (player.y - player.hitbox.offsetY - camera.y) * zoom;
+  const drawX = player.x - player.hitbox.offsetX;
+  const drawY = player.y - player.hitbox.offsetY;
   const drawWidth = player.width * scaleFactor;
   const drawHeight = player.height * scaleFactor;
+
   ctx.save();
 
   if (facingLeft) {
@@ -329,10 +330,11 @@ function drawPlayer() {
       drawHeight
     );
   }
+
   ctx.restore();
 
   //For interaction sprite
-  if (showExclamation) {
+   if (showExclamation) {
     const exWidth = (32 * zoom) / 2;
     const exHeight = (32 * zoom) / 2;
     const exX = (player.x - player.hitbox.offsetX - camera.x) * zoom + 32;
@@ -363,6 +365,7 @@ function drawMap() {
     return;
   }
 
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.scale(zoom, zoom);
@@ -376,27 +379,22 @@ function drawMap() {
       const mapTileWidth = mapData.width;
 
       for (let i = 0; i < layer.data.length; i++) {
-
         const gid = layer.data[i];
         if (gid === 0) continue;
 
         const currentTileset = Object.values(tilesetImages).find(
           (ts) => gid >= ts.firstgid && gid < ts.firstgid + ts.tilecount
         );
-
         if (!currentTileset || !currentTileset.image) {
           console.warn(
             `Skipping GID ${gid} in Layer '${layer.name}' (index ${i}): No loaded tileset image found for this GID.`
           );
           continue;
-        }
+        } 
 
         const tileIndex = gid - currentTileset.firstgid;
-        const tileXInTileset =
-          (tileIndex % currentTileset.columns) * currentTileset.tilewidth;
-        const tileYInTileset =
-          Math.floor(tileIndex / currentTileset.columns) *
-          currentTileset.tileheight;
+        const tileXInTileset = (tileIndex % currentTileset.columns) * currentTileset.tilewidth;
+        const tileYInTileset = Math.floor(tileIndex / currentTileset.columns) * currentTileset.tileheight;
 
         const col = i % mapTileWidth;
         const row = Math.floor(i / mapTileWidth);
@@ -418,7 +416,7 @@ function drawMap() {
       }
     }
   });
-
+  
   for (let box of collisions) {
     if (
       box.type === "sleep" ||
@@ -438,6 +436,7 @@ function drawMap() {
   }
   ctx.restore();
 }
+
 
 async function loadTilesetAndImage(tilesetSource, firstgid) {
   try {
@@ -657,6 +656,7 @@ window.initGameMap = async function (canvasElement, currentMapNum, playerSavedSt
     },
     
   };
+  
 
   collisions = [];
 
