@@ -774,12 +774,53 @@ window.initGameMap = async function (canvasElement, currentMapNum, playerSavedSt
           collisions.push(collisionObject);
         }
 
-        // ❌ Jangan tambahkan lagi wall/obstacle dari object
-        // else if (obj.type === "wall" || obj.type === "obstacle") {
-        //   collisions.push(collisionObject);
-        // }
+        
       });
     }
+    if (layer.type === "tilelayer" && layer.id === 3) {
+      const mapTileWidth = mapData.width;
+
+      for (let i = 0; i < layer.data.length; i++) {
+        const tileValue = layer.data[i];
+        if (tileValue >= 1) {
+          const col = i % mapTileWidth;
+          const row = Math.floor(i / mapTileWidth);
+
+          const obj = {
+            x: col * tileWidth,
+            y: row * tileHeight,
+            width: tileWidth,
+            height: tileHeight,
+            type: null, // akan ditentukan di bawah
+          };
+
+          // 🚀 Tentukan jenis interaksi berdasarkan data tile
+          switch (tileValue) {
+            case 1:
+              obj.type = "teleport";
+              obj.targetMap = "map2"; // Atau ambil dari properti nanti
+              break;
+            case 2:
+              obj.type = "fishing";
+              break;
+            case 3:
+              obj.type = "digging";
+              break;
+            case 4:
+              obj.type = "sleep";
+              break;
+            case 5:
+              obj.type = "buying";
+              break;
+            default:
+              obj.type = "custom";
+              break;
+          }
+
+          collisions.push(obj); // atau simpan di array terpisah jika ingin dipisahkan
+        }
+  }
+}
   });
     let playerStartX;
     let playerStartY;
@@ -794,8 +835,8 @@ window.initGameMap = async function (canvasElement, currentMapNum, playerSavedSt
       playerStartY = 250;
     } 
     else if (mapNum === "3") {
-      playerStartX = 200;
-      playerStartY = 250;
+      playerStartX = 615;
+      playerStartY = 90;
     }
     else if (mapNum === "4") {
       playerStartX = 200;
