@@ -45,7 +45,7 @@ function GameMap({ mapNum }) {
           localStorage.getItem("playerStats") || "{}"
         );
         const characterId = localStorage.getItem("characterId") || "Noble Man";
-        const previousMap = localStorage.getItem("previousMap") || "map1.html";
+        const previousMap = localStorage.getItem("previousMap") || `/map${mapNum}.html`;
 
         window
           .initGameMap(
