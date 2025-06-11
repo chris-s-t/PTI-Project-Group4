@@ -621,7 +621,7 @@ window.initGameMap = async function (canvasElement, currentMapNum, playerSavedSt
     frameX: 0,
     frameY: 0,
     maxFrame: 3,
-    frameDelay: 10,
+    frameDelay: 10000,
     frameTimer: 0,
     hitbox: { offsetX: 22, offsetY: 28, width: 18, height: 40 },
     stats: playerSavedStats,
@@ -790,8 +790,8 @@ window.initGameMap = async function (canvasElement, currentMapNum, playerSavedSt
       // Maybe adjust player.hitbox.offsetX/Y/width/height here if map 1 has unique player dimensions
     } 
     else if (mapNum === "2") {
-      playerStartX = 400;
-      playerStartY = 300;
+      playerStartX = 200;
+      playerStartY = 250;
     } 
     else if (mapNum === "3") {
       playerStartX = 200;
