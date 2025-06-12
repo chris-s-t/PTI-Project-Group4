@@ -3,7 +3,7 @@ let player = {};
 let camera = {};
 let hitbox = {};
 const keys = {};
-let speed = 1;
+let speed = 4;
 let frameCount = 0;
 
 // Booleans
@@ -22,6 +22,7 @@ const playerImg = new Image();
 const zPromptImg = new Image();
 const exclamationActiveImg = new Image();
 const mapImg = new Image();
+const itemPath = "/Assets/Items/";
 
 // Map & Tilesets
 let mapNum, mapData, tileWidth, tileHeight, previousMap, scaleFactor;
@@ -74,30 +75,33 @@ function isColliding(a, b) {
   );
 }
 
-function cutsceneToggle(cutsceneDuration, cooldownDuration, displayText, imgSrc) {
-  inCutscene = true;
-  interactCooldown = true;
+function cutsceneToggle(cutsceneDuration, cooldownDuration, message, imageUrl, title = "") {
+  // Pause player movement and interaction
   speed = 0;
+  interactCooldown = true;
+  inCutscene = true;
 
+  window.dispatchEvent(
+    new CustomEvent("showBox", {
+      detail: {
+        message,
+        imageUrl,
+        imageDuration: cutsceneDuration,
+        title,
+      },
+    })
+  );
+
+  // After cutsceneDuration, allow movement again
   setTimeout(() => {
-    inCutscene = false;
     speed = 1;
+    inCutscene = false;
   }, cutsceneDuration);
 
+  // After cooldownDuration, allow interaction again
   setTimeout(() => {
     interactCooldown = false;
   }, cooldownDuration);
-
-  if (displayText != undefined || imgSrc != undefined) {
-    const event = new CustomEvent("showBox", {
-      detail: {
-        message: displayText,
-        imageUrl: imgSrc,
-        imageDuration: cutsceneDuration,
-      },
-    });
-    window.dispatchEvent(event);
-  }
 }
 
 function drawExclamation(duration) {
@@ -114,23 +118,23 @@ function updatePlayerPosition() {
 
   let moved = false;
 
-  if (keys["ArrowUp"]) {
+  if (keys["ArrowUp"] || keys["w"]) {
     player.y -= speed;
     player.frameY = 1;
     moved = true;
   }
-  if (keys["ArrowDown"]) {
+  if (keys["ArrowDown"] || keys["s"]) {
     player.y += speed;
     player.frameY = 1;
     moved = true;
   }
-  if (keys["ArrowLeft"]) {
+  if (keys["ArrowLeft"] || keys["a"]) {
     player.x -= speed;
     player.frameY = 1;
     moved = true;
     facingLeft = true;
   }
-  if (keys["ArrowRight"]) {
+  if (keys["ArrowRight"] || keys["d"]) {
     player.x += speed;
     player.frameY = 1;
     moved = true;
@@ -167,24 +171,58 @@ function updatePlayerPosition() {
           if (rarity == 99) {
             statChange("happiness", 10);
             moneyChange(1000);
-            cutsceneToggle(1000, 2000, "You caught a RARE fish!"),
-              "/Assets/GUI/UI_board_small_stone.png";
-          } else if (rarity <= 65) {
+            addItem("catfish", 1);
+            cutsceneToggle(
+              1000,
+              2000,
+              "You caught a RARE catfish!",
+              `${itemPath}catfish.png`,
+              "Fishing Successful!"
+            );
+          } else if (rarity <= 98 && rarity > 48) {
+            statChange("happiness", 5);
+            moneyChange(1200);
+            addItem("fish", 1);
+            cutsceneToggle(
+              1000,
+              2000,
+              "You caught a common fish!",
+              `${itemPath}fish.png`,
+              "Fishing Successful!"
+            );
+          } else if (rarity <= 48 && rarity > 18) {
             statChange("happiness", 5);
             moneyChange(100);
+            addItem("moorish_idol", 1);
             cutsceneToggle(
               1000,
               2000,
-              "You caught a fish!",
-              "/Assets/GUI/UI_board_small_stone.png"
+              "You caught a Moorish Idol!",
+              `${itemPath}moorish_idol.png`,
+              "Fishing Successful!"
             );
-          } else {
-            statChange("happiness", -15);
+          } else if (rarity <= 18 && rarity > 8) {
+            statChange("happiness", 5);
+            statChange("health", -10)
+            moneyChange(100);
+            addItem("catfish", 1);
             cutsceneToggle(
               1000,
               2000,
-              "You caught trash hahahahahaha!",
-              "/Assets/GUI/UI_board_small_stone.png"
+              "You caught a Shark... and got bitten in the process.",
+              `${itemPath}apple.png`,
+              "Fishing Successful?"
+            );
+          } else if (rarity <= 8) {
+            statChange("happiness", 5);
+            moneyChange(100);
+            addItem("cat", 1);
+            cutsceneToggle(
+              1000,
+              2000,
+              "You caught a cat?",
+              `${itemPath}battlekets.png`,
+              "Fishing Successful?"
             );
           }
         }
@@ -200,8 +238,7 @@ function updatePlayerPosition() {
           if (rarity == 99) {
             statChange("happiness", 30);
             moneyChange(50000);
-            cutsceneToggle(1000, 2000, "You dug out Legendary artifacts!"),
-              "Assets/GUI/UI_board_small_stone.png";
+            cutsceneToggle(1000, 2000, "You dug out Legendary artifacts!", "Assets/GUI/UI_board_small_stone.png");
           } else if (rarity <= 65) {
             statChange("food", 5);
             statChange("happiness", 5);
@@ -577,7 +614,7 @@ function moneyChange(amount) {
   localStorage.setItem("playerMoney", changeMoney);
 
   window.dispatchEvent(
-    new CustomEvent("updatePlayerMoney", { detail: { value: amount } })
+    new CustomEvent("updatePlayerMoney", { detail: { value: changeMoney } })
   );
 }
 
@@ -1183,7 +1220,7 @@ window.addEventListener("keydown", (e) => {
     );
   }
   if (e.key === "v") {
-    addItem("catfish", 1);
+    addItem("catfishh", 1);
   }
   if (e.key === "b") {
     addItem("fish", 2);
