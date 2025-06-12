@@ -359,7 +359,22 @@ function updatePlayerPosition() {
             updateGameClock();
           }, 5000);
         }
+      }else if (collision.type === "shower") {
+        drawExclamation(0);
+
+        if (zKeyPressed && !interactCooldown && !inCutscene) {
+          cutsceneToggle(
+            1000, 
+            2000,
+            "you got a shower",
+            "Assets/Emojis/E12.png"
+          );
+          
+          statChange("hygiene", 100);
+          statChange("happiness", 30);
+        }
       }
+
 
       else if (collision.type === "mapTransition") {
         if (!collision.inside && !isMapTransitionDialogActive) {
@@ -1024,6 +1039,7 @@ window.initGameMap = async function (canvasElement, currentMapNum, playerSavedSt
       531: { type: "digging" },
       3: { type: "sleep" },
       4: { type: "buying" },
+      501:{type: "shower"}
     };
 
     if (layer.type === "tilelayer" && layer.id === 3) {
