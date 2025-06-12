@@ -821,3 +821,31 @@ body {
 .fade-in {
   animation: fadeToBlack 1s ease forwards;
 }
+
+.sleep-zzz {
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2rem;
+  font-family: "Cinzel", serif;
+  color: white;
+  text-shadow: 2px 2px 4px black;
+  z-index: 100000; /* above the overlay */
+  animation: floatZ 2s ease-in-out infinite;
+}
+
+@keyframes floatZ {
+  0% {
+    transform: translate(-50%, 0);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translate(-50%, -8px);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, 0);
+    opacity: 0.8;
+  }
+}

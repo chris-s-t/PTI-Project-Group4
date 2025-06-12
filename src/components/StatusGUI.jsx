@@ -49,6 +49,7 @@ function StatusGUI() {
   const [popupImageUrl, setPopupImageUrl] = useState("");
   const [popupTitle, setPopupTitle] = useState("");
   const [overlayVisible, setOverlayVisible] = useState(false);
+  const [sleepZText, setSleepZText] = useState("");                //zzz
 
 
 
@@ -130,11 +131,22 @@ function StatusGUI() {
     //overlay for dimming
     const handleShowOverlay = () => {
       setOverlayVisible(true);
-      console.log("Overlay ON");
+      setSleepZText(""); // reset
+      //zzz
+      const sequence = ["Z", "Zz", "Zzz", "Zzz.", "Zzz..", "Zzz..."];
+      let i = 0;
+
+      const zInterval = setInterval(() => {
+        setSleepZText(sequence[i]);
+        i++;
+        if (i >= sequence.length) {
+          clearInterval(zInterval);
+        }
+      }, 600); // adjust delay between z's
     }
     const handleHideOverlay = () => {
       setOverlayVisible(false);
-      console.log("Overlay OFF");
+      setSleepZText(""); // reset
     }
 
     window.addEventListener("updatePlayerStatus", handleUpdateStatus);
@@ -176,7 +188,10 @@ function StatusGUI() {
     
     <>
     {overlayVisible && (
+      <>
       <div className="sleep-overlay fade-in"></div>
+      <div className="sleep-zzz">{sleepZText}</div>
+      </>
     )}
       <div id="statusGUI" className="status-gui">
         <div className="clock">

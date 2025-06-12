@@ -1288,9 +1288,12 @@ window.addEventListener("keydown", (e) => {
     );
   }
   if (e.key === "v") {
-    addItem("catfishh", 1);   
+    addItem("catfish", 1);   
   }
   if (e.key === "b") {
     addItem("fish", 2);
+  }
+  if (e.key === "q") {
+    inCutscene = !inCutscene;
   }
 });
