@@ -30,8 +30,6 @@ function GameMap({ mapNum }) {
       return;
     }
 
-    console.log("Canvas found. Attempting to load mapScript.js.");
-
     const script = document.createElement("script");
     script.src = "/mapScript.js";
     script.type = "module";
@@ -41,7 +39,7 @@ function GameMap({ mapNum }) {
       if (window.initGameMap) {
         const playerStats = JSON.parse(localStorage.getItem("playerStats") || "{}");
         const characterId = localStorage.getItem("characterId") || "Noble Man";
-        const previousMap = localStorage.getItem("previousMap") || `/map${mapNum}.html`;
+        const previousMap = localStorage.getItem("previousMap") || `map${mapNum}`;
 
         window
           .initGameMap(canvas, String(mapNum), playerStats, characterId, previousMap)
@@ -50,20 +48,12 @@ function GameMap({ mapNum }) {
             console.error("❌ initGameMap encountered an error:", error)
           );
       } else {
-        console.log("⏳ Waiting for initGameMap to be defined...");
-        setTimeout(waitForInitGameMap, 50); // check again after 50ms
+        setTimeout(waitForInitGameMap, 50);
       }
     };
 
-    script.onload = () => {
-      console.log("✅ mapScript.js loaded.");
-      waitForInitGameMap();
-    };
-
-    script.onerror = (e) => {
-      console.error("❌ Failed to load mapScript.js:", e);
-    };
-
+    script.onload = waitForInitGameMap;
+    script.onerror = (e) => console.error("❌ Failed to load mapScript.js:", e);
     document.body.appendChild(script);
 
     return () => {
@@ -90,7 +80,7 @@ function GameMap({ mapNum }) {
 
   const handleYes = () => {
     setShowDialog(false);
-    localStorage.setItem("previousMap", `/map${mapNum}.html`);
+    localStorage.setItem("previousMap", `map${mapNum}`);
     navigate(`/${dialogTargetMap}`);
   };
 
@@ -106,15 +96,15 @@ function GameMap({ mapNum }) {
       </div>
 
       {showDialog && (
-        <div id="mapTransitionDialog" className={showDialog ? "" : "hidden"}>
-          <div className="dialog-content">
-            <p>Do you want to move to the next map?</p>
-            <button id="yesButton" onClick={handleYes}>
-              Yes
-            </button>
-            <button id="noButton" onClick={handleNo}>
-              No
-            </button>
+        <div id="mapTransitionDialog">
+          <div className="dialog-content" style={{
+            backgroundImage: `url("/Assets/GUI/UI_board_Medium_parchment.png")`,
+            backgroundSize: "cover",
+            backgroundPosition: "center"
+          }}>
+            <p>Mau pindah ke map berikutnya?</p>
+            <button id="yesButton" onClick={handleYes}>Ya</button>
+            <button id="noButton" onClick={handleNo}>Tidak</button>
           </div>
         </div>
       )}
@@ -133,17 +123,19 @@ function GameMap({ mapNum }) {
           z-index: 9999;
         }
 
-        #mapTransitionDialog.hidden {
-          display: none;
+        .dialog-content {
+          width: 300px;
+          height: 200px;
+          padding: 20px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+          text-align: center;
+          border-radius: 10px;
+          color: black;
         }
 
-        .dialog-content {
-          background-color: white;
-          padding: 20px;
-          border-radius: 10px;
-          text-align: center;
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-          color: black;
+        .dialog-content p {
+          font-size: 20px;
+          margin-bottom: 20px;
         }
 
         .dialog-content button {
@@ -152,6 +144,7 @@ function GameMap({ mapNum }) {
           border: none;
           border-radius: 5px;
           cursor: pointer;
+          font-size: 16px;
         }
 
         #yesButton {
