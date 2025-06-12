@@ -104,6 +104,7 @@ function cutsceneToggle(cutsceneDuration, cooldownDuration, message, imageUrl, t
   }, cooldownDuration);
 }
 
+
 function drawExclamation(duration) {
   showExclamation = true;
   clearTimeout(timeout);
@@ -232,30 +233,63 @@ function updatePlayerPosition() {
         drawExclamation(0);
         if (zKeyPressed && !interactCooldown && !inCutscene) {
           drawExclamation(1000);
-          let rarity = Math.floor(Math.random() * 100);
-          statChange("stamina", -4);
-          statChange("hygiene", -4);
+           let rarity = Math.floor(Math.random() * 100);
+          statChange("stamina", -2);
           if (rarity == 99) {
-            statChange("happiness", 30);
-            moneyChange(50000);
-            cutsceneToggle(1000, 2000, "You dug out Legendary artifacts!", "Assets/GUI/UI_board_small_stone.png");
-          } else if (rarity <= 65) {
-            statChange("food", 5);
-            statChange("happiness", 5);
+            statChange("happiness", 10);
+            moneyChange(1000);
+            addItem("catfish", 1);
             cutsceneToggle(
               1000,
               2000,
-              "You dug some crabs, and ate them",
-              "Assets/GUI/UI_board_small_stone.png"
+              "You caught a RARE catfish!",
+              `${itemPath}catfish.png`,
+              "Fishing Successful!"
             );
-          } else {
-            statChange("happiness", -5);
-            statChange("stamina", -5);
+          } else if (rarity <= 98 && rarity > 48) {
+            statChange("happiness", 5);
+            moneyChange(1200);
+            addItem("fish", 1);
             cutsceneToggle(
               1000,
               2000,
-              "The crabs bit you.",
-              "Assets/GUI/UI_board_small_stone.png"
+              "You caught a common fish!",
+              `${itemPath}fish.png`,
+              "Fishing Successful!"
+            );
+          } else if (rarity <= 48 && rarity > 18) {
+            statChange("happiness", 5);
+            moneyChange(100);
+            addItem("moorish_idol", 1);
+            cutsceneToggle(
+              1000,
+              2000,
+              "You caught a Moorish Idol!",
+              `${itemPath}moorish_idol.png`,
+              "Fishing Successful!"
+            );
+          } else if (rarity <= 18 && rarity > 8) {
+            statChange("happiness", 5);
+            statChange("health", -10)
+            moneyChange(100);
+            addItem("catfish", 1);
+            cutsceneToggle(
+              1000,
+              2000,
+              "You caught a Shark... and got bitten in the process.",
+              `${itemPath}apple.png`,
+              "Fishing Successful?"
+            );
+          } else if (rarity <= 8) {
+            statChange("happiness", 5);
+            moneyChange(100);
+            addItem("cat", 1);
+            cutsceneToggle(
+              1000,
+              2000,
+              "You caught a cat?",
+              `${itemPath}battlekets.png`,
+              "Fishing Successful?"
             );
           }
         }
@@ -969,7 +1003,7 @@ window.initGameMap = async function (canvasElement, currentMapNum, playerSavedSt
 
       // 🎣 Interaction tiles
       2: { type: "fishing" },
-      3: { type: "digging" },
+      531: { type: "digging" },
       4: { type: "sleep" },
       5: { type: "buying" },
     };
@@ -1162,7 +1196,7 @@ function addItem(id, quantity = 1) {
   }
 
   localStorage.setItem("playerInventory", JSON.stringify(inventory));
-  dispatchInventoryUpdate();statname
+  dispatchInventoryUpdate();
 }
 function dispatchInventoryUpdate() {
   let inventory = JSON.parse(localStorage.getItem("playerInventory"));
