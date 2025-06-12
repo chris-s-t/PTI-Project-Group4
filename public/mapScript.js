@@ -237,48 +237,44 @@ function updatePlayerPosition() {
           statChange("stamina", -2);
           if (rarity == 99) {
             statChange("happiness", 10);
-            moneyChange(1000);
-            addItem("catfish", 1);
+            moneyChange(5000);
             cutsceneToggle(
               1000,
               2000,
-              "You caught a RARE catfish!",
-              `${itemPath}catfish.png`,
-              "Fishing Successful!"
+              "You dug a CHEST!!!",
+              `${itemPath}chest.png`,
+              "digging Successful!"
             );
           } else if (rarity <= 98 && rarity > 48) {
             statChange("happiness", 5);
-            moneyChange(1200);
-            addItem("fish", 1);
+            moneyChange(100);
+            addItem("crab", 1);
             cutsceneToggle(
               1000,
               2000,
-              "You caught a common fish!",
-              `${itemPath}fish.png`,
-              "Fishing Successful!"
+              "You got a crab.",
+              `${itemPath}crab.png`,
+              "digging Successful!"
             );
           } else if (rarity <= 48 && rarity > 18) {
             statChange("happiness", 5);
-            moneyChange(100);
-            addItem("moorish_idol", 1);
+            moneyChange(1000);
             cutsceneToggle(
               1000,
               2000,
-              "You caught a Moorish Idol!",
-              `${itemPath}moorish_idol.png`,
-              "Fishing Successful!"
+              "You dug a gold coin!",
+              `${itemPath}goldcoin.png`,
+              "digging Successful!"
             );
           } else if (rarity <= 18 && rarity > 8) {
             statChange("happiness", 5);
-            statChange("health", -10)
-            moneyChange(100);
-            addItem("catfish", 1);
+            moneyChange(4000);
             cutsceneToggle(
               1000,
               2000,
-              "You caught a Shark... and got bitten in the process.",
-              `${itemPath}apple.png`,
-              "Fishing Successful?"
+              "You dug a FOSSIL!!!",
+              `${itemPath}fossil.png`,
+              "Digging Successfull"
             );
           } else if (rarity <= 8) {
             statChange("happiness", 5);
@@ -287,9 +283,9 @@ function updatePlayerPosition() {
             cutsceneToggle(
               1000,
               2000,
-              "You caught a cat?",
+              "You dug a cat?",
               `${itemPath}battlekets.png`,
-              "Fishing Successful?"
+              "digging Successful?"
             );
           }
         }

@@ -76,6 +76,42 @@ const itemData = {
       happiness: -20,
       hygiene: -20,
     }
+  },
+  chest: {
+    id: "chest",
+    name: "chest",
+    description: "OMG OMG CHEST OMG",
+    image: `${path}chest.png`,
+    stats: {
+      happiness: 30,
+    }
+  },
+  coin: {
+    id: "coin",
+    name: "coin",
+    description: "a coin that is worth maybe 2 pounds.",
+    image: `${path}goldcoin.png`,
+    stats: {
+      happiness: 5,
+    }
+  },
+  fossil: {
+    id: "fossil",
+    name: "fossil",
+    description: "a rare type of stone, its worth a fortune.",
+    image: `${path}fossil.png`,
+    stats: {
+      happiness: 12,
+    }
+  },
+  crab: {
+    id: "crab",
+    name: "crab",
+    description: "a common crab, not safe to eat tho",
+    image: `${path}crab.png`,
+    stats: {
+      happiness: 12,
+    }
   }
 };
 
