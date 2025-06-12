@@ -48,6 +48,8 @@ function StatusGUI() {
   const [popupMessage, setPopupMessage] = useState("");
   const [popupImageUrl, setPopupImageUrl] = useState("");
   const [popupTitle, setPopupTitle] = useState("");
+  const [overlayVisible, setOverlayVisible] = useState(false);
+
 
 
   useEffect(() => {
@@ -125,6 +127,16 @@ function StatusGUI() {
       }, imageDuration);
     };
 
+    //overlay for dimming
+    const handleShowOverlay = () => {
+      setOverlayVisible(true);
+      console.log("Overlay ON");
+    }
+    const handleHideOverlay = () => {
+      setOverlayVisible(false);
+      console.log("Overlay OFF");
+    }
+
     window.addEventListener("updatePlayerStatus", handleUpdateStatus);
     window.addEventListener("updatePlayerMoney", handleUpdateMoney);
     window.addEventListener("updateClock", handleUpdateClock);
@@ -133,6 +145,8 @@ function StatusGUI() {
     window.addEventListener("updateInventory", handleUpdateInventory);
     window.addEventListener("toggleInventory", handleToggleInventory);
     window.addEventListener("showBox", handleShowBox);
+    window.addEventListener("showSleepOverlay", handleShowOverlay);
+    window.addEventListener("hideSleepOverlay", handleHideOverlay);
 
     return () => {
       window.removeEventListener("updatePlayerStatus", handleUpdateStatus);
@@ -146,6 +160,8 @@ function StatusGUI() {
       window.removeEventListener("updateInventory", handleUpdateInventory);
       window.removeEventListener("toggleInventory", handleToggleInventory);
       window.removeEventListener("showBox", handleShowBox);
+      window.removeEventListener("showSleepOverlay", handleShowOverlay);
+      window.removeEventListener("hideSleepOverlay", handleHideOverlay);
     };
   }, []);
 
@@ -157,7 +173,11 @@ function StatusGUI() {
   };
 
   return (
+    
     <>
+    {overlayVisible && (
+      <div className="sleep-overlay fade-in"></div>
+    )}
       <div id="statusGUI" className="status-gui">
         <div className="clock">
           <img src={ClockIcon} alt="Clock" />
@@ -260,7 +280,6 @@ function StatusGUI() {
         <p id="popupText"></p>
       </div>
 
-      <div id="overlay" style={{ display: "none" }}></div>
 
 
     {inventoryVisible && (

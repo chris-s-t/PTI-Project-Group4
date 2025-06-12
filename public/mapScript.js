@@ -94,7 +94,7 @@ function cutsceneToggle(cutsceneDuration, cooldownDuration, message, imageUrl, t
 
   // After cutsceneDuration, allow movement again
   setTimeout(() => {
-    speed = 1;
+    speed = 4;
     inCutscene = false;
   }, cutsceneDuration);
 
@@ -322,23 +322,45 @@ function updatePlayerPosition() {
           }
         }
       } 
-      else if (collision.type == "sleep") {
-        // Sleep behavior
+      else if (collision.type === "sleep") {
         drawExclamation(0);
+
         if (zKeyPressed && !interactCooldown && !inCutscene) {
+
+          // jadi hitam
+         window.dispatchEvent(new Event("showSleepOverlay"));
+
           cutsceneToggle(
-            5000,
-            6000,
+            5000, // duration sleep
+            6000, // cooldown
             "You tidy up and rest for a bit...",
-            "Assets/GUI/UI_board_small_stone.png"
+            "Assets/Emojis/E35.png",
+            "Sleep"
           );
-          const overlay = document.getElementById("overlay");
+          
           statChange("food", -5);
           statChange("hygiene", 30);
           statChange("stamina", 50);
           statChange("happiness", 30);
+
+          // Bangun
+          setTimeout(() => {
+            // hitam hilang
+            window.dispatchEvent(new Event("hideSleepOverlay"));
+
+            let currentDayMinutes = totalGameMinutes % (24 * 60);
+            let minutesLeftToday = 24 * 60 - currentDayMinutes;
+
+            let minutesToAdd = minutesLeftToday + (8 * 60);
+            totalGameMinutes += minutesToAdd;
+
+            // Esok hari
+            currentDayNumber++;
+            updateGameClock();
+          }, 5000);
         }
-      } 
+      }
+
       else if (collision.type === "mapTransition") {
         if (!collision.inside && !isMapTransitionDialogActive) {
           collision.inside = true;
@@ -897,10 +919,10 @@ window.initGameMap = async function (canvasElement, currentMapNum, playerSavedSt
   if (inCutscene) return;
   statChange("food", -1);
   statChange("stamina", -1);
-  statChange("hygiene", -2);
+  statChange("hygiene", -1);
   statChange("happiness", -1);
   statChange("health", 0);
-}, 3000);
+}, 10000);
 
   // --- MAP INIT --- \\
   try {
@@ -1000,8 +1022,8 @@ window.initGameMap = async function (canvasElement, currentMapNum, playerSavedSt
       // 🎣 Interaction tiles
       2: { type: "fishing" },
       531: { type: "digging" },
-      4: { type: "sleep" },
-      5: { type: "buying" },
+      3: { type: "sleep" },
+      4: { type: "buying" },
     };
 
     if (layer.type === "tilelayer" && layer.id === 3) {
@@ -1148,7 +1170,7 @@ function showMapTransitionDialog(nextMap) {
   noButton.onclick = () => {
     dialog.classList.add("hidden");
     isMapTransitionDialogActive = false;
-    speed = 1;
+    speed = 4;
     Object.keys(keys).forEach((key) => keys[key] = false);
   };
 }
@@ -1250,7 +1272,7 @@ window.addEventListener("keydown", (e) => {
     );
   }
   if (e.key === "v") {
-    addItem("catfishh", 1);
+    addItem("catfishh", 1);   
   }
   if (e.key === "b") {
     addItem("fish", 2);

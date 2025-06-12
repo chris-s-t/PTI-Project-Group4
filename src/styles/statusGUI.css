@@ -797,3 +797,27 @@ body {
   flex-shrink: 0;
   border-radius: 4px;
 }
+
+@keyframes fadeToBlack {
+  from {
+    background-color: rgba(0, 0, 0, 0);
+  }
+  to {
+    background-color: rgba(0, 0, 0, 0.75);
+  }
+}
+
+.sleep-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 99999;
+  pointer-events: none;
+  background-color: rgba(0, 0, 0, 0.75); /* Final color */
+}
+
+.fade-in {
+  animation: fadeToBlack 1s ease forwards;
+}
