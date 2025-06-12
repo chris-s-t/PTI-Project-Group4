@@ -40,6 +40,11 @@ function StatusGUI() {
     happiness: { currentStat: 100, max: 100 },
     hygiene: { currentStat: 100, max: 100 },
   });
+  const [inventory, setInventory] = useState([]);
+  const [inventoryVisible, setInventoryVisible] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState(null);
+  const [clickedItemIndex, setClickedItemIndex] = useState(null);   // What the item image does after diklik
+
 
   useEffect(() => {
     const savedPlayerName = localStorage.getItem("playerName");
@@ -93,11 +98,22 @@ function StatusGUI() {
       }
     };
 
+    //inventory
+    const handleUpdateInventory = (e) => {
+      setInventory(e.detail.inventory);
+    };
+
+    const handleToggleInventory = (e) => {
+      setInventoryVisible(e.detail.visible);
+    };
+
     window.addEventListener("updatePlayerStatus", handleUpdateStatus);
     window.addEventListener("updatePlayerMoney", handleUpdateMoney);
     window.addEventListener("updateClock", handleUpdateClock);
     window.addEventListener("updateGreeting", handleUpdateGreeting);
     window.addEventListener("updatePlayerAvatar", handleUpdatePlayerAvatar);
+    window.addEventListener("updateInventory", handleUpdateInventory);
+    window.addEventListener("toggleInventory", handleToggleInventory);
 
     return () => {
       window.removeEventListener("updatePlayerStatus", handleUpdateStatus);
@@ -108,6 +124,8 @@ function StatusGUI() {
         "updatePlayerAvatar",
         handleUpdatePlayerAvatar
       );
+      window.removeEventListener("updateInventory", handleUpdateInventory);
+      window.removeEventListener("toggleInventory", handleToggleInventory);
     };
   }, []);
 
@@ -223,6 +241,58 @@ function StatusGUI() {
       </div>
 
       <div id="overlay" style={{ display: "none" }}></div>
+
+
+     {inventoryVisible && (
+  <>
+    <div className="inventory-overlay">
+      <div className="inventory-window">
+        <h3 className="inventory-title">Inventory</h3>
+        <div className="inventory-grid">
+          {Array.from({ length: 60 }).map((_, index) => {
+            const item = inventory[index];
+            return (
+              <div
+                className="inventory-slot"
+                key={index}
+                onMouseEnter={() => setHoveredItem(item || null)}
+                onMouseLeave={() => setHoveredItem(null)}
+                onClick={() => {
+                  if (item) {
+                    setClickedItemIndex(index);
+                    window.dispatchEvent(
+                      new CustomEvent("useInventoryItem", { detail: { id: item.id } })
+                    );
+                    setTimeout(() => setClickedItemIndex(null), 300);
+                  }
+                }}
+              >
+                {item && (
+                  <>
+                    <img
+                      src={item.image || `/Assets/Items/${item.id}.png`}
+                      alt={item.name}
+                      className={`inventory-icon ${clickedItemIndex === index ? "clicked" : ""}`}
+                    />
+                    <span className="inventory-quantity">x{item.quantity}</span>
+                  </>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+
+    {hoveredItem && (
+      <div className="item-description-box-outside">
+        <h3 className="inventory-title">{hoveredItem.name}</h3>
+        <p className="item-description">{hoveredItem.description}</p>
+      </div>
+    )}
+  </>
+)}
+
     </>
   );
 }

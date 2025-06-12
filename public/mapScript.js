@@ -14,6 +14,7 @@ let interactCooldown = false;
 let zKeyPressed = false;
 let isGameInitialized;
 let isGameLoopRunning = false;
+let isInventoryVisible = false; //inventory wip
 
 // Images
 const playerImg = new Image();
@@ -29,11 +30,15 @@ let tilesetsData = [];
 let collisions = [];
 let tilesetImages = {};
 
+// Item Data
+import itemData from "./itemData.js";
+
 // Time Interval
 let timeout = null;
 let totalGameMinutes = 0;
 let currentDayNumber = 1;
 let clockInterval = null;
+let statInterval = null;
 
 
 // Asset Paths Map \\
@@ -578,7 +583,7 @@ function statChange(statName, amount) {
 
   window.dispatchEvent(
     new CustomEvent("updatePlayerStatus", {
-      detail: { type: statName, value: amount },
+      detail: { type: statName, value: stats[statName].currentStat },
     })
   );
 }
@@ -713,8 +718,18 @@ window.initGameMap = async function (canvasElement, currentMapNum, playerSavedSt
   currentDayNumber = parseInt(localStorage.getItem("currentDayNumber") || "1");
 
   clockInterval = setInterval(() => {
+    if (inCutscene) return;
     updateGameClock();
   }, 1000);
+
+  // --- STAT DEGRADATION --- \\
+  statInterval = setInterval(() => {
+  if (inCutscene) return;
+  statChange("food", 1);
+  statChange("stamina", 1);
+  statChange("hygiene", 2);
+  statChange("happiness", 1);
+}, 3000);
 
   // --- MAP INIT --- \\
   try {
@@ -1034,3 +1049,89 @@ function requestTeleport(targetMap) {
     detail: { nextMap: targetMap }
   }));
 }
+// Adding item ke invetory
+function addItem(id, quantity = 1) {
+  let inventory = JSON.parse(localStorage.getItem("playerInventory"));
+  const data = itemData[id];
+  if (!data) {
+    console.warn(`Item with ID "${id}" not found.`);
+    return;
+  }
+
+  const existing = inventory.find((item) => item.id === id);
+  if (existing) {
+    existing.quantity += quantity;
+  } else {
+    inventory.push({
+      id: data.id,
+      name: data.name,
+      description: data.description,
+      quantity,
+    });
+  }
+
+  localStorage.setItem("playerInventory", JSON.stringify(inventory));
+  dispatchInventoryUpdate();
+}
+function dispatchInventoryUpdate() {
+  let inventory = JSON.parse(localStorage.getItem("playerInventory"));
+  window.dispatchEvent(
+    new CustomEvent("updateInventory", {
+      detail: { inventory },
+    })
+  );
+}
+// Jika item di click di inventory
+window.addEventListener("useInventoryItem", (e) => {
+  useItem(e.detail.id);
+});
+// Maka...
+// ...Makan inventory
+function useItem(id) {
+  let inventory = JSON.parse(localStorage.getItem("playerInventory"));
+  const data = itemData[id];
+  if (!data) {
+    console.warn(`No item data for ${id}`);
+    return;
+  }
+
+  // Apply stat changes
+  if (data.stats) {
+    for (const [stat, value] of Object.entries(data.stats)) {
+      statChange(stat, value); // Existing function you already use
+    }
+  }
+
+  // Reduce quantity and remove item if needed
+  const item = inventory.find((i) => i.id === id);
+  if (item) {
+    item.quantity--;
+    if (item.quantity <= 0) {
+      inventory = inventory.filter((i) => i.id !== id);
+    }
+    localStorage.setItem("playerInventory", JSON.stringify(inventory));
+    dispatchInventoryUpdate();
+  }
+}
+//Buka inventory
+window.addEventListener("keydown", (e) => {
+  keys[e.key] = true;
+
+  if (e.key === "c") {
+    isInventoryVisible = !isInventoryVisible;
+    inCutscene = isInventoryVisible
+    speed = inCutscene ? 0 : 1;
+
+    window.dispatchEvent(
+      new CustomEvent("toggleInventory", {
+        detail: { visible: isInventoryVisible },
+      })
+    );
+  }
+  if (e.key === "v") {
+    addItem("catfish", 1);
+  }
+  if (e.key === "b") {
+    addItem("fish", 2);
+  }
+});

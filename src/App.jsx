@@ -35,6 +35,7 @@ function App() {
     localStorage.setItem("characterId", characterId);
     localStorage.setItem("playerStats", JSON.stringify(stats));
     localStorage.setItem("playerMoney", money.toString());
+    localStorage.setItem("playerInventory", JSON.stringify([]));
   };
 
 

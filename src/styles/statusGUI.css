@@ -603,3 +603,110 @@ body {
     box-shadow: 0 0 14px rgba(255, 239, 173, 0.7), inset 0 0 5px #ffe9a3;
   }
 }
+
+
+/* Inventory Overlay */
+.inventory-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Inventory Window */
+.inventory-window {
+  background-color: rgba(50, 35, 20, 0.95);
+  border: 2px solid #d4aa7d;
+  padding: 16px;
+  border-radius: 10px;
+  width: fit-content;
+  height: fit-content;
+  box-shadow: 0 0 10px #000;
+}
+
+/* Inventory Grid: 10 kolom 6 baris */
+.inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 32px);
+  grid-template-rows: repeat(6, 32px);
+  gap: 4px;
+}
+
+/* Inventory Slot */
+.inventory-slot {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  background-color: rgba(0, 0, 0, 0.4);
+  border: 1px solid #a67c52;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.inventory-slot:hover {
+  cursor: pointer;
+}
+
+/* Item Icon */
+.inventory-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Item Icon Animation */
+.inventory-icon.clicked {
+  transform: scale(1.5);
+  opacity: 0;
+}
+
+/* Quantity Label */
+.inventory-quantity {
+  position: absolute;
+  bottom: 1px;
+  right: 2px;
+  font-size: 0.6rem;
+  color: gold;
+  font-family: "Cinzel", serif;
+  text-shadow: 0 0 2px black;
+}
+
+/* Empty Text */
+.empty-inventory {
+  grid-column: span 10;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #ccc;
+  font-style: italic;
+}
+
+.inventory-title {
+  text-align: center;
+  color: #f9e2af;
+  font-family: "Cinzel Decorative", serif;
+  margin-bottom: 8px;
+}
+.item-description-box-outside {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(calc(100% + 48px), -50%); /* push right from center */
+  background-color: rgba(50, 35, 20, 0.95);
+  border: 2px solid #d4aa7d;
+  border-radius: 8px;
+  padding: 10px;
+  width: calc(32px * 10 + 9 * 4px);
+  min-height: calc(32px * 6 + 5 * 4px + 30px);
+  font-family: "Cinzel", serif;
+  color: #fff;
+  box-shadow: 0 0 8px #000;
+  z-index: 9999; /* super on top */
+}
