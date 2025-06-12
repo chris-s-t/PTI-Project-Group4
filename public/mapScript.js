@@ -15,6 +15,7 @@ let zKeyPressed = false;
 let isGameInitialized;
 let isGameLoopRunning = false;
 let isInventoryVisible = false; //inventory wip
+let isPlayerDead = false; // <-- New flag for death state
 
 // Images
 const playerImg = new Image();
@@ -45,7 +46,7 @@ let statInterval = null;
 const ASSET_PATHS = {
   player: (charId) => `/Assets/Characters/Mini${charId.replaceAll(" ", "")}.png`,
   zPrompt: "/Assets/Buttons/z-icon.png",
-  exclamationActive: "/Assets/GUI/Exclamation_Red.png",
+  exclamationActive: "/Assets/GUI/Exclamation_Red.png", // <-- Path to the death screen image
   mapJson: (mapNumber) => {
     if (mapNumber === "1") {
       return `/Assets/Maps/map1.tmj`;
@@ -580,9 +581,101 @@ function moneyChange(amount) {
   );
 }
 
+/**
+ * --- Death Screen ---
+ * This function handles the player's death sequence. The "Main Menu"
+ */
+function handlePlayerDeath() {
+    if (isPlayerDead) return; // Prevent the function from running multiple times
+    isPlayerDead = true;
+    inCutscene = true; // Stop player from moving and other interactions
+    speed = 0;
+
+    // Stop game time and stat degradation
+    clearInterval(clockInterval);
+    clearInterval(statInterval);
+
+    // Create the overlay div for the fade effect
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100vw';
+    overlay.style.height = '100vh';
+    overlay.style.backgroundColor = 'black';
+    overlay.style.opacity = '0';
+    overlay.style.transition = 'opacity 2s ease-in-out';
+    overlay.style.zIndex = '1000';
+    overlay.style.display = 'flex';
+    overlay.style.flexDirection = 'column';
+    overlay.style.justifyContent = 'center';
+    overlay.style.alignItems = 'center';
+    document.body.appendChild(overlay);
+
+    // After a brief moment, start the fade to black
+    setTimeout(() => {
+        overlay.style.opacity = '1';
+    }, 100);
+
+    // After the fade to black is complete, show the death screen content
+    setTimeout(() => {
+        // Add the "You Died" text
+        const deathText = document.createElement('h1');
+        deathText.textContent = 'YOU DIED';
+        deathText.style.color = 'red';
+        deathText.style.textAlign = 'center';
+        deathText.style.fontSize = '5rem';
+        deathText.style.fontFamily = 'sans-serif';
+        deathText.style.opacity = '0';
+        deathText.style.transition = 'opacity 2s ease-in';
+        deathText.style.marginBottom = '20px';
+        overlay.appendChild(deathText);
+        
+        // Create a container for the buttons
+        const buttonContainer = document.createElement('div');
+        buttonContainer.style.opacity = '0';
+        buttonContainer.style.transition = 'opacity 2s ease-in';
+        overlay.appendChild(buttonContainer);
+
+        // --- Main Menu Button (Corrected) ---
+        const mainMenuButton = document.createElement('button');
+        mainMenuButton.textContent = 'Main Menu';
+        mainMenuButton.style.padding = '10px 20px';
+        mainMenuButton.style.fontSize = '1.5rem';
+        mainMenuButton.style.margin = '0 10px';
+        mainMenuButton.style.cursor = 'pointer';
+        mainMenuButton.onclick = () => {
+            // FIX: Reset time and day when returning to the main menu.
+            localStorage.removeItem("totalGameMinutes");
+            localStorage.removeItem("currentDayNumber");
+            window.location.href = '/'; // Assuming main menu is at the root
+        };
+        buttonContainer.appendChild(mainMenuButton);
+
+        // Fade in the "You Died" text and buttons
+        setTimeout(() => {
+            deathText.style.opacity = '1';
+            buttonContainer.style.opacity = '1';
+        }, 500);
+
+    }, 2200); // This time should be slightly longer than the fade transition
+}
+
+/**
+ * --- MODIFIED FUNCTION ---
+ * Added a check to trigger the death sequence if a critical stat reaches zero.
+ */
 function statChange(statName, amount) {
+  if (isPlayerDead) return; // Do not change stats if player is already dead
+
   let stats = JSON.parse(localStorage.getItem("playerStats"));
   stats[statName].currentStat += amount;
+  
+  // Clamp the stat so it doesn't go below 0 visually before death
+  if (stats[statName].currentStat < 0) {
+      stats[statName].currentStat = 0;
+  }
+
   localStorage.setItem("playerStats", JSON.stringify(stats));
 
   window.dispatchEvent(
@@ -590,6 +683,13 @@ function statChange(statName, amount) {
       detail: { type: statName, value: stats[statName].currentStat },
     })
   );
+
+  // --- NEW ---
+  // Check for death condition
+  const criticalStats = ["food", "stamina", "hygiene", "happiness", "health"];
+  if (criticalStats.includes(statName) && stats[statName].currentStat <= 0) {
+      handlePlayerDeath();
+  }
 }
 
 function updateGameClock() {
@@ -728,10 +828,11 @@ window.initGameMap = async function (canvasElement, currentMapNum, playerSavedSt
   // --- STAT DEGRADATION --- \\
   statInterval = setInterval(() => {
   if (inCutscene) return;
-  statChange("food", 1);
-  statChange("stamina", 1);
-  statChange("hygiene", 2);
-  statChange("happiness", 1);
+  statChange("food", -1);
+  statChange("stamina", -1);
+  statChange("hygiene", -2);
+  statChange("happiness", -1);
+  statChange("health", 0);
 }, 3000);
 
   // --- MAP INIT --- \\
@@ -1024,7 +1125,7 @@ function addItem(id, quantity = 1) {
   }
 
   localStorage.setItem("playerInventory", JSON.stringify(inventory));
-  dispatchInventoryUpdate();
+  dispatchInventoryUpdate();statname
 }
 function dispatchInventoryUpdate() {
   let inventory = JSON.parse(localStorage.getItem("playerInventory"));
