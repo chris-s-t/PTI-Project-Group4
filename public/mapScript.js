@@ -543,7 +543,6 @@ async function loadTilesetAndImage(tilesetSource, firstgid) {
 function gameLoop() {
   if (!ctx) {
     console.warn("gameLoop skipped: ctx not ready");
-    requestAnimationFrame(gameLoop); // ⬅ Tetap panggil untuk cek ulang nanti
     return;
   }
 
@@ -568,7 +567,6 @@ function moneyChange(amount) {
   let changeMoney = parseInt(localStorage.getItem("playerMoney"));
   changeMoney += amount;
   localStorage.setItem("playerMoney", changeMoney);
-  const moneyChangeEvent = new Event("playerMoneyChanged");
 
   window.dispatchEvent(
     new CustomEvent("updatePlayerMoney", { detail: { value: amount } })
@@ -579,7 +577,6 @@ function statChange(statName, amount) {
   let stats = JSON.parse(localStorage.getItem("playerStats"));
   stats[statName].currentStat += amount;
   localStorage.setItem("playerStats", JSON.stringify(stats));
-  const statChangeEvent = new Event("playerStatChanged");
 
   window.dispatchEvent(
     new CustomEvent("updatePlayerStatus", {
@@ -624,7 +621,6 @@ window.initGameMap = async function (canvasElement, currentMapNum, playerSavedSt
     console.log("♻️ Re-initializing map...");
     window.cleanupGameMap?.();
   }
-  isGameInitialized = true;
   isGameInitialized = true; // Mark as initialized
 
   console.log("initGameMap STARTING. Canvas:", canvasElement, "MapNum:", currentMapNum);
@@ -976,6 +972,7 @@ window.initGameMap = async function (canvasElement, currentMapNum, playerSavedSt
     if (!isGameLoopRunning) {
       isGameLoopRunning = true;
       gameLoop();
+      dispatchInventoryUpdate(); //Primary inventory initialization when map changes/loads
     }
   } catch (error) {
     console.error("Error loading map assets:", error);
@@ -1044,11 +1041,7 @@ window.addEventListener("keyup", (e) => {
   }
 });
 
-function requestTeleport(targetMap) {
-  window.dispatchEvent(new CustomEvent("showMapTransitionDialog", {
-    detail: { nextMap: targetMap }
-  }));
-}
+
 // Adding item ke invetory
 function addItem(id, quantity = 1) {
   let inventory = JSON.parse(localStorage.getItem("playerInventory"));
