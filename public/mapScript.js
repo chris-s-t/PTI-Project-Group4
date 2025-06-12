@@ -298,14 +298,21 @@ function updatePlayerPosition() {
     if (isColliding(hitbox, collision)) {
       if (collision.type === "teleport" && !collision.inside) {
         collision.inside = true;
-        console.log("🚪 Teleport trigger hit!", collision);
-        localStorage.setItem("teleportX", collision.targetX);
-        localStorage.setItem("teleportY", collision.targetY);
+
+        // 💾 Simpan spawn data ke global var (bukan localStorage)
+        window.__spawnData = {
+          x: collision.targetX,
+          y: collision.targetY,
+        };
 
         window.dispatchEvent(new CustomEvent("showMapTransitionDialog", {
-          detail: { nextMap: collision.targetMap }
+          detail: {
+            nextMap: collision.targetMap.replace("map", ""), // Kirim hanya "2"
+            spawnX: collision.targetX,
+            spawnY: collision.targetY
+          }
         }));
-        
+
         return;
       }
     }
@@ -614,7 +621,7 @@ function updateGameClock() {
 //-------------- Primary Initialization Function ---------------//
 //--------------------------------------------------------------//
 window.isGameInitialized = false;
-window.initGameMap = async function (canvasElement, currentMapNum, playerSavedStats, playerCharacterId, playerPreviousMapParam) {
+window.initGameMap = async function (canvasElement, currentMapNum, playerSavedStats, playerCharacterId, playerPreviousMapParam, options = {}) {
   console.log("🚀 previousMap param:", playerPreviousMapParam);
   console.log("📦 parsed previousMap number:", previousMap);
   if (isGameInitialized) {
@@ -811,6 +818,24 @@ window.initGameMap = async function (canvasElement, currentMapNum, playerSavedSt
         
       });
     }
+    const tileActions = {
+      // 🚪 Teleport tiles
+      33:  { type: "teleport", map: "map2", x: 300,  y: 250 },
+      770: { type: "teleport", map: "map2", x: 1100, y: 400 },
+      502: { type: "teleport", map: "map1", x: 1100, y: 550 },
+      477: { type: "teleport", map: "map3", x: 615,  y: 90 },
+      486: { type: "teleport", map: "map4", x: 300,  y: 750 },
+      411: { type: "teleport", map: "map2", x: 470,  y: 270 },
+      58:  { type: "teleport", map: "map5", x: 1100, y: 435 },
+      333: { type: "teleport", map: "map1", x: 200,  y: 550 },
+
+      // 🎣 Interaction tiles
+      2: { type: "fishing" },
+      3: { type: "digging" },
+      4: { type: "sleep" },
+      5: { type: "buying" },
+    };
+
     if (layer.type === "tilelayer" && layer.id === 3) {
       const mapTileWidth = mapData.width;
 
@@ -825,60 +850,18 @@ window.initGameMap = async function (canvasElement, currentMapNum, playerSavedSt
             y: row * tileHeight,
             width: tileWidth,
             height: tileHeight,
-            type: null,
+            type: "custom", // default type
           };
 
-          // 🚀 Tentukan jenis interaksi berdasarkan tile ID
-          if (tileValue === 33) {
-            obj.type = "teleport";
-            obj.targetMap = "map2";
-            obj.targetX = 300;
-            obj.targetY = 250;
-          } else if (tileValue === 770) {
-            obj.type = "teleport";
-            obj.targetMap = "map2";
-            obj.targetX = 1100;
-            obj.targetY = 500;
-          } else if (tileValue === 502) {
-            obj.type = "teleport";
-            obj.targetMap = "map1";
-            obj.targetX = 1100;
-            obj.targetY = 550;
-          } else if (tileValue === 477) {
-            obj.type = "teleport";
-            obj.targetMap = "map3";
-            obj.targetX = 615;
-            obj.targetY = 90;
-          } else if (tileValue === 486) {
-            obj.type = "teleport";
-            obj.targetMap = "map4";
-            obj.targetX = 300;
-            obj.targetY = 750;
-          }else if (tileValue === 411) {
-            obj.type = "teleport";
-            obj.targetMap = "map2";
-            obj.targetX = 300;
-            obj.targetY = 830;
-          }else if (tileValue === 58) {
-            obj.type = "teleport";
-            obj.targetMap = "map5";
-            obj.targetX = 300;
-            obj.targetY = 830;
-          }else if (tileValue === 333) {
-            obj.type = "teleport";
-            obj.targetMap = "map1";
-            obj.targetX = 300;
-            obj.targetY = 830;
-          } else if (tileValue === 2) {
-            obj.type = "fishing";
-          } else if (tileValue === 3) {
-            obj.type = "digging";
-          } else if (tileValue === 4) {
-            obj.type = "sleep";
-          } else if (tileValue === 5) {
-            obj.type = "buying";
-          } else {
-            obj.type = "custom";
+          const action = tileActions[tileValue];
+          if (action) {
+            obj.type = action.type;
+
+            if (action.type === "teleport") {
+              obj.targetMap = action.map;
+              obj.targetX = action.x;
+              obj.targetY = action.y;
+            }
           }
 
           collisions.push(obj);
@@ -886,45 +869,26 @@ window.initGameMap = async function (canvasElement, currentMapNum, playerSavedSt
       }
     }
   });
-    const savedX = parseInt(localStorage.getItem("teleportX"));
-    const savedY = parseInt(localStorage.getItem("teleportY"));
-    const previousMap = localStorage.getItem("previousMap"); 
-    if (!isNaN(savedX) && !isNaN(savedY)) {
-      // 🟢 Gunakan posisi teleport yang disimpan
-      player.x = savedX;
-      player.y = savedY;
+    if (options.spawnX !== undefined && options.spawnY !== undefined) {
+      player.x = options.spawnX;
+      player.y = options.spawnY;
+      console.log("📦 Manual spawn dari URL:", player.x, player.y);
     } else {
-      // 🟡 Fallback manual berdasarkan map dan previousMap
-      if (mapNum === "2") {
-        if (previousMap === "map1") {
-          player.x = 300;
-          player.y = 250; // Depan (dari map1)
-        } else if (previousMap === "map3") {
-          player.x = 1100;
-          player.y = 500; // Belakang (dari map3)
-        } else {
-          player.x = 200;
-          player.y = 250; // Default map2
-        }
-      } else if (mapNum === "1") {
-        if (previousMap === "map2") {
-          player.x = 1100;
-          player.y = 550;
-        } else {
-          player.x = 200;
-          player.y = 550; // Default map1
-        }
-      } else if (mapNum === "3") {
-        player.x = 615;
-        player.y = 90;
-      } else if (mapNum === "4") {
-        player.x = 300;
-        player.y = 750;
-      } else if (mapNum === "5") {
-        player.x = 1100;
-        player.y = 435;
+      // fallback jika masuk manual ke map
+      const fallback = {
+        "1": { x: 200, y: 550 },
+        "2": { x: 470, y: 270 },
+        "3": { x: 615, y: 90 },
+        "4": { x: 300, y: 750 },
+        "5": { x: 1100, y: 435 },
+      }[mapNum];
+
+      if (fallback) {
+        player.x = fallback.x;
+        player.y = fallback.y;
       }
     }
+
 
     // ✅ Clean up teleport data
     localStorage.removeItem("teleportX");
@@ -1008,13 +972,9 @@ function showMapTransitionDialog(nextMap) {
   dialog.classList.remove("hidden");
 
   yesButton.onclick = () => {
-    const currentMap = window.location.pathname.split("/").pop();
-    localStorage.setItem("previousMap", currentMap);
-    window.dispatchEvent(
-      new CustomEvent("showMapTransitionDialog", {
-        detail: { nextMap: nextMap },
-      })
-    );
+    console.log("🧭 Showing dialog for map:", nextMap);
+    const target = nextMap.replace("map", "");
+    window.location.href = `/map${target}`;
   };
 
   noButton.onclick = () => {

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import StatusGUI from "./StatusGUI";
 import "../styles/App.css";
 import "../styles/gameCanvas.css";
@@ -11,7 +11,8 @@ declare global {
       mapNum: string,
       playerStats: any,
       characterId: string,
-      previousMap: string
+      previousMap: string,
+      options?: { spawnX?: number; spawnY?: number }
     ) => Promise<void>;
     cleanupGameMap?: () => void;
   }
@@ -20,8 +21,12 @@ declare global {
 function GameMap({ mapNum }) {
   const canvasRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [showDialog, setShowDialog] = useState(false);
   const [dialogTargetMap, setDialogTargetMap] = useState("");
+  const [spawnX, setSpawnX] = useState<number | null>(null);
+  const [spawnY, setSpawnY] = useState<number | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -30,6 +35,12 @@ function GameMap({ mapNum }) {
       return;
     }
 
+    // Baca koordinat manual dari URL
+    const query = new URLSearchParams(location.search);
+    const xParam = query.get("x");
+    const yParam = query.get("y");
+    const spawnX = xParam !== null ? parseInt(xParam) : null;
+    const spawnY = yParam !== null ? parseInt(yParam) : null;
     const script = document.createElement("script");
     script.src = "/mapScript.js";
     script.type = "module";
@@ -42,7 +53,10 @@ function GameMap({ mapNum }) {
         const previousMap = localStorage.getItem("previousMap") || `map${mapNum}`;
 
         window
-          .initGameMap(canvas, String(mapNum), playerStats, characterId, previousMap)
+          .initGameMap(canvas, String(mapNum), playerStats, characterId, previousMap, {
+            spawnX: spawnX ?? undefined,
+            spawnY: spawnY ?? undefined
+          })
           .then(() => console.log("✅ initGameMap finished successfully."))
           .catch((error) =>
             console.error("❌ initGameMap encountered an error:", error)
@@ -62,12 +76,14 @@ function GameMap({ mapNum }) {
         window.cleanupGameMap();
       }
     };
-  }, [mapNum, navigate]);
+  }, [mapNum, location]);
 
   useEffect(() => {
     const handleMapTransitionRequest = (event) => {
-      const { nextMap } = event.detail;
+      const { nextMap, spawnX, spawnY } = event.detail;
       setDialogTargetMap(nextMap);
+      setSpawnX(spawnX ?? null);
+      setSpawnY(spawnY ?? null);
       setShowDialog(true);
     };
 
@@ -80,8 +96,9 @@ function GameMap({ mapNum }) {
 
   const handleYes = () => {
     setShowDialog(false);
-    localStorage.setItem("previousMap", `map${mapNum}`);
-    navigate(`/${dialogTargetMap}`);
+    if (dialogTargetMap && spawnX !== null && spawnY !== null) {
+      navigate(`/map${dialogTargetMap}?x=${spawnX}&y=${spawnY}`);
+    }
   };
 
   const handleNo = () => {
