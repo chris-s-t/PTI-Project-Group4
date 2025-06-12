@@ -44,6 +44,10 @@ function StatusGUI() {
   const [inventoryVisible, setInventoryVisible] = useState(false);
   const [hoveredItem, setHoveredItem] = useState(null);
   const [clickedItemIndex, setClickedItemIndex] = useState(null);   // What the item image does after diklik
+  const [popupVisible, setPopupVisible] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
+  const [popupImageUrl, setPopupImageUrl] = useState("");
+  const [popupTitle, setPopupTitle] = useState("");
 
 
   useEffect(() => {
@@ -107,6 +111,20 @@ function StatusGUI() {
       setInventoryVisible(e.detail.visible);
     };
 
+    //popup
+    const handleShowBox = (event) => {
+      const { message, imageUrl, imageDuration, title } = event.detail;
+
+      setPopupMessage(message);
+      setPopupImageUrl(imageUrl);
+      setPopupTitle(title);
+      setPopupVisible(true);
+
+      setTimeout(() => {
+        setPopupVisible(false);
+      }, imageDuration);
+    };
+
     window.addEventListener("updatePlayerStatus", handleUpdateStatus);
     window.addEventListener("updatePlayerMoney", handleUpdateMoney);
     window.addEventListener("updateClock", handleUpdateClock);
@@ -114,6 +132,7 @@ function StatusGUI() {
     window.addEventListener("updatePlayerAvatar", handleUpdatePlayerAvatar);
     window.addEventListener("updateInventory", handleUpdateInventory);
     window.addEventListener("toggleInventory", handleToggleInventory);
+    window.addEventListener("showBox", handleShowBox);
 
     return () => {
       window.removeEventListener("updatePlayerStatus", handleUpdateStatus);
@@ -126,6 +145,7 @@ function StatusGUI() {
       );
       window.removeEventListener("updateInventory", handleUpdateInventory);
       window.removeEventListener("toggleInventory", handleToggleInventory);
+      window.removeEventListener("showBox", handleShowBox);
     };
   }, []);
 
@@ -243,57 +263,68 @@ function StatusGUI() {
       <div id="overlay" style={{ display: "none" }}></div>
 
 
-     {inventoryVisible && (
-  <>
-    <div className="inventory-overlay">
-      <div className="inventory-window">
-        <h3 className="inventory-title">Inventory</h3>
-        <div className="inventory-grid">
-          {Array.from({ length: 60 }).map((_, index) => {
-            const item = inventory[index];
-            return (
-              <div
-                className="inventory-slot"
-                key={index}
-                onMouseEnter={() => setHoveredItem(item || null)}
-                onMouseLeave={() => setHoveredItem(null)}
-                onClick={() => {
-                  if (item) {
-                    setClickedItemIndex(index);
-                    window.dispatchEvent(
-                      new CustomEvent("useInventoryItem", { detail: { id: item.id } })
-                    );
-                    setTimeout(() => setClickedItemIndex(null), 300);
-                  }
-                }}
-              >
-                {item && (
-                  <>
-                    <img
-                      src={item.image || `/Assets/Items/${item.id}.png`}
-                      alt={item.name}
-                      className={`inventory-icon ${clickedItemIndex === index ? "clicked" : ""}`}
-                    />
-                    <span className="inventory-quantity">x{item.quantity}</span>
-                  </>
-                )}
-              </div>
-            );
-          })}
+    {inventoryVisible && (
+      <>
+        <div className="inventory-overlay">
+          <div className="inventory-window">
+            <h3 className="inventory-title">Inventory</h3>
+            <div className="inventory-grid">
+              {Array.from({ length: 60 }).map((_, index) => {
+                const item = inventory[index];
+                return (
+                  <div
+                    className="inventory-slot"
+                    key={index}
+                    onMouseEnter={() => setHoveredItem(item || null)}
+                    onMouseLeave={() => setHoveredItem(null)}
+                    onClick={() => {
+                      if (item) {
+                        setClickedItemIndex(index);
+                        window.dispatchEvent(
+                          new CustomEvent("useInventoryItem", { detail: { id: item.id } })
+                        );
+                        setTimeout(() => setClickedItemIndex(null), 300);
+                      }
+                    }}
+                  >
+                    {item && (
+                      <>
+                        <img
+                          src={item.image || `/Assets/Items/${item.id}.png`}
+                          alt={item.name}
+                          className={`inventory-icon ${clickedItemIndex === index ? "clicked" : ""}`}
+                        />
+                        <span className="inventory-quantity">x{item.quantity}</span>
+                      </>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
+
+        {hoveredItem && (
+          <div className="item-description-box-outside">
+            <h3 className="inventory-title">{hoveredItem.name}</h3>
+            <p className="item-description">{hoveredItem.description}</p>
+          </div>
+        )}
+      </>
+    )}
+  
+  {popupVisible && (
+    <div className="popup-box">
+      <h3 className="popup-title">{popupTitle}</h3>
+      <div className="popup-content-row">
+        <p className="popup-message">{popupMessage}</p>
+        <img src={popupImageUrl} alt="Popup Visual" className="popup-image" />
       </div>
     </div>
+  )}
 
-    {hoveredItem && (
-      <div className="item-description-box-outside">
-        <h3 className="inventory-title">{hoveredItem.name}</h3>
-        <p className="item-description">{hoveredItem.description}</p>
-      </div>
-    )}
+
   </>
-)}
-
-    </>
   );
 }
 

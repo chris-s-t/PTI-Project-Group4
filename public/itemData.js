@@ -65,6 +65,17 @@ const itemData = {
       health: 15,
       happiness: 5,
     }
+  },
+  cat: {
+    id: "cat",
+    name: "Skirmish Cat",
+    description: "???",
+    image: `${path}battlekets1.png`,
+    stats: {
+      food: 50,
+      happiness: -20,
+      hygiene: -20,
+    }
   }
 };
 
