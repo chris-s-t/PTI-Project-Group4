@@ -113,23 +113,23 @@ function updatePlayerPosition() {
 
   let moved = false;
 
-  if (keys["ArrowUp"]) {
+  if (keys["ArrowUp"] || keys["w"]) {
     player.y -= speed;
     player.frameY = 1;
     moved = true;
   }
-  if (keys["ArrowDown"]) {
+  if (keys["ArrowDown"] || keys["s"]) {
     player.y += speed;
     player.frameY = 1;
     moved = true;
   }
-  if (keys["ArrowLeft"]) {
+  if (keys["ArrowLeft"] || keys["a"]) {
     player.x -= speed;
     player.frameY = 1;
     moved = true;
     facingLeft = true;
   }
-  if (keys["ArrowRight"]) {
+  if (keys["ArrowRight"] || keys["d"]) {
     player.x += speed;
     player.frameY = 1;
     moved = true;

@@ -130,8 +130,8 @@ function MainMenu({ playerName, setPlayerName, selectedCharacter, setSelectedCha
       };
 
       onStartGame(playerName, selectedCharacter, playerStats, characterData.moneyOwned);
-      console.log("Adding fade-out class to body");
-      document.body.classList.add("fade-out");
+      //console.log("Adding fade-out class to body");
+      //document.body.classList.add("fade-out");
       setTimeout(() => {
         console.log("Fade-out complete. Navigating to /map1");
         navigate("/map1");
