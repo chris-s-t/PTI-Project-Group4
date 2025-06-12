@@ -13,6 +13,7 @@ let facingLeft = false;
 let interactCooldown = false;
 let zKeyPressed = false;
 let isGameInitialized;
+let isGameLoopRunning = false;
 
 // Images
 const playerImg = new Image();
@@ -289,9 +290,17 @@ function updatePlayerPosition() {
     } else {
       player.frameX = 0;
     }
-    if (zKeyPressed && isColliding(hitbox, collision)) {
-      if (collision.type === "teleport") {
-        teleport(collision.targetMap, collision.targetX, collision.targetY);
+    if (isColliding(hitbox, collision)) {
+      if (collision.type === "teleport" && !collision.inside) {
+        collision.inside = true;
+        console.log("🚪 Teleport trigger hit!", collision);
+        localStorage.setItem("teleportX", collision.targetX);
+        localStorage.setItem("teleportY", collision.targetY);
+
+        window.dispatchEvent(new CustomEvent("showMapTransitionDialog", {
+          detail: { nextMap: collision.targetMap }
+        }));
+        
         return;
       }
     }
@@ -534,10 +543,14 @@ function gameLoop() {
   }
 
   frameCount++;
-  if (frameCount % 60 === 0) {
-    console.log(`🎮 gameLoop running, frame ${frameCount}`);
-  }
-
+  // if (frameCount % 60 === 0) {
+  //   console.log(`🎮 gameLoop running, frame ${frameCount}`);
+  // }
+  collisions.forEach(collision => {
+    if (collision.type === "teleport" && !isColliding(hitbox, collision)) {
+      collision.inside = false;
+    }
+  });
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   updatePlayerPosition();
   camera.update(); // ⬅ jangan lupa panggil ini!
@@ -600,10 +613,13 @@ function updateGameClock() {
 //--------------------------------------------------------------//
 window.isGameInitialized = false;
 window.initGameMap = async function (canvasElement, currentMapNum, playerSavedStats, playerCharacterId, playerPreviousMapParam) {
+  console.log("🚀 previousMap param:", playerPreviousMapParam);
+  console.log("📦 parsed previousMap number:", previousMap);
   if (isGameInitialized) {
-    console.warn("initGameMap called again in development mode, skipping initialization.");
-    return;
+    console.log("♻️ Re-initializing map...");
+    window.cleanupGameMap?.();
   }
+  isGameInitialized = true;
   isGameInitialized = true; // Mark as initialized
 
   console.log("initGameMap STARTING. Canvas:", canvasElement, "MapNum:", currentMapNum);
@@ -645,22 +661,23 @@ window.initGameMap = async function (canvasElement, currentMapNum, playerSavedSt
     x: 0,
     y: 0,
     update: () => {
-      const mapWidth = (mapData.width || 0) * tileWidth;
-      const mapHeight = (mapData.height || 0) * tileHeight;
+      if (!mapData || !tileWidth || !tileHeight) {
+        console.warn("⚠️ Camera update skipped: mapData/tile size not ready.");
+        return;
+      }
+
+      const mapWidth = mapData.width * tileWidth;
+      const mapHeight = mapData.height * tileHeight;
 
       let targetX = player.x + player.width / 2 - canvas.width / (2 * zoom);
       let targetY = player.y + player.height / 2 - canvas.height / (2 * zoom);
 
       targetX = Math.max(0, Math.min(targetX, mapWidth - canvas.width / zoom));
-      targetY = Math.max(
-        0,
-        Math.min(targetY, mapHeight - canvas.height / zoom)
-      );
+      targetY = Math.max(0, Math.min(targetY, mapHeight - canvas.height / zoom));
 
       camera.x = targetX;
       camera.y = targetY;
-      console.log(`[CAMERA] X: ${camera.x.toFixed(2)} | Y: ${camera.y.toFixed(2)} | Player: (${player.x}, ${player.y})`);
-    },
+    }
     
   };
   
@@ -797,18 +814,50 @@ window.initGameMap = async function (canvasElement, currentMapNum, playerSavedSt
             y: row * tileHeight,
             width: tileWidth,
             height: tileHeight,
-            type: null, // akan ditentukan di bawah
+            type: null,
           };
 
-          // 🚀 Tentukan jenis interaksi berdasarkan data tile
-          if (tileValue === 33 || tileValue === 770) {
+          // 🚀 Tentukan jenis interaksi berdasarkan tile ID
+          if (tileValue === 33) {
             obj.type = "teleport";
             obj.targetMap = "map2";
-            obj.targetX = 200;
+            obj.targetX = 300;
             obj.targetY = 250;
-            
-            collisions.push(obj);
-            
+          } else if (tileValue === 770) {
+            obj.type = "teleport";
+            obj.targetMap = "map2";
+            obj.targetX = 1100;
+            obj.targetY = 500;
+          } else if (tileValue === 502) {
+            obj.type = "teleport";
+            obj.targetMap = "map1";
+            obj.targetX = 1100;
+            obj.targetY = 550;
+          } else if (tileValue === 477) {
+            obj.type = "teleport";
+            obj.targetMap = "map3";
+            obj.targetX = 615;
+            obj.targetY = 90;
+          } else if (tileValue === 486) {
+            obj.type = "teleport";
+            obj.targetMap = "map4";
+            obj.targetX = 300;
+            obj.targetY = 750;
+          }else if (tileValue === 411) {
+            obj.type = "teleport";
+            obj.targetMap = "map2";
+            obj.targetX = 300;
+            obj.targetY = 830;
+          }else if (tileValue === 58) {
+            obj.type = "teleport";
+            obj.targetMap = "map5";
+            obj.targetX = 300;
+            obj.targetY = 830;
+          }else if (tileValue === 333) {
+            obj.type = "teleport";
+            obj.targetMap = "map1";
+            obj.targetX = 300;
+            obj.targetY = 830;
           } else if (tileValue === 2) {
             obj.type = "fishing";
           } else if (tileValue === 3) {
@@ -822,92 +871,63 @@ window.initGameMap = async function (canvasElement, currentMapNum, playerSavedSt
           }
 
           collisions.push(obj);
-            }
+        }
       }
     }
   });
-    let playerStartX;
-    let playerStartY;
-    
-    if (mapNum === "1") {
-      playerStartX = 200;
-      playerStartY = 550;
-      // Maybe adjust player.hitbox.offsetX/Y/width/height here if map 1 has unique player dimensions
-    } 
-    else if (mapNum === "2") {
-      playerStartX = 200;
-      playerStartY = 250;
-    } 
-    else if (mapNum === "3") {
-      playerStartX = 615;
-      playerStartY = 90;
-    }
-    else if (mapNum === "4") {
-      playerStartX = 200;
-      playerStartY = 250;
-    }
-    else if (mapNum === "5") {
-      playerStartX = 200;
-      playerStartY = 250;
-    }
-    console.log("Player starting at:", playerStartX, playerStartY);
-    player.x = playerStartX;
-    player.y = playerStartY;
-
-    const prevMapNum = parseInt(playerPreviousMapParam.match(/\d+/)[0]);
-
-    if (playerPreviousMapParam) {
-      if (mapNum === "1") {
-        switch (prevMapNum) {
-          case 2:
-            fixMapPosition(315, 680);
-            break;
-          case 4:
-            fixMapPosition(80, 180);
-            break;
-          case 5:
-            fixMapPosition(50, 190);
-            break;
+    const savedX = parseInt(localStorage.getItem("teleportX"));
+    const savedY = parseInt(localStorage.getItem("teleportY"));
+    const previousMap = localStorage.getItem("previousMap"); 
+    if (!isNaN(savedX) && !isNaN(savedY)) {
+      // 🟢 Gunakan posisi teleport yang disimpan
+      player.x = savedX;
+      player.y = savedY;
+    } else {
+      // 🟡 Fallback manual berdasarkan map dan previousMap
+      if (mapNum === "2") {
+        if (previousMap === "map1") {
+          player.x = 300;
+          player.y = 250; // Depan (dari map1)
+        } else if (previousMap === "map3") {
+          player.x = 1100;
+          player.y = 500; // Belakang (dari map3)
+        } else {
+          player.x = 200;
+          player.y = 250; // Default map2
         }
-      } 
-      else if (mapNum === "2") {
-        switch (prevMapNum) {
-          case 1:
-            fixMapPosition(290, 70);
-            break;
-          case 3:
-            fixMapPosition(40, 150);
-            break;
+      } else if (mapNum === "1") {
+        if (previousMap === "map2") {
+          player.x = 1100;
+          player.y = 550;
+        } else {
+          player.x = 200;
+          player.y = 550; // Default map1
         }
-      } 
-      else if (mapNum === "3") {
-        switch (prevMapNum) {
-          case 2:
-            fixMapPosition(960, 540);
-            break;
-          case 5:
-            fixMapPosition(40, 190);
-            break;
-        }
-      } 
-      else if (mapNum === "5") {
-        switch (prevMapNum) {
-          case 1:
-            fixMapPosition(260, 70);
-            break;
-          case 3:
-            fixMapPosition(580, 600);
-            break;
-        }
+      } else if (mapNum === "3") {
+        player.x = 615;
+        player.y = 90;
+      } else if (mapNum === "4") {
+        player.x = 300;
+        player.y = 750;
+      } else if (mapNum === "5") {
+        player.x = 1100;
+        player.y = 435;
       }
-    } 
-  } catch (error) {
-    console.error("Error fetching or parsing TMJ map:", error);
-    window.dispatchEvent(
-      new CustomEvent("gameOver", { detail: { reason: "Map data error." } })
-    );
-    return;
-  }
+    }
+
+    // ✅ Clean up teleport data
+    localStorage.removeItem("teleportX");
+    localStorage.removeItem("teleportY");
+    localStorage.removeItem("previousMap");
+
+    console.log(`Spawned in map${mapNum} from ${previousMap}`);
+    } catch (error) {
+      console.error("Error fetching or parsing TMJ map:", error);
+      window.dispatchEvent(
+        new CustomEvent("gameOver", { detail: { reason: "Map data error." } })
+      );
+      return;
+    }
 
   try {
     await Promise.all(imageLoadPromises);
@@ -932,7 +952,16 @@ window.initGameMap = async function (canvasElement, currentMapNum, playerSavedSt
       console.log(`    Image width:`, tilesetImages[firstgid]?.image?.width);
     });
     */
-    gameLoop();
+
+    if (!mapData || !tileWidth || !tileHeight || mapLayers.length === 0) {
+      console.error("❌ Cannot start gameLoop: Map not fully initialized.");
+      return;
+    }
+
+    if (!isGameLoopRunning) {
+      isGameLoopRunning = true;
+      gameLoop();
+    }
   } catch (error) {
     console.error("Error loading map assets:", error);
     window.dispatchEvent(
@@ -947,7 +976,16 @@ window.cleanupGameMap = function () {
     clearInterval(clockInterval);
     clockInterval = null;
   }
-  window.isGameInitialized = false;
+  isGameLoopRunning = false;
+  // 🧹 Reset semua state supaya bersih saat ganti map
+  canvas = null;
+  ctx = null;
+  mapData = null;
+  mapLayers = [];
+  tilesetsData = [];
+  collisions = [];
+  tilesetImages = {}; // ⬅️ FIX utama di sini
+  isGameInitialized = false;
 };
 
 function showMapTransitionDialog(nextMap) {
@@ -971,6 +1009,7 @@ function showMapTransitionDialog(nextMap) {
     dialog.classList.add("hidden");
     isMapTransitionDialogActive = false;
     speed = 1;
+    Object.keys(keys).forEach((key) => keys[key] = false);
   };
 }
 window.addEventListener("dead", function () {
@@ -990,9 +1029,8 @@ window.addEventListener("keyup", (e) => {
   }
 });
 
-function teleport(targetMap, targetX, targetY) {
-  localStorage.setItem("previousMap", `map${mapNum}`);
-  localStorage.setItem("teleportX", targetX);
-  localStorage.setItem("teleportY", targetY);
-  window.location.href = `/${targetMap}`;
+function requestTeleport(targetMap) {
+  window.dispatchEvent(new CustomEvent("showMapTransitionDialog", {
+    detail: { nextMap: targetMap }
+  }));
 }
