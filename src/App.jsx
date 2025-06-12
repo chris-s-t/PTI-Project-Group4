@@ -57,6 +57,7 @@ function App() {
         <Route path="/map1" element={<GameMap key="map1" mapNum={1} />} />
         <Route path="/map2" element={<GameMap key="map2" mapNum={2} />} />
         <Route path="/map3" element={<GameMap key="map3" mapNum={3} />} />
+        <Route path="/map4" element={<GameMap key="map4" mapNum={4} />} />
         {/* Add more map routes as needed */}
       </Routes>
     </Router>
