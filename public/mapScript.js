@@ -8,7 +8,6 @@ let frameCount = 0;
 
 // Booleans
 let inCutscene = false;
-let showExclamation = false;
 let facingLeft = false;
 let interactCooldown = false;
 let zKeyPressed = false;
@@ -18,6 +17,7 @@ let isInventoryVisible = false; //inventory wip
 let isShopVisible = false;
 let isPlayerDead = false; // <-- New flag for death state
 let isGodModeActive = false; // Initialize God Mode as off
+let interactable = false;
 
 // Images
 const playerImg = new Image();
@@ -111,14 +111,6 @@ function cutsceneToggle(
   }, cooldownDuration);
 }
 
-function drawExclamation(duration) {
-  showExclamation = true;
-  clearTimeout(timeout);
-  timeout = setTimeout(() => {
-    showExclamation = false;
-  }, duration);
-}
-
 function updatePlayerPosition() {
   const lastX = player.x;
   const lastY = player.y;
@@ -155,8 +147,32 @@ function updatePlayerPosition() {
   hitbox.y = player.y + player.hitbox.offsetY;
 
   // Check for collision and interactables
+  interactable = false;
   for (let collision of collisions) {
     if (isColliding(hitbox, collision)) {
+       if (
+        collision.type === "shop" ||
+        collision.type === "fishing" ||
+        collision.type === "sleep" ||
+        collision.type === "donate" ||
+        collision.type === "digging" ||
+        collision.type === "shower"
+      ) {
+        interactable = true;
+
+        // Only trigger this ONCE when entering
+        if (!collision.inside) {
+          collision.inside = true;
+          window.dispatchEvent(
+            new CustomEvent("toggleInteractPrompt", {
+              detail: {
+                visible: true,
+                type: collision.type
+              }
+            })
+          );
+        }
+      }
       if (collision.type === "wall") {
         player.x = lastX;
         player.y = lastY;
@@ -168,9 +184,7 @@ function updatePlayerPosition() {
         // Handle interaction logic here
       } else if (collision.type === "fishing") {
         // Fishing behavior
-        drawExclamation(0);
         if (zKeyPressed && !interactCooldown && !inCutscene) {
-          drawExclamation(1000);
           let rarity = Math.floor(Math.random() * 100);
           statChange("stamina", -2);
           if (rarity == 99) {
@@ -233,10 +247,8 @@ function updatePlayerPosition() {
         }
       } else if (collision.type === "digging") {
         // Digging behavior
-        drawExclamation(0);
         if (zKeyPressed && !interactCooldown && !inCutscene) {
-          drawExclamation(1000);
-          let rarity = Math.floor(Math.random() * 100);
+           let rarity = Math.floor(Math.random() * 100);
           statChange("stamina", -2);
           if (rarity == 99) {
             statChange("happiness", 10);
@@ -294,17 +306,14 @@ function updatePlayerPosition() {
         }
       } else if (collision.type === "buying") {
         // Buying behavior
-        drawExclamation(0);
         if (zKeyPressed && !interactCooldown && !inCutscene) {
-          drawExclamation(1000);
           let rarity = Math.floor(Math.random() * 100);
           statChange("stamina", -4);
           statChange("hygiene", -4);
           if (rarity == 99) {
             statChange("happiness", 30);
             moneyChange(50000);
-            cutsceneToggle(1000, 2000, "You stole..."),
-              "Assets/GUI/UI_board_small_stone.png";
+            cutsceneToggle(1000, 2000, "You stole...", "Assets/GUI/UI_board_small_stone.png");
           } else if (rarity <= 65) {
             moneyChange(-10000000);
             cutsceneToggle(
@@ -326,24 +335,29 @@ function updatePlayerPosition() {
       } 
       else if (collision.type === "donate") {
         // Doante behavior
-        drawExclamation(0);
         if (zKeyPressed && !interactCooldown && !inCutscene) {
-          drawExclamation(1000);
           let rarity = Math.floor(Math.random() * 100);
           statChange("stamina", -4);
           statChange("hygiene", -4);
           if (rarity == 99) {
             statChange("happiness", 30);
             moneyChange(50000);
-            cutsceneToggle(1000, 2000, "You stole..."),
-              "Assets/GUI/UI_board_small_stone.png";
+            cutsceneToggle(
+              1000,
+              2000,
+              "You stole...",
+              "Assets/GUI/UI_board_small_stone.png",
+              "Donate"
+            );
+
           } else if (rarity <= 65) {
             moneyChange(-10000000);
             cutsceneToggle(
               1000,
               2000,
               "You gave all your money for charity",
-              "Assets/GUI/UI_board_small_stone.png"
+              "Assets/GUI/UI_board_small_stone.png",
+              "Yo"
             );
           } else {
             moneyChange(-100);
@@ -351,13 +365,13 @@ function updatePlayerPosition() {
               1000,
               2000,
               "You gave your money for charity",
-              "Assets/GUI/UI_board_small_stone.png"
+              "Assets/GUI/UI_board_small_stone.png",
+              "Gurt"
             );
           }
         }
       } 
       else if (collision.type === "sleep") {
-        drawExclamation(0);
 
         if (zKeyPressed && !interactCooldown && !inCutscene) {
           // jadi hitam
@@ -391,9 +405,9 @@ function updatePlayerPosition() {
             currentDayNumber++;
             updateGameClock();
           }, 5000);
-        } 
-        else if (collision.type === "shower") {
-        drawExclamation(0);
+        }
+      }
+      else if (collision.type === "shower") {
 
         if (zKeyPressed && !interactCooldown && !inCutscene) {
           cutsceneToggle(
@@ -409,7 +423,6 @@ function updatePlayerPosition() {
       }
 
       else if (collision.type === "shop") {
-        drawExclamation(0);
         //open shop
         if (zKeyPressed && !interactCooldown && !inCutscene && !isShopVisible) {
           isShopVisible = true;
@@ -440,7 +453,7 @@ function updatePlayerPosition() {
             })
           );
         }
-      }
+      
 
       } else if (collision.type === "mapTransition") {
         if (!collision.inside && !isMapTransitionDialogActive) {
@@ -452,10 +465,7 @@ function updatePlayerPosition() {
         }
       } 
     } else {
-      // Reset the `inside` property when the player leaves the block
-      if (collision.type === "mapTransition") {
         collision.inside = false;
-      }
     }
     if (moved) {
       player.frameTimer++;
@@ -489,6 +499,13 @@ function updatePlayerPosition() {
         return;
       }
     }
+  }
+  if (!interactable) {
+    window.dispatchEvent(
+      new CustomEvent("toggleInteractPrompt", {
+        detail: { visible: false },
+      })
+    );
   }
   camera.update();
 }
@@ -532,22 +549,6 @@ function drawPlayer() {
   }
 
   ctx.restore();
-
-  //For interaction sprite
-  if (showExclamation) {
-    const exWidth = (32 * zoom) / 2;
-    const exHeight = (32 * zoom) / 2;
-    const exX = (player.x - player.hitbox.offsetX - camera.x) * zoom + 32;
-    const exY = (player.y - player.hitbox.offsetY - camera.y) * zoom + 16;
-    if (inCutscene) {
-      //Draws the red mark when in a cutscene
-      ctx.drawImage(exclamationActiveImg, exX, exY, exWidth, exHeight);
-    } else if (!interactCooldown) {
-      //Draw the grey for prompting when interactable again
-      ctx.drawImage(zPromptImg, exX, exY, exWidth, exHeight);
-      ctx.drawImage(zPromptImg, exX, exY, exWidth, exHeight);
-    }
-  }
 }
 
 function drawMap() {

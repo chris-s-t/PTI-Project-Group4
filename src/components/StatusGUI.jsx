@@ -125,6 +125,23 @@ function StatusGUI() {
 
   const joystickRef = useRef(null);
   const activeJoystickKeyRef = useRef(null);
+  const [sleepZText, setSleepZText] = useState("");                //zzz
+  const [showInteractPrompt, setShowInteractPrompt] = useState(false); // z button top right
+  const [promptPressed, setPromptPressed] = useState(false); // z button top right too
+  const [interactType, setInteractType] = useState(null); // teks samping z button;
+
+  function handlePromptClick() {
+      setPromptPressed(true);
+      setTimeout(() => setPromptPressed(false), 1000);
+
+      const zPress = new KeyboardEvent("keydown", { key: "z" });
+      window.dispatchEvent(zPress);
+
+      setTimeout(() => {
+        const zRelease = new KeyboardEvent("keyup", { key: "z" });
+        window.dispatchEvent(zRelease);
+      }, 200);
+    }
 
 
   useEffect(() => {
@@ -251,6 +268,18 @@ function StatusGUI() {
       setOverlayVisible(false);
       console.log("Overlay OFF");
     }
+    // z button top right
+    const handleShowPrompt = (e) => {
+      setShowInteractPrompt(e.detail.visible);
+      setInteractType(e.detail.type || null);
+    };
+    const handleZPress = (e) => {
+      if (e.key === "z") {
+        setPromptPressed(true);
+        setTimeout(() => setPromptPressed(false), 200);
+      }
+    };
+
 
     window.addEventListener("updatePlayerStatus", handleUpdateStatus);
     window.addEventListener("updatePlayerMoney", handleUpdateMoney);
@@ -263,7 +292,8 @@ function StatusGUI() {
      window.addEventListener("toggleShop", handleToggleShop);
     window.addEventListener("showSleepOverlay", handleShowOverlay);
     window.addEventListener("hideSleepOverlay", handleHideOverlay);
-
+    window.addEventListener("toggleInteractPrompt", handleShowPrompt);
+    window.addEventListener("keydown", handleZPress);
     return () => {
       window.removeEventListener("updatePlayerStatus", handleUpdateStatus);
       window.removeEventListener("updatePlayerMoney", handleUpdateMoney);
@@ -279,6 +309,8 @@ function StatusGUI() {
       window.removeEventListener("toggleShop", handleToggleShop);
       window.removeEventListener("showSleepOverlay", handleShowOverlay);
       window.removeEventListener("hideSleepOverlay", handleHideOverlay);
+      window.removeEventListener("toggleInteractPrompt", handleShowPrompt);
+      window.removeEventListener("keydown", handleZPress);
     };
 
   }, []);
@@ -369,6 +401,22 @@ function StatusGUI() {
 
   return (
     <>
+    {showInteractPrompt && (
+      <div className="interact-container">
+        {interactType && (
+          <div className="interact-label">
+            {interactType.charAt(0).toUpperCase() + interactType.slice(1)}
+          </div>
+        )}
+        <div className="interact-prompt" onClick={handlePromptClick}>
+          <img
+            src="/Assets/Buttons/z-icon.png"
+            alt="Interact"
+            className={promptPressed ? "pressed" : ""}
+          />
+        </div>
+      </div>
+    )}
     {overlayVisible && (
       <div className="sleep-overlay fade-in"></div>
     )}

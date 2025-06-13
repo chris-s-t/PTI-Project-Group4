@@ -893,3 +893,47 @@ body {
   color: gold; /* Gold color for score */
   text-shadow: 2px 2px 4px #000;
 }
+
+.interact-container {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    flex-direction: row-reverse; /* important: places prompt on the right */
+    z-index: 10000;
+}
+
+.interact-label {
+  margin-left: 8px; /* gap between text and image */
+  padding: 4px 10px;
+  background-color: rgba(50, 35, 20, 0.95);
+  border: 2px solid #d4aa7d;
+  border-radius: 8px;
+  font-family: "Cinzel", serif;
+  font-size: 0.75rem;
+  color: #fff;
+  text-shadow: 1px 1px 2px black;
+  white-space: nowrap;
+
+  text-align: right;
+}
+
+.interact-prompt {
+  position: absolute;
+  top: 80px;
+  right: -360px;
+  width: 32px;
+  height: 32px;
+  z-index: 999;
+  cursor: pointer;
+}
+.interact-prompt img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  transition: transform 0.1s ease;
+}
+.interact-prompt img.pressed {
+  transform: scale(0.5);
+}
