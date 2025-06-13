@@ -1,0 +1,346 @@
+.menu {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  margin: 0;
+  padding: 2rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-width: 2500px;
+  max-height: 200vh;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.menu h1 {
+  font-size: 48px;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 5px #000;
+  transform: translateY(30px);
+  opacity: 0;
+  animation: floatFadeUp 1.2s ease-out forwards;
+  animation-delay: 0.2s;
+}
+
+.menu-button-img {
+  width: 200px;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+
+.menu-button-img:hover {
+  transform: scale(0.9);
+}
+
+.name-input {
+  margin-bottom: 2rem;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: floatFadeUp 1.2s ease-out forwards;
+  animation-delay: 0.5s;
+}
+
+.name-input input {
+  width: 90%;
+  max-width: 320px;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 12px;
+  background: url("/Assets/GUI/UI board Small  parchment.png") no-repeat center center;
+  background-size: 100% 100%;
+  color: #fcebb4;
+  font-family: "Cinzel", serif;
+  font-size: 1rem;
+  text-align: center;
+  text-shadow: 1px 1px 0 #000, -1px 1px 0 #000, 1px -1px 0 #000, -1px -1px 0 #000;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 220, 150, 0.5), inset 0 0 10px rgba(0, 0, 0, 0.4);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.name-input input:focus {
+  outline: none;
+  transform: scale(1.05);
+  box-shadow: 0 0 16px rgba(255, 235, 180, 0.8),
+    0 0 28px rgba(255, 245, 200, 0.6), inset 0 0 12px rgba(0, 0, 0, 0.4);
+}
+
+.character-selection {
+  text-align: center;
+  padding: 7vh 4vw;
+  max-width: 2500px;
+  margin: auto;
+}
+
+.character-selection h1 {
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  margin-bottom: 0.2vh;
+}
+
+.character-grid {
+  display: grid;
+  justify-content: center;
+  gap: 1.5rem;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: floatFadeUp 1.2s ease-out forwards;
+  animation-delay: 1.2s;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  box-sizing: border-box;
+  max-width: 2500px;
+  margin-top: 2rem;
+}
+
+.character-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  border-radius: 1rem;
+  box-sizing: border-box;
+  padding: 0.5rem;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.character-card img {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  object-fit: cover;
+  border-radius: 12px;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.character-name {
+  font-size: 20px;
+  color: #fcebb4;
+  font-family: "Cinzel", serif;
+  text-align: center;
+  text-shadow: 2px 2px 4px #000;
+  background: url("/Assets/GUI/UI board Small  parchment.png") no-repeat center center;
+  background-size: 100% 100%;
+  padding: 12px 24px;
+  display: inline-block;
+  width: fit-content;
+  max-width: 90%;
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 10px;
+  transform: scaleY(0);
+  transform-origin: top;
+  opacity: 0;
+  transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+}
+
+.character-card:hover .character-name {
+  transform: scaleY(1);
+  opacity: 1;
+  animation: parchmentFloat 2s ease-in-out infinite;
+}
+
+.character-divider {
+  width: 90%;
+  height: 12px;
+  margin: 0.5rem auto;
+  position: relative;
+  background: linear-gradient(to right, #d4af37, #c58f0a, #d4af37);
+  border-radius: 6px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 220, 150, 0.5), inset 0 0 10px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.character-divider::before {
+  content: "ᚠᛃᚢᛇᚾ";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: "serif";
+  font-size: 14px;
+  color: #473e07;
+  text-shadow: 0 0 6px #50460f, 0 0 12px #463a0c;
+  letter-spacing: 6px;
+  pointer-events: none;
+}
+
+.character-card:hover .character-divider {
+  transform: scale(1.5);
+  box-shadow: 0 0 14px #0f0f0faa, 0 0 26px #000000aa;
+}
+
+.character-card:hover img {
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.6))
+    drop-shadow(0 0 18px rgba(0, 0, 0, 0.4));
+}
+
+.character-card.selected img {
+  filter: drop-shadow(0 0 12px rgba(0, 0, 0, 0.75))
+    drop-shadow(0 0 24px rgba(0, 0, 0, 0.5))
+    drop-shadow(0 0 36px rgba(0, 0, 0, 0.35));
+  transform: scale(1.12);
+}
+
+.buttons {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  margin: 30px auto 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5vh;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: floatFadeUp 1.2s ease-out forwards;
+  animation-delay: 1.2s;
+  cursor: pointer;
+}
+
+.buttons img {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+}
+
+#characterError {
+  color: #ff3c3c;
+  font-size: 25px;
+  font-style: italic;
+  text-shadow: 0 0 10px rgba(255, 230, 180, 0.8),
+    0 0 20px rgba(255, 190, 130, 0.6);
+  margin-top: 5px;
+  display: none;
+  animation: flickerRed 0.8s infinite alternate;
+}
+
+.input-error {
+  border: 2px solid #ff3c3c;
+  box-shadow: 0 0 8px 2px rgba(255, 60, 60, 0.8);
+  background-color: rgba(255, 230, 230, 0.05);
+  animation: runeGlowRed 1s infinite alternate;
+}
+
+.menu.fade-in {
+  opacity: 0;
+  animation: fadeInMenu 1s forwards;
+}
+
+@keyframes floatFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes parchmentFloat {
+  0%,
+  100% {
+    transform: scaleY(1) translateY(0);
+  }
+
+  50% {
+    transform: scaleY(1) translateY(-3px);
+  }
+}
+
+@keyframes runeGlowRed {
+  0% {
+    box-shadow: 0 0 8px 2px rgba(255, 60, 60, 0.6);
+  }
+
+  100% {
+    box-shadow: 0 0 12px 4px rgba(255, 10, 10, 0.9);
+  }
+}
+
+@keyframes flickerRed {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0.6;
+  }
+}
+
+@keyframes fadeInMenu {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Media Queries for Menu */
+@media screen and (max-width: 480px) {
+  .menu {
+    max-height: 90vh;
+    padding: 0.5rem;
+  }
+  .character-grid {
+    gap: 0.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    padding: 0 0.25rem;
+  }
+  .menu h1 {
+    font-size: 28px;
+  }
+  .character-selection {
+    padding: 2vh 1vw;
+  }
+  .buttons img {
+    width: 100px;
+  }
+  .character-card img {
+    max-width: 150px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .menu {
+    max-height: 95vh;
+    padding: 1rem;
+  }
+  .character-grid {
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    padding: 0 0.5rem;
+  }
+  .character-name {
+    font-size: 16px;
+    padding: 8px 16px;
+  }
+  .buttons img {
+    width: 120px;
+  }
+  .name-input input {
+    font-size: 0.9rem;
+    padding: 0.4rem;
+  }
+}
+
+@media screen and (min-width: 1400px) {
+  .character-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 3rem 4rem;
+  }
+  .menu {
+    transform: scale(1);
+    padding: 2rem 4rem;
+    max-height: 100vh;
+  }
+}
