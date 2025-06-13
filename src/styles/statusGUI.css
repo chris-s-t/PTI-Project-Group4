@@ -25,11 +25,7 @@ body {
   color: white;
   font-family: "Cinzel", serif;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-  width: clamp(
-    180px,
-    20vw,
-    300px
-  );
+  width: clamp(180px, 20vw, 300px);
   max-height: 95vh;
   overflow-y: auto;
   overflow-x: hidden;
@@ -868,7 +864,11 @@ body {
   justify-content: center; /* Center content horizontally */
   gap: 8px; /* Space between icon and text */
   width: 100%; /* Take full width of parent container (status-bars-container or its new parent) */
-  height: clamp(30px, 4vw, 40px); /* Match height of other status bars for consistency */
+  height: clamp(
+    30px,
+    4vw,
+    40px
+  ); /* Match height of other status bars for consistency */
   padding: 5px; /* Add some padding */
   box-sizing: border-box;
   background-color: rgba(0, 0, 0, 0.4); /* Optional background */
@@ -887,18 +887,18 @@ body {
 }
 
 .status-score-display .score-text {
-  color: gold; /* Gold color for score */
+  color: gold;
   text-shadow: 2px 2px 4px #000;
 }
 
 .interact-container {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    display: flex;
-    align-items: center;
-    flex-direction: row-reverse; /* important: places prompt on the right */
-    z-index: 10000;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse; /* important: places prompt on the right */
+  z-index: 10000;
 }
 
 .interact-label {
@@ -922,7 +922,7 @@ body {
   position: absolute;
   top: 80px;
   right: -280px;
-  top : 230px;
+  top: 230px;
   width: 32px;
   height: 32px;
   z-index: 999;
@@ -936,4 +936,91 @@ body {
 }
 .interact-prompt img.pressed {
   transform: scale(0.5);
+}
+
+.inventory-icon-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: -150px;
+  margin-left: 150px;
+  padding: 5px 0;
+}
+
+.inventory-button {
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, filter 0.2s ease-in-out;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5));
+}
+
+.inventory-button:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5)) brightness(1.2);
+}
+
+.inventory-icon-container p {
+  color: gold;
+  text-shadow: 2px 2px 4px #000;
+  background-color: #2a1e15;
+  border-radius: 100px;
+}
+
+.inventory-button-wrapper {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -150px;
+  margin-left: 300px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.inventory-button-wrapper:hover {
+  transform: scale(1.1);
+}
+
+.inventory-button-wrapper .inventory-icon {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5));
+  transition: filter 0.2s ease-in-out;
+}
+
+.inventory-button-wrapper:hover .inventory-icon {
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)) brightness(1.2);
+}
+
+.hotkey-display {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 22px;
+  height: 22px;
+  background: linear-gradient(145deg, #3b2303, #332804);
+  border: 1px solid #777;
+  border-radius: 6px;
+  color: #f0e6d2;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0);
+  animation: hotkey-glow 3s infinite ease-in-out;
+}
+
+@keyframes hotkey-glow {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.7);
+  }
 }

@@ -117,7 +117,7 @@ function GameMap({ mapNum }) {
           <div className="dialog-content" style={{
             backgroundImage: `url("/Assets/GUI/UI_board_Medium_parchment.png")`,
             backgroundSize: "cover",
-            backgroundPosition: "center"
+            backgroundColor: 'transparent'
           }}>
             <p>Mau pindah ke map berikutnya?</p>
             <button id="yesButton" onClick={handleYes}>Ya</button>

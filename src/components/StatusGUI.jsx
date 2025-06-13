@@ -16,6 +16,7 @@ import oldManImg from "/Assets/Avatars/MiniOldManCrop.png";
 import peasantImg from "/Assets/Avatars/MiniPeasantCrop.png";
 import princessImg from "/Assets/Avatars/MiniPrincessCrop.png";
 import queenImg from "/Assets/Avatars/MiniQueenCrop.png";
+import backpackIcon from "/Assets/StatusGUI/backpackIcon.png";
 
 import itemData from "../../public/itemData.js";
 
@@ -61,7 +62,6 @@ function getTitleFromCharacter(characterId) {
 }
 
 function getGreeting(hours, playerName) {
-  console.log(hours);
   let greeting;
   if (hours >= 5 && hours < 12) {
     greeting = "Good Morning";
@@ -125,23 +125,23 @@ function StatusGUI() {
 
   const joystickRef = useRef(null);
   const activeJoystickKeyRef = useRef(null);
-  const [sleepZText, setSleepZText] = useState("");                //zzz
+  const [sleepZText, setSleepZText] = useState(""); //zzz
   const [showInteractPrompt, setShowInteractPrompt] = useState(false); // z button top right
   const [promptPressed, setPromptPressed] = useState(false); // z button top right too
   const [interactType, setInteractType] = useState(null); // teks samping z button;
 
   function handlePromptClick() {
-      setPromptPressed(true);
-      setTimeout(() => setPromptPressed(false), 1000);
+    setPromptPressed(true);
+    setTimeout(() => setPromptPressed(false), 1000);
 
-      const zPress = new KeyboardEvent("keydown", { key: "z" });
-      window.dispatchEvent(zPress);
+    const zPress = new KeyboardEvent("keydown", { key: "z" });
+    window.dispatchEvent(zPress);
 
-      setTimeout(() => {
-        const zRelease = new KeyboardEvent("keyup", { key: "z" });
-        window.dispatchEvent(zRelease);
-      }, 200);
-    }
+    setTimeout(() => {
+      const zRelease = new KeyboardEvent("keyup", { key: "z" });
+      window.dispatchEvent(zRelease);
+    }, 200);
+  }
 
   useEffect(() => {
     const savedPlayerName = localStorage.getItem("playerName");
@@ -266,7 +266,7 @@ function StatusGUI() {
     const handleHideOverlay = () => {
       setOverlayVisible(false);
       console.log("Overlay OFF");
-    }
+    };
     // z button top right
     const handleShowPrompt = (e) => {
       setShowInteractPrompt(e.detail.visible);
@@ -278,7 +278,6 @@ function StatusGUI() {
         setTimeout(() => setPromptPressed(false), 200);
       }
     };
-
 
     window.addEventListener("updatePlayerStatus", handleUpdateStatus);
     window.addEventListener("updatePlayerMoney", handleUpdateMoney);
@@ -441,25 +440,23 @@ function StatusGUI() {
 
   return (
     <>
-    {showInteractPrompt && (
-      <div className="interact-container">
-        {interactType && (
-          <div className="interact-label">
-            {interactType.charAt(0).toUpperCase() + interactType.slice(1)}
+      {showInteractPrompt && (
+        <div className="interact-container">
+          {interactType && (
+            <div className="interact-label">
+              {interactType.charAt(0).toUpperCase() + interactType.slice(1)}
+            </div>
+          )}
+          <div className="interact-prompt" onClick={handlePromptClick}>
+            <img
+              src="/Assets/Buttons/z-icon.png"
+              alt="Interact"
+              className={promptPressed ? "pressed" : ""}
+            />
           </div>
-        )}
-        <div className="interact-prompt" onClick={handlePromptClick}>
-          <img
-            src="/Assets/Buttons/z-icon.png"
-            alt="Interact"
-            className={promptPressed ? "pressed" : ""}
-          />
         </div>
-      </div>
-    )}
-    {overlayVisible && (
-      <div className="sleep-overlay fade-in"></div>
-    )}
+      )}
+      {overlayVisible && <div className="sleep-overlay fade-in"></div>}
       {overlayVisible && <div className="sleep-overlay fade-in"></div>}
       <div id="statusGUI" className="status-gui">
         <div className="clock">
@@ -553,6 +550,18 @@ function StatusGUI() {
             );
           }
         })}
+      </div>
+
+      <div
+        className="inventory-button-wrapper"
+        title="Open Inventory (C)"
+      >
+        <img
+          src={backpackIcon}
+          alt="Open Inventory"
+          className="inventory-icon"
+        />
+        <div className="hotkey-display">C</div>
       </div>
 
       <div className="medieval-joystick" ref={joystickRef}>
