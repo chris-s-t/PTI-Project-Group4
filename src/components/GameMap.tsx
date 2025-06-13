@@ -107,10 +107,11 @@ function GameMap({ mapNum }) {
 
   return (
     <div id="gameContainer">
-      <canvas id="gameCanvas" ref={canvasRef} width="800" height="736"></canvas>
       <div id="status-container">
         <StatusGUI />
       </div>
+      <canvas id="gameCanvas" ref={canvasRef} width="800" height="736"></canvas>
+      
 
       {showDialog && (
         <div id="mapTransitionDialog">

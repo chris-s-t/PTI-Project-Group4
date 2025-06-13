@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "../styles/statusGUI.css";
 
 import ClockIcon from "/Assets/StatusGUI/Clock.png";
@@ -19,6 +19,7 @@ import queenImg from "/Assets/Avatars/MiniQueenCrop.png";
 
 import itemData from "../../public/itemData.js"
 
+
 const characterAvatars = {
   "Noble Man": nobleManImg,
   "Noble Woman": nobleWomanImg,
@@ -29,6 +30,43 @@ const characterAvatars = {
 };
 
 function StatusGUI() {
+  const holdDirectionRef = useRef(null);
+  const animationFrameRef = useRef(null);
+
+  const keyMap = {
+    ArrowUp: "up",
+    ArrowDown: "down",
+    ArrowLeft: "left",
+    ArrowRight: "right",
+  };
+
+  const handleHoldStart = (arrowKey) => {
+    const dir = keyMap[arrowKey];
+    if (!dir) return;
+
+    holdDirectionRef.current = dir;
+
+    if (window.movePlayer) {
+      window.movePlayer(dir, true); // 🔥 AKTIFKAN key
+    }
+
+    animationFrameRef.current = requestAnimationFrame(moveLoop);
+  };
+  const moveLoop = () => {
+    if (holdDirectionRef.current) {
+      animationFrameRef.current = requestAnimationFrame(moveLoop);
+    }
+  };
+  const handleHoldStop = () => {
+    const dir = holdDirectionRef.current;
+    if (window.movePlayer && dir) {
+      window.movePlayer(dir, false); // 🧯 MATIKAN key
+    }
+
+    holdDirectionRef.current = null;
+    cancelAnimationFrame(animationFrameRef.current);
+  };
+  
   const [currentTime, setCurrentTime] = useState("00:00");
   const [currentDay, setCurrentDay] = useState("Day 1");
   const [greeting, setGreeting] = useState("");
@@ -55,7 +93,7 @@ function StatusGUI() {
   const [overlayVisible, setOverlayVisible] = useState(false);
   const [sleepZText, setSleepZText] = useState("");                //zzz
 
-
+  
 
   useEffect(() => {
     const savedPlayerName = localStorage.getItem("playerName");
@@ -254,59 +292,94 @@ function StatusGUI() {
             </div>
           </div>
         </div>
-
-        {Object.entries(playerStats).map(([statName, stat]) => (
-          <div className={`status-bar status-bar-${statName}`} key={statName}>
-            <div className="bar-container">
-              <div className="floating-text-container"></div>
-              <div className="bar-bg"></div>
-              <img
-                src={
-                  statName === "health"
-                    ? HealthIcon
-                    : statName === "food"
-                    ? FoodIcon
-                    : statName === "stamina"
-                    ? StaminaIcon
-                    : statName === "happiness"
-                    ? HappinessIcon
-                    : HygieneIcon
-                }
-                className="status-icon"
-                alt={`${statName} Icon`}
-              />
-              <div
-                className={`bar-fill status-bar-${statName}`}
-                style={{
-                  width: `${(stat.currentStat / stat.max) * 100}%`,
-                  backgroundColor: getStatusColor(stat.currentStat, stat.max),
-                }}
-              ></div>
-              <div className="stat-text" id={`${statName}Text`}>
-                {stat.currentStat}
+        <div className="statlocation">
+          {Object.entries(playerStats).map(([statName, stat]) => (
+            <div className={`status-bar status-bar-${statName}`} key={statName}>
+              <div className="bar-container">
+                <div className="floating-text-container"></div>
+                <div className="bar-bg"></div>
+                <img
+                  src={
+                    statName === "health"
+                      ? HealthIcon
+                      : statName === "food"
+                      ? FoodIcon
+                      : statName === "stamina"
+                      ? StaminaIcon
+                      : statName === "happiness"
+                      ? HappinessIcon
+                      : HygieneIcon
+                  }
+                  className="status-icon"
+                  alt={`${statName} Icon`}
+                />
+                <div
+                  className={`bar-fill status-bar-${statName}`}
+                  style={{
+                    width: `${(stat.currentStat / stat.max) * 100}%`,
+                    backgroundColor: getStatusColor(stat.currentStat, stat.max),
+                  }}
+                ></div>
+                <div className="stat-text" id={`${statName}Text`}>
+                  {stat.currentStat}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
       <div className="medieval-joystick">
-        <button className="arrow up" data-key="ArrowUp">
+        <button
+          className="arrow up"
+          data-key="ArrowUp"
+          onMouseDown={() => handleHoldStart("ArrowUp")}
+          onTouchStart={() => handleHoldStart("ArrowUp")}
+          onMouseUp={handleHoldStop}
+          onTouchEnd={handleHoldStop}
+          onMouseLeave={handleHoldStop}
+        >
           ▲
         </button>
+
         <div className="middle-row">
-          <button className="arrow left" data-key="ArrowLeft">
+          <button
+            className="arrow left"
+            data-key="ArrowLeft"
+            onMouseDown={() => handleHoldStart("ArrowLeft")}
+            onTouchStart={() => handleHoldStart("ArrowLeft")}
+            onMouseUp={handleHoldStop}
+            onTouchEnd={handleHoldStop}
+            onMouseLeave={handleHoldStop}
+          >
             ◄
           </button>
-          <button className="arrow right" data-key="ArrowRight">
+          <button
+            className="arrow right"
+            data-key="ArrowRight"
+            onMouseDown={() => handleHoldStart("ArrowRight")}
+            onTouchStart={() => handleHoldStart("ArrowRight")}
+            onMouseUp={handleHoldStop}
+            onTouchEnd={handleHoldStop}
+            onMouseLeave={handleHoldStop}
+          >
             ►
           </button>
         </div>
-        <button className="arrow down" data-key="ArrowDown">
+
+        <button
+          className="arrow down"
+          data-key="ArrowDown"
+          onMouseDown={() => handleHoldStart("ArrowDown")}
+          onTouchStart={() => handleHoldStart("ArrowDown")}
+          onMouseUp={handleHoldStop}
+          onTouchEnd={handleHoldStop}
+          onMouseLeave={handleHoldStop}
+        >
           ▼
         </button>
       </div>
-      
+            
     {hoveredItem && (
       <div className="item-description-box-outside">
         <h3 className="inventory-title">{hoveredItem.name}</h3>
@@ -435,9 +508,6 @@ function StatusGUI() {
       </div>
     </div>
   )}
-
-
-
 
   </>
   );

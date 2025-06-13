@@ -43,7 +43,7 @@ let currentDayNumber = 1;
 let clockInterval = null;
 let statInterval = null;
 
-
+window.keys = keys;
 // Asset Paths Map \\
 const ASSET_PATHS = {
   player: (charId) => `/Assets/Characters/Mini${charId.replaceAll(" ", "")}.png`,
@@ -1405,3 +1405,24 @@ window.addEventListener("keydown", (e) => {
     addItem("full_restore", 1);
   }
 });
+window.movePlayer = (direction, holding = true) => {
+  if (!window.keys) {
+    console.warn("❗ keys object not found");
+    return;
+  }
+
+  switch (direction) {
+    case "up":
+      window.keys["ArrowUp"] = holding;
+      break;
+    case "down":
+      window.keys["ArrowDown"] = holding;
+      break;
+    case "left":
+      window.keys["ArrowLeft"] = holding;
+      break;
+    case "right":
+      window.keys["ArrowRight"] = holding;
+      break;
+  }
+};
