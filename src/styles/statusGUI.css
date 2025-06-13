@@ -525,33 +525,6 @@ body {
   }
 }
 
-#popupBox {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  min-width: 250px;
-  min-height: 100px;
-  background-size: cover;
-  background-position: center;
-  opacity: 0.9;
-  display: none;
-  color: white;
-  padding: 15px;
-  box-sizing: border-box;
-  text-align: center;
-  font-size: 16px;
-  border-radius: 10px;
-  z-index: 99;
-  word-wrap: break-word;
-  white-space: normal;
-  background-image: url("/Assets/GUI/UI_board_small_stone.png");
-}
-
-#popupBox p {
-  margin: 0;
-}
-
 .medieval-joystick {
   position: absolute;
   bottom: auto;
@@ -707,7 +680,7 @@ body {
   font-family: "Cinzel", serif;
   color: #fff;
   box-shadow: 0 0 8px #000;
-  z-index: 9999; /* super on top */
+  z-index: 9999;
 }
 @media screen and (max-width: 768px) {
   #status-gui {
@@ -756,7 +729,7 @@ body {
   bottom: 60px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 9999;
+  z-index: 99999;
   background-color: rgba(50, 35, 20, 0.95);
   border: 2px solid #d4aa7d;
   border-radius: 10px;
@@ -796,6 +769,33 @@ body {
   object-fit: contain;
   flex-shrink: 0;
   border-radius: 4px;
+}
+
+.shopkeeper-section,
+.player-shop-section {
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(50, 35, 20, 0.95);
+  padding: 8px;
+  border-radius: 10px;
+  border: 2px solid #d4aa7d;
+  z-index: 10000;
+  box-shadow: 0 0 8px black;
+  text-align: center;
+}
+
+.shopkeeper-section {
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.player-shop-section {
+  position: absolute;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 @keyframes fadeToBlack {

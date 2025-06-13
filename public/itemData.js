@@ -6,6 +6,7 @@ const itemData = {
     name: "Apple",
     description: "Restores a small amount of hunger.",
     image: `${path}apple.png`,
+    sellPrice: 50,
     stats: {
       food: 10,
       happiness: 5,
@@ -16,6 +17,7 @@ const itemData = {
     name: "Fish",
     description: "A common fish seen anywhere.",
     image: `${path}fish.png`,
+    sellPrice: 100,
     stats: {
       food: 15,
       happiness: 5,
@@ -27,6 +29,7 @@ const itemData = {
     name: "Moorish Idol",
     description: "A tropical fish that is slighlty rarer.",
     image: `${path}moorish_idol.png`,
+    sellPrice: 250,
     stats: {
       food: 20,
       happiness: 12,
@@ -38,6 +41,7 @@ const itemData = {
     name: "Clownfish",
     description: "A rare fish that is dwindling in numbers due to the lack of anemones in the area.",
     image: `${path}clownfish.png`,
+    sellPrice: 1000,
     stats: {
       food: 20,
       happiness: 30,
@@ -49,6 +53,7 @@ const itemData = {
     name: "Catfish",
     description: "A legendary fish from another region. This particular species is poisonous.",
     image: `${path}catfish.png`,
+    sellPrice: 10000,
     stats: {
       food: -10,
       happiness: 100,
@@ -61,6 +66,7 @@ const itemData = {
     name: "Health Potion",
     description: "Instantly restores full health.",
     image: `${path}potion.png`,
+    sellPrice: 50,
     stats: {
       health: 15,
       happiness: 5,
@@ -71,6 +77,7 @@ const itemData = {
     name: "Skirmish Cat",
     description: "???",
     image: `${path}battlekets1.png`,
+    sellPrice: 9,
     stats: {
       food: 50,
       happiness: -20,
@@ -82,6 +89,7 @@ const itemData = {
     name: "chest",
     description: "OMG OMG CHEST OMG",
     image: `${path}chest.png`,
+    sellPrice: 10000,
     stats: {
       happiness: 30,
     }
@@ -91,6 +99,7 @@ const itemData = {
     name: "coin",
     description: "a coin that is worth maybe 2 pounds.",
     image: `${path}goldcoin.png`,
+    sellPrice: 2,
     stats: {
       happiness: 5,
     }
@@ -100,6 +109,7 @@ const itemData = {
     name: "fossil",
     description: "a rare type of stone, its worth a fortune.",
     image: `${path}fossil.png`,
+    sellPrice: 5000,
     stats: {
       happiness: 12,
     }
@@ -109,8 +119,23 @@ const itemData = {
     name: "crab",
     description: "a common crab, not safe to eat tho",
     image: `${path}crab.png`,
+    sellPrice: 100,
     stats: {
       happiness: 12,
+    }
+  },
+  full_restore: {
+    id: "full_restore",
+    name: "Full Restore",
+    description: "Fully heals all of your stats. Takes two years to make a single batch.",
+    image: `${path}full_potion.png`,
+    sellPrice: 10000,
+    stats: {
+      food: 100,
+      happiness: 100,
+      hygiene: 100,
+      health: 100,
+      stamina: 100,
     }
   }
 };

@@ -15,6 +15,7 @@ let zKeyPressed = false;
 let isGameInitialized;
 let isGameLoopRunning = false;
 let isInventoryVisible = false; //inventory wip
+let isShopVisible = false;
 let isPlayerDead = false; // <-- New flag for death state
 
 // Images
@@ -208,8 +209,8 @@ function updatePlayerPosition() {
             moneyChange(100);
             addItem("catfish", 1);
             cutsceneToggle(
-              1000,
-              2000,
+              3000,
+              4000,
               "You caught a Shark... and got bitten in the process.",
               `${itemPath}apple.png`,
               "Fishing Successful?"
@@ -290,8 +291,8 @@ function updatePlayerPosition() {
           }
         }
       } 
-      else if (collision.type === "buying") {
-        // Buying behavior
+      else if (collision.type === "donate") {
+        // Doante behavior
         drawExclamation(0);
         if (zKeyPressed && !interactCooldown && !inCutscene) {
           drawExclamation(1000);
@@ -359,7 +360,8 @@ function updatePlayerPosition() {
             updateGameClock();
           }, 5000);
         }
-      }else if (collision.type === "shower") {
+      }
+      else if (collision.type === "shower") {
         drawExclamation(0);
 
         if (zKeyPressed && !interactCooldown && !inCutscene) {
@@ -372,6 +374,39 @@ function updatePlayerPosition() {
           
           statChange("hygiene", 100);
           statChange("happiness", 30);
+        }
+      }
+      else if (collision.type === "shop") {
+        drawExclamation(0);
+        //open shop
+        if (zKeyPressed && !interactCooldown && !inCutscene && !isShopVisible) {
+          isShopVisible = true;
+          inCutscene = true;
+          interactCooldown = true;
+          speed = 0;
+
+          window.dispatchEvent(
+            new CustomEvent("toggleShop", {
+              detail: { visible: true }
+            })
+          );
+
+          setTimeout(() => {
+            interactCooldown = false;
+          }, 1000);
+        }
+        //close shop
+        if (zKeyPressed && !interactCooldown && inCutscene && isShopVisible) {
+          setTimeout(() => {
+            isShopVisible = false;
+          }, 1000);
+          inCutscene = false;
+          speed = 4;
+          window.dispatchEvent(
+            new CustomEvent("toggleShop", {
+              detail: { visible: false }
+            })
+          );
         }
       }
 
@@ -554,7 +589,9 @@ function drawMap() {
       box.type === "sleep" ||
       box.type === "fishing" ||
       box.type === "digging" ||
-      box.type === "buying"
+      box.type === "donate" ||
+      box.type === "digging" ||
+      box.type === "shop"
     ) {
       ctx.strokeStyle = "blue";
       ctx.strokeRect(box.x, box.y, box.width, box.height);
@@ -1038,8 +1075,8 @@ window.initGameMap = async function (canvasElement, currentMapNum, playerSavedSt
       2: { type: "fishing" },
       531: { type: "digging" },
       3: { type: "sleep" },
-      4: { type: "buying" },
-      501:{type: "shower"}
+      4: { type: "shop" },
+      5:{type: "shower"}
     };
 
     if (layer.type === "tilelayer" && layer.id === 3) {
@@ -1272,14 +1309,85 @@ function useItem(id) {
     dispatchInventoryUpdate();
   }
 }
+
+//sell item from iventory
+window.addEventListener("sellInventoryItem", (e) => {
+  const itemId = e.detail.id;
+  const inventory = JSON.parse(localStorage.getItem("playerInventory")) || [];
+  const item = inventory.find(i => i.id === itemId);
+  const data = itemData[itemId];
+
+  if (!item || !data || data.sellPrice == null) return;
+
+  item.quantity--;
+  const updatedInventory = item.quantity <= 0
+    ? inventory.filter(i => i.id !== itemId)
+    : [...inventory];
+
+  localStorage.setItem("playerInventory", JSON.stringify(updatedInventory));
+  window.dispatchEvent(
+    new CustomEvent("updateInventory", { detail: { inventory: updatedInventory } })
+  );
+
+  moneyChange(data.sellPrice);
+
+  window.dispatchEvent(
+    new CustomEvent("showBox", {
+      detail: {
+        message: `Sold 1 ${data.name} for ${data.sellPrice}g!`,
+        imageUrl: data.image,
+        imageDuration: 1500,
+        title: "Sale"
+      }
+    })
+  );
+});
+
+//buy item from inventory
+window.addEventListener("buyShopItem", (e) => {
+  const itemId = e.detail.id;
+  const data = itemData[itemId];
+
+  if (!data || data.sellPrice == null) return;
+
+  const currentMoney = parseInt(localStorage.getItem("playerMoney")) || 0;
+  if (currentMoney < data.sellPrice) {
+    window.dispatchEvent(
+      new CustomEvent("showBox", {
+        detail: {
+          message: "Not enough money!",
+          imageUrl: data.image,
+          imageDuration: 1500,
+          title: "Shop"
+        }
+      })
+    );
+    return;
+  }
+  moneyChange(-data.sellPrice);
+  addItem(itemId, 1);
+  window.dispatchEvent(
+    new CustomEvent("showBox", {
+      detail: {
+        message: `Bought 1 ${data.name} for ${data.sellPrice}g!`,
+        imageUrl: data.image,
+        imageDuration: 1500,
+        title: "Purchase"
+      }
+    })
+  );
+});
+
+
 //Buka inventory
 window.addEventListener("keydown", (e) => {
   keys[e.key] = true;
 
   if (e.key === "c") {
+    if (inCutscene && !isInventoryVisible) return;
     isInventoryVisible = !isInventoryVisible;
     inCutscene = isInventoryVisible
-    speed = inCutscene ? 0 : 1;
+    speed = inCutscene ? 0 : 4;
 
     window.dispatchEvent(
       new CustomEvent("toggleInventory", {
@@ -1294,6 +1402,6 @@ window.addEventListener("keydown", (e) => {
     addItem("fish", 2);
   }
   if (e.key === "q") {
-    inCutscene = !inCutscene;
+    addItem("full_restore", 1);
   }
 });

@@ -17,6 +17,8 @@ import peasantImg from "/Assets/Avatars/MiniPeasantCrop.png";
 import princessImg from "/Assets/Avatars/MiniPrincessCrop.png";
 import queenImg from "/Assets/Avatars/MiniQueenCrop.png";
 
+import itemData from "../../public/itemData.js"
+
 const characterAvatars = {
   "Noble Man": nobleManImg,
   "Noble Woman": nobleWomanImg,
@@ -48,6 +50,8 @@ function StatusGUI() {
   const [popupMessage, setPopupMessage] = useState("");
   const [popupImageUrl, setPopupImageUrl] = useState("");
   const [popupTitle, setPopupTitle] = useState("");
+  const [shopVisible, setShopVisible] = useState(false);
+  const [shopItems, setShopItems] = useState([]);
   const [overlayVisible, setOverlayVisible] = useState(false);
   const [sleepZText, setSleepZText] = useState("");                //zzz
 
@@ -128,6 +132,16 @@ function StatusGUI() {
       }, imageDuration);
     };
 
+    //shop
+    const handleToggleShop = (e) => {
+      setShopVisible(e.detail.visible);
+      if (e.detail.visible) {
+        import("../../public/shopkeeperInventory.js").then(module => {
+          setShopItems(module.default);
+        });
+      }
+    };
+
     //overlay for dimming
     const handleShowOverlay = () => {
       setOverlayVisible(true);
@@ -157,6 +171,7 @@ function StatusGUI() {
     window.addEventListener("updateInventory", handleUpdateInventory);
     window.addEventListener("toggleInventory", handleToggleInventory);
     window.addEventListener("showBox", handleShowBox);
+    window.addEventListener("toggleShop", handleToggleShop);
     window.addEventListener("showSleepOverlay", handleShowOverlay);
     window.addEventListener("hideSleepOverlay", handleHideOverlay);
 
@@ -172,6 +187,7 @@ function StatusGUI() {
       window.removeEventListener("updateInventory", handleUpdateInventory);
       window.removeEventListener("toggleInventory", handleToggleInventory);
       window.removeEventListener("showBox", handleShowBox);
+      window.removeEventListener("toggleShop", handleToggleShop);
       window.removeEventListener("showSleepOverlay", handleShowOverlay);
       window.removeEventListener("hideSleepOverlay", handleHideOverlay);
     };
@@ -290,12 +306,16 @@ function StatusGUI() {
           ▼
         </button>
       </div>
-
-      <div id="popupBox" style={{ display: "none" }}>
-        <p id="popupText"></p>
+      
+    {hoveredItem && (
+      <div className="item-description-box-outside">
+        <h3 className="inventory-title">{hoveredItem.name}</h3>
+        <p className="item-description">{hoveredItem.description}</p>
+        {hoveredItem.sellPrice != null && (
+          <p className="item-description">Sell Price: {hoveredItem.sellPrice}g</p>
+        )}
       </div>
-
-
+    )}
 
     {inventoryVisible && (
       <>
@@ -309,7 +329,10 @@ function StatusGUI() {
                   <div
                     className="inventory-slot"
                     key={index}
-                    onMouseEnter={() => setHoveredItem(item || null)}
+                    onMouseEnter={() => {
+                      const fullItem = itemData[item.id];
+                      setHoveredItem(fullItem || null);
+                    }}
                     onMouseLeave={() => setHoveredItem(null)}
                     onClick={() => {
                       if (item) {
@@ -338,12 +361,7 @@ function StatusGUI() {
           </div>
         </div>
 
-        {hoveredItem && (
-          <div className="item-description-box-outside">
-            <h3 className="inventory-title">{hoveredItem.name}</h3>
-            <p className="item-description">{hoveredItem.description}</p>
-          </div>
-        )}
+      
       </>
     )}
   
@@ -356,6 +374,69 @@ function StatusGUI() {
       </div>
     </div>
   )}
+
+  {shopVisible && (
+    <div className="inventory-overlay">
+      <div className="inventory-window shopkeeper-section">
+        <h3 className="inventory-title">Shop</h3>
+        <div className="inventory-grid">
+          {shopItems.map((item, index) => {
+            const data = itemData[item.id];
+            return (
+              <div
+                key={index}
+                className="inventory-slot"
+                onClick={() => {
+                  if (item) {
+                    window.dispatchEvent(
+                      new CustomEvent("buyShopItem", { detail: { id: item.id } })
+                    );
+                  }
+                }}
+                onMouseEnter={() => setHoveredItem(data || null)}
+                onMouseLeave={() => setHoveredItem(null)}
+              >
+                <img src={data.image} className="inventory-icon" />
+                <span className="inventory-quantity">x{item.quantity}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="inventory-window player-shop-section">
+        <h3 className="inventory-title">Sell Inventory</h3>
+        <div className="inventory-grid">
+          {inventory.map((item, index) => (
+            <div
+              key={index}
+              className="inventory-slot"
+              onClick={() => {
+                if (item) {
+                  window.dispatchEvent(
+                    new CustomEvent("sellInventoryItem", { detail: { id: item.id } })
+                  );
+                }
+              }}
+              onMouseEnter={() => {
+                const fullItem = itemData[item.id];
+                setHoveredItem(fullItem || null);
+              }}
+              onMouseLeave={() => setHoveredItem(null)}
+            >
+              <img
+                src={`/Assets/Items/${item.id}.png`}
+                className="inventory-icon"
+              />
+              <span className="inventory-quantity">x{item.quantity}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )}
+
+
 
 
   </>
