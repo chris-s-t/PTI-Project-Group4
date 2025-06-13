@@ -107,11 +107,12 @@ const itemData = {
   fossil: {
     id: "fossil",
     name: "fossil",
-    description: "a rare type of stone, its worth a fortune.",
+    description: "A rare type of stone, its worth a fortune. Don't try eating it...",
     image: `${path}fossil.png`,
-    sellPrice: 5000,
+    sellPrice: 9000,
     stats: {
-      happiness: 12,
+      health: -50,
+      hygiene: -10,
     }
   },
   crab: {

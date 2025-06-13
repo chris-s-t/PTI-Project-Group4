@@ -250,9 +250,10 @@ function updatePlayerPosition() {
         if (zKeyPressed && !interactCooldown && !inCutscene) {
            let rarity = Math.floor(Math.random() * 100);
           statChange("stamina", -2);
+          statChange("hygiene", -2);
           if (rarity == 99) {
             statChange("happiness", 10);
-            moneyChange(5000);
+            moneyChange(200000);
             cutsceneToggle(
               1000,
               2000,
@@ -262,7 +263,6 @@ function updatePlayerPosition() {
             );
           } else if (rarity <= 98 && rarity > 48) {
             statChange("happiness", 5);
-            moneyChange(100);
             addItem("crab", 1);
             cutsceneToggle(
               1000,
@@ -283,7 +283,7 @@ function updatePlayerPosition() {
             );
           } else if (rarity <= 18 && rarity > 8) {
             statChange("happiness", 5);
-            moneyChange(4000);
+            addItem("fossil", 1);
             cutsceneToggle(
               1000,
               2000,
@@ -293,7 +293,6 @@ function updatePlayerPosition() {
             );
           } else if (rarity <= 8) {
             statChange("happiness", 5);
-            moneyChange(100);
             addItem("cat", 1);
             cutsceneToggle(
               1000,
@@ -301,34 +300,6 @@ function updatePlayerPosition() {
               "You dug a cat?",
               `${itemPath}battlekets.png`,
               "digging Successful?"
-            );
-          }
-        }
-      } else if (collision.type === "buying") {
-        // Buying behavior
-        if (zKeyPressed && !interactCooldown && !inCutscene) {
-          let rarity = Math.floor(Math.random() * 100);
-          statChange("stamina", -4);
-          statChange("hygiene", -4);
-          if (rarity == 99) {
-            statChange("happiness", 30);
-            moneyChange(50000);
-            cutsceneToggle(1000, 2000, "You stole...", "Assets/GUI/UI_board_small_stone.png");
-          } else if (rarity <= 65) {
-            moneyChange(-10000000);
-            cutsceneToggle(
-              1000,
-              2000,
-              "You gave all your money for charity",
-              "Assets/GUI/UI_board_small_stone.png"
-            );
-          } else {
-            moneyChange(-100);
-            cutsceneToggle(
-              1000,
-              2000,
-              "You gave your money for charity",
-              "Assets/GUI/UI_board_small_stone.png"
             );
           }
         }
@@ -341,32 +312,37 @@ function updatePlayerPosition() {
           statChange("hygiene", -4);
           if (rarity == 99) {
             statChange("happiness", 30);
+            statChange("stamina", -5);
+            statChange("hygiene", -10);
             moneyChange(50000);
             cutsceneToggle(
-              1000,
-              2000,
-              "You stole...",
-              "Assets/GUI/UI_board_small_stone.png",
-              "Donate"
+              3000,
+              4000,
+              "You let your intrusive thoughts win and stole instead.",
+              "Assets/Emojis/E14.png",
+              "Charity!"
             );
 
           } else if (rarity <= 65) {
-            moneyChange(-10000000);
+            moneyChange(-1000);
+            statChange("happiness", -5)
+            statChange("stamina", -5)
             cutsceneToggle(
               1000,
               2000,
-              "You gave all your money for charity",
-              "Assets/GUI/UI_board_small_stone.png",
-              "Yo"
+              "You got stolen... for charity!",
+              "Assets/Emojis/E6.png",
+              "Charity?"
             );
           } else {
             moneyChange(-100);
+            statChange("happiness", 10);
             cutsceneToggle(
               1000,
               2000,
               "You gave your money for charity",
-              "Assets/GUI/UI_board_small_stone.png",
-              "Gurt"
+              "Assets/Emojis/E33.png",
+              "Charity"
             );
           }
         }
@@ -1123,7 +1099,8 @@ window.initGameMap = async function (
         531: { type: "digging" },
         3: { type: "sleep" },
         4: { type: "shop" },
-        5:{type: "shower"}
+        5:{type: "shower"},
+        6:{type: "donate"}
       };
 
       if (layer.type === "tilelayer" && layer.id === 3) {
@@ -1430,6 +1407,7 @@ window.addEventListener("keydown", (e) => {
   keys[e.key] = true;
 
   if (e.key === "c") {
+    if (inCutscene && !isInventoryVisible) return;
     isInventoryVisible = !isInventoryVisible;
     inCutscene = isInventoryVisible;
     speed = inCutscene ? 0 : 4;
