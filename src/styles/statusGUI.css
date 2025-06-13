@@ -130,7 +130,6 @@ body {
   padding: 2.5px;
 }
 #greeting {
-  background-image: url("Assets/GUI/UI_board_small_stone.png");
   background-repeat: no-repeat;
   background-size: 100% 100%;
   background-position: center;
@@ -259,7 +258,6 @@ body {
 
 .name-box,
 .money-box {
-  background-image: url("Assets/StatusGUI/nameHold.png");
   background-size: 100% 100%;
   padding: 4px 10px;
   font-family: "Cinzel", serif;

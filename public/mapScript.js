@@ -894,6 +894,12 @@ window.initGameMap = async function (
   }
   isGameInitialized = true; // Mark as initialized
 
+  window.dispatchEvent(new CustomEvent("updatePlayerAvatar", {
+    detail: {
+      characterId: playerCharacterId
+    }
+  }));
+
   console.log(
     "initGameMap STARTING. Canvas:",
     canvasElement,

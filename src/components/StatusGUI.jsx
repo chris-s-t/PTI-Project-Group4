@@ -11,7 +11,7 @@ import StaminaIcon from "/Assets/StatusGUI/staminaIcon.png";
 import HappinessIcon from "/Assets/StatusGUI/happyIcon.png";
 import HygieneIcon from "/Assets/StatusGUI/hygieneIcon.png";
 import statBack from "/Assets/StatusGUI/statBack.png";
-import statFill from "/Assets/StatusGUI/statFill.png";
+import uiBoard from "/Assets/GUI/UI_board_small_stone.png";
 import nameHold from "/Assets/StatusGUI/nameHold.png";
 
 import nobleManImg from "/Assets/Avatars/MiniNobleManCrop.png";
@@ -222,17 +222,15 @@ function StatusGUI() {
     };
 
     const handleUpdatePlayerAvatar = (event) => {
-      const { characterId } = event.detail;
-      if (characterAvatars[characterId]) {
-        setPlayerAvatarSrc(characterAvatars[characterId]);
-      }
-      const { charId } = event.detail;
-      if (characterAvatars[charId]) {
-        setCharacterId(charId);
-        setPlayerAvatarSrc(characterAvatars[charId]);
+      const { characterId: newCharacterId } = event.detail;
+      if (newCharacterId && characterAvatars[newCharacterId]) {
+        setCharacterId(newCharacterId);
+        setPlayerAvatarSrc(characterAvatars[newCharacterId]);
+      } else {
+        console.warn(`Invalid or missing characterId passed to updatePlayerAvatar: ${newCharacterId}`);
       }
     };
-
+    
     const handleUpdateInventory = (e) => {
       setInventory(e.detail.inventory);
     };
@@ -494,10 +492,21 @@ function StatusGUI() {
           </div>
 
           <div className="name-money-container">
-            <div id="playerNameDisplay" className="name-box">
+            <div
+              id="playerNameDisplay"
+              className="name-box"
+              style={{
+                backgroundImage: `url(${nameHold})`,
+              }}
+            >
               {playerName}
             </div>
-            <div className="money-box">
+            <div
+              className="money-box"
+              style={{
+                backgroundImage: `url(${nameHold})`,
+              }}
+            >
               <img src={CoinIcon} className="coin-icon" alt="Coin Icon" />
               <span id="moneyDisplay" className="money-text">
                 {playerMoney.toLocaleString()}
@@ -595,7 +604,13 @@ function StatusGUI() {
         </button>
       </div>
 
-      <div id="greeting" className="greeting">
+      <div
+        id="greeting"
+        className="greeting"
+        style={{
+          backgroundImage: `url(${uiBoard})`,
+        }}
+      >
         {currentGreeting}
       </div>
 
