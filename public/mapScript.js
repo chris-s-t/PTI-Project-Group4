@@ -1122,7 +1122,7 @@ window.initGameMap = async function (
         2: { type: "fishing" },
         531: { type: "digging" },
         3: { type: "sleep" },
-        4: { type: "buying" },
+        4: { type: "shop" },
         5:{type: "shower"}
       };
 

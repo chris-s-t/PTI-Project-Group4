@@ -922,7 +922,8 @@ body {
 .interact-prompt {
   position: absolute;
   top: 80px;
-  right: -360px;
+  right: -280px;
+  top : 230px;
   width: 32px;
   height: 32px;
   z-index: 999;
