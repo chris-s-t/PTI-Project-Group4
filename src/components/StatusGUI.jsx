@@ -17,7 +17,7 @@ import peasantImg from "/Assets/Avatars/MiniPeasantCrop.png";
 import princessImg from "/Assets/Avatars/MiniPrincessCrop.png";
 import queenImg from "/Assets/Avatars/MiniQueenCrop.png";
 
-import itemData from "../../public/itemData.js"
+import itemData from "../../public/itemData.js";
 
 const characterAvatars = {
   "Noble Man": nobleManImg,
@@ -49,15 +49,15 @@ function getDayOfWeek(dayNumber) {
 }
 
 function getTitleFromCharacter(characterId) {
-    const titles = {
-        "Noble Man": "Noble Sir",
-        "Noble Woman": "Noble Lady",
-        "Old Man": "Elder",
-        "Peasant": "Peasant",
-        "Princess": "Princess",
-        "Queen": "Your Majesty",
-    };
-    return titles[characterId] || "";
+  const titles = {
+    "Noble Man": "Noble Sir",
+    "Noble Woman": "Noble Lady",
+    "Old Man": "Elder",
+    Peasant: "Peasant",
+    Princess: "Princess",
+    Queen: "Your Majesty",
+  };
+  return titles[characterId] || "";
 }
 
 function getGreeting(hours, playerName) {
@@ -102,13 +102,13 @@ function StatusGUI() {
     stamina: { currentStat: 100, max: 100 },
     happiness: { currentStat: 100, max: 100 },
     hygiene: { currentStat: 100, max: 100 },
-    score: { currentStat: 100, max: 100 },
+    score: { currentStat: 0, max: 100000 },
   });
   const [characterId, setCharacterId] = useState("");
   const [inventory, setInventory] = useState([]);
   const [inventoryVisible, setInventoryVisible] = useState(false);
   const [hoveredItem, setHoveredItem] = useState(null);
-  const [clickedItemIndex, setClickedItemIndex] = useState(null);   // What the item image does after diklik
+  const [clickedItemIndex, setClickedItemIndex] = useState(null); // What the item image does after diklik
   const [popupVisible, setPopupVisible] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
   const [popupImageUrl, setPopupImageUrl] = useState("");
@@ -143,7 +143,6 @@ function StatusGUI() {
       }, 200);
     }
 
-
   useEffect(() => {
     const savedPlayerName = localStorage.getItem("playerName");
     const savedPlayerMoney = localStorage.getItem("playerMoney");
@@ -159,9 +158,9 @@ function StatusGUI() {
           hygiene: { currentStat: 100, max: 100 },
           happiness: { currentStat: 100, max: 100 },
           health: { currentStat: 100, max: 100 },
-          score: { currentStat: 0, max: 100000},
+          score: { currentStat: 0, max: 100000 },
         };
-      
+
     setPlayerName(savedPlayerName);
     setCharacterId(savedCharacterId);
     setPlayerMoney(savedPlayerMoney);
@@ -205,7 +204,8 @@ function StatusGUI() {
       setCurrentMinutes(minutes);
 
       const title = getTitleFromCharacter(characterId || "");
-      const capitalizedPlayerName = playerName.charAt(0).toUpperCase() + playerName.slice(1);
+      const capitalizedPlayerName =
+        playerName.charAt(0).toUpperCase() + playerName.slice(1);
       const fullPlayerName = `${title} ${capitalizedPlayerName}`;
       setCurrentGreeting(getGreeting(hours, fullPlayerName));
       setOverlayOpacity(calculateOpacity(hours, minutes));
@@ -253,17 +253,16 @@ function StatusGUI() {
     const handleToggleShop = (e) => {
       setShopVisible(e.detail.visible);
       if (e.detail.visible) {
-        import("../../public/shopkeeperInventory.js").then(module => {
+        import("../../public/shopkeeperInventory.js").then((module) => {
           setShopItems(module.default);
         });
       }
     };
 
-
     const handleShowOverlay = () => {
       setOverlayVisible(true);
       console.log("Overlay ON");
-    }
+    };
     const handleHideOverlay = () => {
       setOverlayVisible(false);
       console.log("Overlay OFF");
@@ -289,7 +288,7 @@ function StatusGUI() {
     window.addEventListener("updateInventory", handleUpdateInventory);
     window.addEventListener("toggleInventory", handleToggleInventory);
     window.addEventListener("showBox", handleShowBox);
-     window.addEventListener("toggleShop", handleToggleShop);
+    window.addEventListener("toggleShop", handleToggleShop);
     window.addEventListener("showSleepOverlay", handleShowOverlay);
     window.addEventListener("hideSleepOverlay", handleHideOverlay);
     window.addEventListener("toggleInteractPrompt", handleShowPrompt);
@@ -312,7 +311,6 @@ function StatusGUI() {
       window.removeEventListener("toggleInteractPrompt", handleShowPrompt);
       window.removeEventListener("keydown", handleZPress);
     };
-
   }, []);
 
   useEffect(() => {
@@ -396,8 +394,50 @@ function StatusGUI() {
   };
 
   const title = getTitleFromCharacter(characterId);
-  const capitalizedPlayerName = playerName.charAt(0).toUpperCase() + playerName.slice(1);
+  const capitalizedPlayerName =
+    playerName.charAt(0).toUpperCase() + playerName.slice(1);
   const fullPlayerName = `${title} ${capitalizedPlayerName}`;
+
+  const scoreContainerStyle = {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "8px",
+    width: "50%",
+    padding: "5px",
+    marginTop: "6rem",
+    marginLeft: "14.5rem",
+    boxSizing: "border-box",
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    borderRadius: "8px",
+    fontSize: "1.125rem",
+    fontWeight: "bold",
+    color: "#fff8d4",
+    textShadow: "1px 1px 2px #000",
+    top: "100px",
+  };
+
+  const scoreValueContainer = {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "8px",
+  };
+
+  const scoreTitleStyle = {
+    color: "#f9e2af",
+    fontFamily: '"Cinzel Decorative", serif',
+    fontWeight: "bold",
+    fontSize: "1rem",
+    textShadow: "1px 1px 2px #000",
+    margin: 0,
+    padding: 0,
+  };
+
+  const scoreTextStyle = {
+    color: "gold",
+    textShadow: "2px 2px 4px #000",
+  };
 
   return (
     <>
@@ -420,11 +460,14 @@ function StatusGUI() {
     {overlayVisible && (
       <div className="sleep-overlay fade-in"></div>
     )}
+      {overlayVisible && <div className="sleep-overlay fade-in"></div>}
       <div id="statusGUI" className="status-gui">
         <div className="clock">
           <img src={ClockIcon} alt="Clock" />
           <div className="time">{currentTime}</div>
-          <div className="day">{getDayOfWeek(currentDayNumber)} -  {currentDay}</div>
+          <div className="day">
+            {getDayOfWeek(currentDayNumber)} - {currentDay}
+          </div>
         </div>
 
         <div className="avatar-section">
@@ -465,13 +508,17 @@ function StatusGUI() {
         {Object.entries(playerStats).map(([statName, stat]) => {
           if (statName === "score") {
             return (
-              <div className="status-score-display" key={statName}>
-                <span className="score-text">{stat.currentStat}</span>{" "}
+              <div style={scoreContainerStyle}>
+                <h3 style={scoreTitleStyle}>Score</h3>
+                <div style={scoreValueContainer}>
+                  <span style={scoreTextStyle}>{stat.currentStat}</span>
+                </div>
               </div>
             );
           } else {
             return (
-              <div className={`status-bar status-bar-${statName}`}
+              <div
+                className={`status-bar status-bar-${statName}`}
                 key={statName}
               >
                 <div className="bar-container">
@@ -496,10 +543,6 @@ function StatusGUI() {
                     className={`bar-fill status-bar-${statName}`}
                     style={{
                       width: `${(stat.currentStat / stat.max) * 80}%`,
-                      backgroundColor: getStatusColor(
-                        stat.currentStat,
-                        stat.max
-                      ),
                     }}
                   ></div>
                   <div className="stat-text" id={`${statName}Text`}>
@@ -507,7 +550,7 @@ function StatusGUI() {
                   </div>
                 </div>
               </div>
-              );
+            );
           }
         })}
       </div>
@@ -533,144 +576,158 @@ function StatusGUI() {
         {currentGreeting}
       </div>
 
-    <div id="overlay" style={{ display: "none" }}></div>
+      <div id="overlay" style={{ display: "none" }}></div>
 
-    {hoveredItem && (
-      <div className="item-description-box-outside">
-        <h3 className="inventory-title">{hoveredItem.name}</h3>
-        <p className="item-description">{hoveredItem.description}</p>
-        {hoveredItem.sellPrice != null && (
-          <p className="item-description">Sell Price: {hoveredItem.sellPrice}g</p>
-        )}
-      </div>
-    )}
+      {hoveredItem && (
+        <div className="item-description-box-outside">
+          <h3 className="inventory-title">{hoveredItem.name}</h3>
+          <p className="item-description">{hoveredItem.description}</p>
+          {hoveredItem.sellPrice != null && (
+            <p className="item-description">
+              Sell Price: {hoveredItem.sellPrice}g
+            </p>
+          )}
+        </div>
+      )}
 
-    {inventoryVisible && (
-      <>
+      {inventoryVisible && (
+        <>
+          <div className="inventory-overlay">
+            <div className="inventory-window">
+              <h3 className="inventory-title">Inventory</h3>
+              <div className="inventory-grid">
+                {Array.from({ length: 60 }).map((_, index) => {
+                  const item = inventory[index];
+                  return (
+                    <div
+                      className="inventory-slot"
+                      key={index}
+                      onMouseEnter={() => {
+                        const fullItem = itemData[item.id];
+                        setHoveredItem(fullItem || null);
+                      }}
+                      onMouseLeave={() => setHoveredItem(null)}
+                      onClick={() => {
+                        if (item) {
+                          setClickedItemIndex(index);
+                          window.dispatchEvent(
+                            new CustomEvent("useInventoryItem", {
+                              detail: { id: item.id },
+                            })
+                          );
+                          setTimeout(() => setClickedItemIndex(null), 300);
+                        }
+                      }}
+                    >
+                      {item && (
+                        <>
+                          <img
+                            src={item.image || `/Assets/Items/${item.id}.png`}
+                            alt={item.name}
+                            className={`inventory-icon ${
+                              clickedItemIndex === index ? "clicked" : ""
+                            }`}
+                          />
+                          <span className="inventory-quantity">
+                            x{item.quantity}
+                          </span>
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {hoveredItem && (
+            <div className="item-description-box-outside">
+              <h3 className="inventory-title">{hoveredItem.name}</h3>
+              <p className="item-description">{hoveredItem.description}</p>
+            </div>
+          )}
+        </>
+      )}
+
+      {shopVisible && (
         <div className="inventory-overlay">
-          <div className="inventory-window">
-            <h3 className="inventory-title">Inventory</h3>
+          <div className="inventory-window shopkeeper-section">
+            <h3 className="inventory-title">Shop</h3>
             <div className="inventory-grid">
-              {Array.from({ length: 60 }).map((_, index) => {
-                const item = inventory[index];
+              {shopItems.map((item, index) => {
+                const data = itemData[item.id];
                 return (
                   <div
-                    className="inventory-slot"
                     key={index}
-                    onMouseEnter={() => {
-                      const fullItem = itemData[item.id];
-                      setHoveredItem(fullItem || null);
-                    }}
-                    onMouseLeave={() => setHoveredItem(null)}
+                    className="inventory-slot"
                     onClick={() => {
                       if (item) {
-                        setClickedItemIndex(index);
                         window.dispatchEvent(
-                          new CustomEvent("useInventoryItem", { detail: { id: item.id } })
+                          new CustomEvent("buyShopItem", {
+                            detail: { id: item.id },
+                          })
                         );
-                        setTimeout(() => setClickedItemIndex(null), 300);
                       }
                     }}
+                    onMouseEnter={() => setHoveredItem(data || null)}
+                    onMouseLeave={() => setHoveredItem(null)}
                   >
-                    {item && (
-                      <>
-                        <img
-                          src={item.image || `/Assets/Items/${item.id}.png`}
-                          alt={item.name}
-                          className={`inventory-icon ${clickedItemIndex === index ? "clicked" : ""}`}
-                        />
-                        <span className="inventory-quantity">x{item.quantity}</span>
-                      </>
-                    )}
+                    <img src={data.image} className="inventory-icon" />
+                    <span className="inventory-quantity">x{item.quantity}</span>
                   </div>
                 );
               })}
             </div>
           </div>
-        </div>
 
-        {hoveredItem && (
-          <div className="item-description-box-outside">
-            <h3 className="inventory-title">{hoveredItem.name}</h3>
-            <p className="item-description">{hoveredItem.description}</p>
-          </div>
-        )}
-      </>
-    )}
-  
-  {shopVisible && (
-    <div className="inventory-overlay">
-      <div className="inventory-window shopkeeper-section">
-        <h3 className="inventory-title">Shop</h3>
-        <div className="inventory-grid">
-          {shopItems.map((item, index) => {
-            const data = itemData[item.id];
-            return (
-              <div
-                key={index}
-                className="inventory-slot"
-                onClick={() => {
-                  if (item) {
-                    window.dispatchEvent(
-                      new CustomEvent("buyShopItem", { detail: { id: item.id } })
-                    );
-                  }
-                }}
-                onMouseEnter={() => setHoveredItem(data || null)}
-                onMouseLeave={() => setHoveredItem(null)}
-              >
-                <img src={data.image} className="inventory-icon" />
-                <span className="inventory-quantity">x{item.quantity}</span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="inventory-window player-shop-section">
-        <h3 className="inventory-title">Sell Inventory</h3>
-        <div className="inventory-grid">
-          {inventory.map((item, index) => (
-            <div
-              key={index}
-              className="inventory-slot"
-              onClick={() => {
-                if (item) {
-                  window.dispatchEvent(
-                    new CustomEvent("sellInventoryItem", { detail: { id: item.id } })
-                  );
-                }
-              }}
-              onMouseEnter={() => {
-                const fullItem = itemData[item.id];
-                setHoveredItem(fullItem || null);
-              }}
-              onMouseLeave={() => setHoveredItem(null)}
-            >
-              <img
-                src={`/Assets/Items/${item.id}.png`}
-                className="inventory-icon"
-              />
-              <span className="inventory-quantity">x{item.quantity}</span>
+          <div className="inventory-window player-shop-section">
+            <h3 className="inventory-title">Sell Inventory</h3>
+            <div className="inventory-grid">
+              {inventory.map((item, index) => (
+                <div
+                  key={index}
+                  className="inventory-slot"
+                  onClick={() => {
+                    if (item) {
+                      window.dispatchEvent(
+                        new CustomEvent("sellInventoryItem", {
+                          detail: { id: item.id },
+                        })
+                      );
+                    }
+                  }}
+                  onMouseEnter={() => {
+                    const fullItem = itemData[item.id];
+                    setHoveredItem(fullItem || null);
+                  }}
+                  onMouseLeave={() => setHoveredItem(null)}
+                >
+                  <img
+                    src={`/Assets/Items/${item.id}.png`}
+                    className="inventory-icon"
+                  />
+                  <span className="inventory-quantity">x{item.quantity}</span>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
-      </div>
-    </div>
-  )}
+      )}
 
-  {popupVisible && (
-    <div className="popup-box">
-      <h3 className="popup-title">{popupTitle}</h3>
-      <div className="popup-content-row">
-        <p className="popup-message">{popupMessage}</p>
-        <img src={popupImageUrl} alt="Popup Visual" className="popup-image" />
-      </div>
-    </div>
-  )}
-
-
-  </>
+      {popupVisible && (
+        <div className="popup-box">
+          <h3 className="popup-title">{popupTitle}</h3>
+          <div className="popup-content-row">
+            <p className="popup-message">{popupMessage}</p>
+            <img
+              src={popupImageUrl}
+              alt="Popup Visual"
+              className="popup-image"
+            />
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

@@ -189,6 +189,7 @@ function updatePlayerPosition() {
           statChange("stamina", -2);
           if (rarity == 99) {
             statChange("happiness", 10);
+            statChange("score", 1000);
             moneyChange(1000);
             addItem("catfish", 1);
             cutsceneToggle(
@@ -200,6 +201,7 @@ function updatePlayerPosition() {
             );
           } else if (rarity <= 98 && rarity > 48) {
             statChange("happiness", 5);
+            statChange("score", 750);
             moneyChange(1200);
             addItem("fish", 1);
             cutsceneToggle(
@@ -211,6 +213,7 @@ function updatePlayerPosition() {
             );
           } else if (rarity <= 48 && rarity > 18) {
             statChange("happiness", 5);
+            statChange("score", 500);
             moneyChange(100);
             addItem("moorish_idol", 1);
             cutsceneToggle(
@@ -223,6 +226,7 @@ function updatePlayerPosition() {
           } else if (rarity <= 18 && rarity > 8) {
             statChange("happiness", 5);
             statChange("health", -10);
+            statChange("score", 250);
             moneyChange(100);
             addItem("catfish", 1);
             cutsceneToggle(
@@ -234,6 +238,7 @@ function updatePlayerPosition() {
             );
           } else if (rarity <= 8) {
             statChange("happiness", 5);
+            statChange("score", 100);
             moneyChange(100);
             addItem("cat", 1);
             cutsceneToggle(
@@ -253,7 +258,8 @@ function updatePlayerPosition() {
           statChange("hygiene", -2);
           if (rarity == 99) {
             statChange("happiness", 10);
-            moneyChange(200000);
+            statChange("score", 1000);
+            moneyChange(5000);
             cutsceneToggle(
               1000,
               2000,
@@ -263,6 +269,8 @@ function updatePlayerPosition() {
             );
           } else if (rarity <= 98 && rarity > 48) {
             statChange("happiness", 5);
+            statChange("score", 750);
+            moneyChange(100);
             addItem("crab", 1);
             cutsceneToggle(
               1000,
@@ -273,6 +281,7 @@ function updatePlayerPosition() {
             );
           } else if (rarity <= 48 && rarity > 18) {
             statChange("happiness", 5);
+            statChange("score", 500);
             moneyChange(1000);
             cutsceneToggle(
               1000,
@@ -284,6 +293,8 @@ function updatePlayerPosition() {
           } else if (rarity <= 18 && rarity > 8) {
             statChange("happiness", 5);
             addItem("fossil", 1);
+            statChange("score", 250);
+            moneyChange(4000);
             cutsceneToggle(
               1000,
               2000,
@@ -293,6 +304,8 @@ function updatePlayerPosition() {
             );
           } else if (rarity <= 8) {
             statChange("happiness", 5);
+            statChange("score", 100);
+            moneyChange(100);
             addItem("cat", 1);
             cutsceneToggle(
               1000,
@@ -365,6 +378,7 @@ function updatePlayerPosition() {
           statChange("hygiene", 30);
           statChange("stamina", 50);
           statChange("happiness", 30);
+          statChange("score", 100);
 
           // Bangun
           setTimeout(() => {
@@ -811,6 +825,7 @@ function handlePlayerDeath() {
  * Added a check to trigger the death sequence if a critical stat reaches zero.
  */
 function statChange(statName, amount) {
+  //console.log(statName, amount);
   if (isPlayerDead) return; // Do not change stats if player is already dead
 
   let stats = JSON.parse(localStorage.getItem("playerStats"));

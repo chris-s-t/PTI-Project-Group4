@@ -127,6 +127,10 @@ function MainMenu({ playerName, setPlayerName, selectedCharacter, setSelectedCha
           currentStat: 100,
           max: 100,
         },
+        score: {
+          currentStat: 0,
+          max: 100000,
+        }
       };
 
       onStartGame(playerName, selectedCharacter, playerStats, characterData.moneyOwned);
