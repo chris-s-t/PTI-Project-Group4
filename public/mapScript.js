@@ -884,6 +884,8 @@ function updateGameClock() {
       detail: {
         time: formattedTime,
         day: `Day ${currentDayNumber}`,
+        hours: hours,
+        minutes: minutes,
       },
     })
   );

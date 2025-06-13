@@ -61,6 +61,7 @@ function getTitleFromCharacter(characterId) {
 }
 
 function getGreeting(hours, playerName) {
+  console.log(hours);
   let greeting;
   if (hours >= 5 && hours < 12) {
     greeting = "Good Morning";
@@ -86,13 +87,6 @@ function calculateOpacity(hours, minutes) {
     opacity = 0.5 - timePassed / (6 * 60);
   }
   return opacity;
-}
-
-function getStatusColor(current, max) {
-  const percentage = (current / max) * 100;
-  if (percentage > 70) return "#4CAF50";
-  if (percentage > 40) return "#FFEB3B";
-  return "#F44336";
 }
 
 function StatusGUI() {
@@ -127,14 +121,8 @@ function StatusGUI() {
   const [currentMinutes, setCurrentMinutes] = useState(0);
   const [currentDayNumber, setCurrentDayNumber] = useState(1);
   const [currentGreeting, setCurrentGreeting] = useState("");
-
   const [overlayOpacity, setOverlayOpacity] = useState(0);
-  const [isPopupVisible, setIsPopupVisible] = useState(false);
-  const [popupContent, setPopupContent] = useState({
-    message: "",
-    imageUrl: "",
-  });
-  const popupBoxRef = useRef(null);
+
   const joystickRef = useRef(null);
   const activeJoystickKeyRef = useRef(null);
 
@@ -169,19 +157,6 @@ function StatusGUI() {
         ])
       )
     );
-    let { hours, minutes } = JSON.parse(localStorage.getItem("time"));
-    let day = parseInt(localStorage.getItem("day"));
-    setCurrentHours(hours);
-    setCurrentMinutes(minutes);
-    setCurrentDayNumber(day);
-    setCurrentTime(formatTime(hours, minutes));
-
-    const title = getTitleFromCharacter(savedCharacterId || "");
-    const capitalizedPlayerName =
-      savedPlayerName.charAt(0).toUpperCase() + savedPlayerName.slice(1);
-    const fullPlayerName = `${title} ${capitalizedPlayerName}`;
-    setCurrentGreeting(getGreeting(hours, fullPlayerName));
-    setOverlayOpacity(calculateOpacity(hours, minutes));
 
     const handleUpdateStatus = (event) => {
       const { type, value } = event.detail;
