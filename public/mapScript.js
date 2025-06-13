@@ -608,12 +608,6 @@ function drawMap() {
     ) {
       ctx.strokeStyle = "blue";
       ctx.strokeRect(box.x, box.y, box.width, box.height);
-    } else if (box.type === "wall" || box.type === "obstacle") {
-      ctx.strokeStyle = "red";
-      ctx.strokeRect(box.x, box.y, box.width, box.height);
-    } else if (box.type === "mapTransition") {
-      ctx.strokeStyle = "green";
-      ctx.strokeRect(box.x, box.y, box.width, box.height);
     }
   }
   ctx.restore();
