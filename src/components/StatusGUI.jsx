@@ -49,22 +49,15 @@ function getDayOfWeek(dayNumber) {
 }
 
 function getTitleFromCharacter(characterId) {
-  switch (characterId) {
-    case "Noble Man":
-      return "Noble Sir";
-    case "Noble Woman":
-      return "Noble Lady";
-    case "Old Man":
-      return "Elder";
-    case "Peasant":
-      return "Peasant";
-    case "Princess":
-      return "Princess";
-    case "Queen":
-      return "Your Majesty";
-    default:
-      return "";
-  }
+    const titles = {
+        "Noble Man": "Noble Sir",
+        "Noble Woman": "Noble Lady",
+        "Old Man": "Elder",
+        "Peasant": "Peasant",
+        "Princess": "Princess",
+        "Queen": "Your Majesty",
+    };
+    return titles[characterId] || "";
 }
 
 function getGreeting(hours, playerName) {
