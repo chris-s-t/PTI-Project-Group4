@@ -741,21 +741,15 @@ function moneyChange(amount) {
   );
 }
 
-/**
- * --- Death Screen ---
- * This function handles the player's death sequence. The "Main Menu"
- */
 function handlePlayerDeath() {
-  if (isPlayerDead) return; // Prevent the function from running multiple times
+  if (isPlayerDead) return;
   isPlayerDead = true;
-  inCutscene = true; // Stop player from moving and other interactions
+  inCutscene = true;
   speed = 0;
 
-  // Stop game time and stat degradation
   clearInterval(clockInterval);
   clearInterval(statInterval);
 
-  // Create the overlay div for the fade effect
   const overlay = document.createElement("div");
   overlay.style.position = "fixed";
   overlay.style.top = "0";
@@ -772,14 +766,11 @@ function handlePlayerDeath() {
   overlay.style.alignItems = "center";
   document.body.appendChild(overlay);
 
-  // After a brief moment, start the fade to black
   setTimeout(() => {
     overlay.style.opacity = "1";
   }, 100);
 
-  // After the fade to black is complete, show the death screen content
   setTimeout(() => {
-    // Add the "You Died" text
     const deathText = document.createElement("h1");
     deathText.textContent = "YOU DIED";
     deathText.style.color = "red";
@@ -791,13 +782,24 @@ function handlePlayerDeath() {
     deathText.style.marginBottom = "20px";
     overlay.appendChild(deathText);
 
-    // Create a container for the buttons
+    const stats = JSON.parse(localStorage.getItem("playerStats"));
+    const finalScore = stats.score.currentStat;
+    const scoreText = document.createElement("h2");
+    scoreText.textContent = "Final Score : " + finalScore;
+    scoreText.style.color = "white";
+    scoreText.style.textAlign = "center";
+    scoreText.style.fontSize = "2.5rem";
+    scoreText.style.fontFamily = "sans-serif";
+    scoreText.style.opacity = "0";
+    scoreText.style.transition = "opacity 2s ease-in";
+    scoreText.style.marginBottom = "30px";
+    overlay.appendChild(scoreText);
+
     const buttonContainer = document.createElement("div");
     buttonContainer.style.opacity = "0";
     buttonContainer.style.transition = "opacity 2s ease-in";
     overlay.appendChild(buttonContainer);
 
-    // --- Main Menu Button (Corrected) ---
     const mainMenuButton = document.createElement("button");
     mainMenuButton.textContent = "Main Menu";
     mainMenuButton.style.padding = "10px 20px";
@@ -805,33 +807,26 @@ function handlePlayerDeath() {
     mainMenuButton.style.margin = "0 10px";
     mainMenuButton.style.cursor = "pointer";
     mainMenuButton.onclick = () => {
-      // FIX: Reset time and day when returning to the main menu.
       localStorage.removeItem("totalGameMinutes");
       localStorage.removeItem("currentDayNumber");
-      window.location.href = "/"; // Assuming main menu is at the root
+      window.location.href = "/";
     };
     buttonContainer.appendChild(mainMenuButton);
 
-    // Fade in the "You Died" text and buttons
     setTimeout(() => {
       deathText.style.opacity = "1";
+      scoreText.style.opacity = "1";
       buttonContainer.style.opacity = "1";
     }, 500);
-  }, 2200); // This time should be slightly longer than the fade transition
+  }, 2200);
 }
 
-/**
- * --- MODIFIED FUNCTION ---
- * Added a check to trigger the death sequence if a critical stat reaches zero.
- */
 function statChange(statName, amount) {
-  //console.log(statName, amount);
-  if (isPlayerDead) return; // Do not change stats if player is already dead
+  if (isPlayerDead) return;
 
   let stats = JSON.parse(localStorage.getItem("playerStats"));
   stats[statName].currentStat += amount;
 
-  // Clamp the stat so it doesn't go below 0 visually before death
   if (stats[statName].currentStat < 0) {
     stats[statName].currentStat = 0;
   }
@@ -844,8 +839,6 @@ function statChange(statName, amount) {
     })
   );
 
-  // --- NEW ---
-  // Check for death condition
   const criticalStats = ["food", "stamina", "hygiene", "happiness", "health"];
   if (criticalStats.includes(statName) && stats[statName].currentStat <= 0) {
     handlePlayerDeath();
