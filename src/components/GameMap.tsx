@@ -22,7 +22,7 @@ function GameMap({ mapNum }) {
   const canvasRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
-
+  const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
   const [showDialog, setShowDialog] = useState(false);
   const [dialogTargetMap, setDialogTargetMap] = useState("");
   const [spawnX, setSpawnX] = useState<number | null>(null);
@@ -46,21 +46,22 @@ function GameMap({ mapNum }) {
     script.type = "module";
     script.async = true;
 
-    const waitForInitGameMap = () => {
+    const waitForInitGameMap = async () => {
       if (window.initGameMap) {
         const playerStats = JSON.parse(localStorage.getItem("playerStats") || "{}");
         const characterId = localStorage.getItem("characterId") || "Noble Man";
         const previousMap = localStorage.getItem("previousMap") || `map${mapNum}`;
 
+        // ✅ Delay sebelum mulai load (misal 1 detik)
+        await delay(1000);
+
         window
           .initGameMap(canvas, String(mapNum), playerStats, characterId, previousMap, {
             spawnX: spawnX ?? undefined,
-            spawnY: spawnY ?? undefined
+            spawnY: spawnY ?? undefined,
           })
           .then(() => console.log("✅ initGameMap finished successfully."))
-          .catch((error) =>
-            console.error("❌ initGameMap encountered an error:", error)
-          );
+          .catch((error) => console.error("❌ initGameMap encountered an error:", error));
       } else {
         setTimeout(waitForInitGameMap, 50);
       }
