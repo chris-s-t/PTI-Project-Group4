@@ -409,6 +409,7 @@ function updatePlayerPosition() {
           
           statChange("hygiene", 100);
           statChange("happiness", 30);
+          statChange("score", 100);
         }
       }
 

@@ -10,6 +10,10 @@ import FoodIcon from "/Assets/StatusGUI/foodIcon.png";
 import StaminaIcon from "/Assets/StatusGUI/staminaIcon.png";
 import HappinessIcon from "/Assets/StatusGUI/happyIcon.png";
 import HygieneIcon from "/Assets/StatusGUI/hygieneIcon.png";
+import statBack from "/Assets/StatusGUI/statBack.png";
+import statFill from "/Assets/StatusGUI/statFill.png";
+import nameHold from "/Assets/StatusGUI/nameHold.png";
+
 import nobleManImg from "/Assets/Avatars/MiniNobleManCrop.png";
 import nobleWomanImg from "/Assets/Avatars/MiniNobleWomanCrop.png";
 import oldManImg from "/Assets/Avatars/MiniOldManCrop.png";
@@ -505,7 +509,7 @@ function StatusGUI() {
         {Object.entries(playerStats).map(([statName, stat]) => {
           if (statName === "score") {
             return (
-              <div style={scoreContainerStyle}>
+              <div style={scoreContainerStyle} key={statName}>
                 <h3 style={scoreTitleStyle}>Score</h3>
                 <div style={scoreValueContainer}>
                   <span style={scoreTextStyle}>{stat.currentStat}</span>
@@ -520,7 +524,20 @@ function StatusGUI() {
               >
                 <div className="bar-container">
                   <div className="floating-text-container"></div>
-                  <div className="bar-bg"></div>
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "85%",
+                      height: "100%",
+                      backgroundSize: "100% 100%",
+                      backgroundRepeat: "no-repeat",
+                      borderRadius: "8px",
+                      zIndex: 1,
+                      backgroundImage: `url(${statBack})`,
+                    }}
+                  ></div>
                   <img
                     src={
                       statName === "health"
@@ -552,10 +569,7 @@ function StatusGUI() {
         })}
       </div>
 
-      <div
-        className="inventory-button-wrapper"
-        title="Open Inventory (C)"
-      >
+      <div className="inventory-button-wrapper" title="Open Inventory (C)">
         <img
           src={backpackIcon}
           alt="Open Inventory"

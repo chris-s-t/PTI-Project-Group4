@@ -314,18 +314,7 @@ body {
   overflow: hidden;
   margin-left: 45px;
 }
-.bar-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 85%;
-  height: 100%;
-  background-image: url("Assets/StatusGUI/statBack.png");
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  border-radius: 8px;
-  z-index: 1;
-}
+
 .bar-fill {
   position: absolute;
   top: 12px;
