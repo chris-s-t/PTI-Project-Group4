@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "../styles/statusGUI.css";
 
 import ClockIcon from "/Assets/StatusGUI/Clock.png";
@@ -28,6 +28,80 @@ const characterAvatars = {
   Queen: queenImg,
 };
 
+function formatTime(hours, minutes) {
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+    2,
+    "0"
+  )}`;
+}
+
+function getDayOfWeek(dayNumber) {
+  const daysOfWeek = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+  return daysOfWeek[(dayNumber - 1) % 7];
+}
+
+function getTitleFromCharacter(characterId) {
+  switch (characterId) {
+    case "Noble Man":
+      return "Noble Sir";
+    case "Noble Woman":
+      return "Noble Lady";
+    case "Old Man":
+      return "Elder";
+    case "Peasant":
+      return "Peasant";
+    case "Princess":
+      return "Princess";
+    case "Queen":
+      return "Your Majesty";
+    default:
+      return "";
+  }
+}
+
+function getGreeting(hours, playerName) {
+  let greeting;
+  if (hours >= 5 && hours < 12) {
+    greeting = "Good Morning";
+  } else if (hours >= 12 && hours < 17) {
+    greeting = "Good Afternoon";
+  } else if (hours >= 17 && hours < 21) {
+    greeting = "Good Evening";
+  } else {
+    greeting = "Good Night";
+  }
+  return `${greeting}, ${playerName}`;
+}
+
+function calculateOpacity(hours, minutes) {
+  let opacity = 0;
+  if (hours >= 12 && hours < 20) {
+    const timePassed = (hours - 12) * 60 + minutes;
+    opacity = (timePassed / (8 * 60)) * 0.5;
+  } else if (hours >= 20 || hours < 4) {
+    opacity = 0.5;
+  } else if (hours >= 4 && hours < 10) {
+    const timePassed = (hours - 4) * 60 + minutes;
+    opacity = 0.5 - timePassed / (6 * 60);
+  }
+  return opacity;
+}
+
+function getStatusColor(current, max) {
+  const percentage = (current / max) * 100;
+  if (percentage > 70) return "#4CAF50";
+  if (percentage > 40) return "#FFEB3B";
+  return "#F44336";
+}
+
 function StatusGUI() {
   const [currentTime, setCurrentTime] = useState("00:00");
   const [currentDay, setCurrentDay] = useState("Day 1");
@@ -41,7 +115,9 @@ function StatusGUI() {
     stamina: { currentStat: 100, max: 100 },
     happiness: { currentStat: 100, max: 100 },
     hygiene: { currentStat: 100, max: 100 },
+    score: { currentStat: 100, max: 100 },
   });
+  const [characterId, setCharacterId] = useState("");
   const [inventory, setInventory] = useState([]);
   const [inventoryVisible, setInventoryVisible] = useState(false);
   const [hoveredItem, setHoveredItem] = useState(null);
@@ -53,8 +129,21 @@ function StatusGUI() {
   const [shopVisible, setShopVisible] = useState(false);
   const [shopItems, setShopItems] = useState([]);
   const [overlayVisible, setOverlayVisible] = useState(false);
-  const [sleepZText, setSleepZText] = useState("");                //zzz
+  const [previousStats, setPreviousStats] = useState({});
+  const [currentHours, setCurrentHours] = useState(15);
+  const [currentMinutes, setCurrentMinutes] = useState(0);
+  const [currentDayNumber, setCurrentDayNumber] = useState(1);
+  const [currentGreeting, setCurrentGreeting] = useState("");
 
+  const [overlayOpacity, setOverlayOpacity] = useState(0);
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    message: "",
+    imageUrl: "",
+  });
+  const popupBoxRef = useRef(null);
+  const joystickRef = useRef(null);
+  const activeJoystickKeyRef = useRef(null);
 
 
   useEffect(() => {
@@ -63,12 +152,43 @@ function StatusGUI() {
     const savedPlayerStats = localStorage.getItem("playerStats");
     const savedCharacterId = localStorage.getItem("characterId");
 
-    if (savedPlayerName) setPlayerName(savedPlayerName);
-    if (savedPlayerMoney) setPlayerMoney(parseInt(savedPlayerMoney));
-    if (savedPlayerStats) setPlayerStats(JSON.parse(savedPlayerStats));
-    if (savedCharacterId && characterAvatars[savedCharacterId]) {
-      setPlayerAvatarSrc(characterAvatars[savedCharacterId]);
-    }
+    const savedStatsJson = localStorage.getItem("playerStats");
+    const initialStats = savedStatsJson
+      ? JSON.parse(savedStatsJson)
+      : {
+          food: { currentStat: 100, max: 100 },
+          stamina: { currentStat: 100, max: 100 },
+          hygiene: { currentStat: 100, max: 100 },
+          happiness: { currentStat: 100, max: 100 },
+          health: { currentStat: 100, max: 100 },
+          score: { currentStat: 0, max: 100000},
+        };
+      
+    setPlayerName(savedPlayerName);
+    setCharacterId(savedCharacterId);
+    setPlayerMoney(savedPlayerMoney);
+    setPlayerStats(initialStats);
+    setPreviousStats(
+      Object.fromEntries(
+        Object.entries(initialStats).map(([key, val]) => [
+          key,
+          Math.max(0, Math.min(val.max, val.currentStat)),
+        ])
+      )
+    );
+    let { hours, minutes } = JSON.parse(localStorage.getItem("time"));
+    let day = parseInt(localStorage.getItem("day"));
+    setCurrentHours(hours);
+    setCurrentMinutes(minutes);
+    setCurrentDayNumber(day);
+    setCurrentTime(formatTime(hours, minutes));
+
+    const title = getTitleFromCharacter(savedCharacterId || "");
+    const capitalizedPlayerName =
+      savedPlayerName.charAt(0).toUpperCase() + savedPlayerName.slice(1);
+    const fullPlayerName = `${title} ${capitalizedPlayerName}`;
+    setCurrentGreeting(getGreeting(hours, fullPlayerName));
+    setOverlayOpacity(calculateOpacity(hours, minutes));
 
     const handleUpdateStatus = (event) => {
       const { type, value } = event.detail;
@@ -92,14 +212,24 @@ function StatusGUI() {
     };
 
     const handleUpdateClock = (event) => {
-      const { time, day } = event.detail;
+      const { time, day, hours, minutes } = event.detail;
       setCurrentTime(time);
       setCurrentDay(day);
+      setCurrentDayNumber(parseInt(day.split(" ")[1]) || 1);
+      setCurrentHours(hours);
+      setCurrentMinutes(minutes);
+
+      const title = getTitleFromCharacter(characterId || "");
+      const capitalizedPlayerName = playerName.charAt(0).toUpperCase() + playerName.slice(1);
+      const fullPlayerName = `${title} ${capitalizedPlayerName}`;
+      setCurrentGreeting(getGreeting(hours, fullPlayerName));
+      setOverlayOpacity(calculateOpacity(hours, minutes));
     };
 
     const handleUpdateGreeting = (event) => {
       const { message } = event.detail;
       setGreeting(message);
+      setCurrentGreeting(message);
     };
 
     const handleUpdatePlayerAvatar = (event) => {
@@ -107,9 +237,13 @@ function StatusGUI() {
       if (characterAvatars[characterId]) {
         setPlayerAvatarSrc(characterAvatars[characterId]);
       }
+      const { charId } = event.detail;
+      if (characterAvatars[charId]) {
+        setCharacterId(charId);
+        setPlayerAvatarSrc(characterAvatars[charId]);
+      }
     };
 
-    //inventory
     const handleUpdateInventory = (e) => {
       setInventory(e.detail.inventory);
     };
@@ -118,7 +252,6 @@ function StatusGUI() {
       setInventoryVisible(e.detail.visible);
     };
 
-    //popup
     const handleShowBox = (event) => {
       const { message, imageUrl, imageDuration, title } = event.detail;
 
@@ -132,7 +265,6 @@ function StatusGUI() {
       }, imageDuration);
     };
 
-    //shop
     const handleToggleShop = (e) => {
       setShopVisible(e.detail.visible);
       if (e.detail.visible) {
@@ -142,25 +274,14 @@ function StatusGUI() {
       }
     };
 
-    //overlay for dimming
+
     const handleShowOverlay = () => {
       setOverlayVisible(true);
-      setSleepZText(""); // reset
-      //zzz
-      const sequence = ["Z", "Zz", "Zzz", "Zzz.", "Zzz..", "Zzz..."];
-      let i = 0;
-
-      const zInterval = setInterval(() => {
-        setSleepZText(sequence[i]);
-        i++;
-        if (i >= sequence.length) {
-          clearInterval(zInterval);
-        }
-      }, 600); // adjust delay between z's
+      console.log("Overlay ON");
     }
     const handleHideOverlay = () => {
       setOverlayVisible(false);
-      setSleepZText(""); // reset
+      console.log("Overlay OFF");
     }
 
     window.addEventListener("updatePlayerStatus", handleUpdateStatus);
@@ -171,7 +292,7 @@ function StatusGUI() {
     window.addEventListener("updateInventory", handleUpdateInventory);
     window.addEventListener("toggleInventory", handleToggleInventory);
     window.addEventListener("showBox", handleShowBox);
-    window.addEventListener("toggleShop", handleToggleShop);
+     window.addEventListener("toggleShop", handleToggleShop);
     window.addEventListener("showSleepOverlay", handleShowOverlay);
     window.addEventListener("hideSleepOverlay", handleHideOverlay);
 
@@ -191,6 +312,66 @@ function StatusGUI() {
       window.removeEventListener("showSleepOverlay", handleShowOverlay);
       window.removeEventListener("hideSleepOverlay", handleHideOverlay);
     };
+
+  }, []);
+
+  useEffect(() => {
+    const joystickElement = joystickRef.current;
+    if (!joystickElement) {
+      console.warn("Joystick element not found for event listeners.");
+      return;
+    }
+
+    const handleMouseDown = (e) => {
+      const btn = e.currentTarget;
+      const key = btn.dataset.key;
+      if (key) {
+        document.dispatchEvent(
+          new KeyboardEvent("keydown", { key, bubbles: true })
+        );
+        activeJoystickKeyRef.current = key;
+      }
+    };
+
+    const handleGlobalMouseUp = () => {
+      if (activeJoystickKeyRef.current) {
+        document.dispatchEvent(
+          new KeyboardEvent("keyup", {
+            key: activeJoystickKeyRef.current,
+            bubbles: true,
+          })
+        );
+        activeJoystickKeyRef.current = null;
+      }
+    };
+
+    const handleMouseLeave = (e) => {
+      const key = e.currentTarget.dataset.key;
+      if (activeJoystickKeyRef.current === key) {
+        document.dispatchEvent(
+          new KeyboardEvent("keyup", { key, bubbles: true })
+        );
+        activeJoystickKeyRef.current = null;
+      }
+    };
+
+    const arrowButtons = joystickElement.querySelectorAll(".arrow");
+    arrowButtons.forEach((btn) => {
+      btn.addEventListener("mousedown", handleMouseDown);
+      btn.addEventListener("mouseleave", handleMouseLeave);
+      btn.addEventListener("dragstart", (e) => e.preventDefault());
+    });
+
+    document.addEventListener("mouseup", handleGlobalMouseUp);
+
+    return () => {
+      arrowButtons.forEach((btn) => {
+        btn.removeEventListener("mousedown", handleMouseDown);
+        btn.removeEventListener("mouseleave", handleMouseLeave);
+        btn.removeEventListener("dragstart", (e) => e.preventDefault());
+      });
+      document.removeEventListener("mouseup", handleGlobalMouseUp);
+    };
   }, []);
 
   const getStatusColor = (current, max) => {
@@ -199,25 +380,35 @@ function StatusGUI() {
     if (percentage > 40) return "#FFEB3B";
     return "#F44336";
   };
+  const showFloatingText = (containerSelector, text, color) => {
+    const container = document.querySelector(containerSelector);
+    if (!container) {
+      console.warn(`Floating text container not found: ${containerSelector}`);
+      return;
+    }
+
+    const div = document.createElement("div");
+    div.className = "floating-text";
+    div.style.color = color || "gold";
+    div.textContent = text;
+    container.appendChild(div);
+    setTimeout(() => div.remove(), 1200);
+  };
+
+  const title = getTitleFromCharacter(characterId);
+  const capitalizedPlayerName = playerName.charAt(0).toUpperCase() + playerName.slice(1);
+  const fullPlayerName = `${title} ${capitalizedPlayerName}`;
 
   return (
-    
     <>
     {overlayVisible && (
-      <>
       <div className="sleep-overlay fade-in"></div>
-      <div className="sleep-zzz">{sleepZText}</div>
-      </>
     )}
       <div id="statusGUI" className="status-gui">
         <div className="clock">
           <img src={ClockIcon} alt="Clock" />
           <div className="time">{currentTime}</div>
-          <div className="day">{currentDay}</div>
-        </div>
-
-        <div id="greeting" className="greeting">
-          {greeting}
+          <div className="day">{getDayOfWeek(currentDayNumber)} -  {currentDay}</div>
         </div>
 
         <div className="avatar-section">
@@ -255,42 +446,57 @@ function StatusGUI() {
           </div>
         </div>
 
-        {Object.entries(playerStats).map(([statName, stat]) => (
-          <div className={`status-bar status-bar-${statName}`} key={statName}>
-            <div className="bar-container">
-              <div className="floating-text-container"></div>
-              <div className="bar-bg"></div>
-              <img
-                src={
-                  statName === "health"
-                    ? HealthIcon
-                    : statName === "food"
-                    ? FoodIcon
-                    : statName === "stamina"
-                    ? StaminaIcon
-                    : statName === "happiness"
-                    ? HappinessIcon
-                    : HygieneIcon
-                }
-                className="status-icon"
-                alt={`${statName} Icon`}
-              />
-              <div
-                className={`bar-fill status-bar-${statName}`}
-                style={{
-                  width: `${(stat.currentStat / stat.max) * 100}%`,
-                  backgroundColor: getStatusColor(stat.currentStat, stat.max),
-                }}
-              ></div>
-              <div className="stat-text" id={`${statName}Text`}>
-                {stat.currentStat}
+        {Object.entries(playerStats).map(([statName, stat]) => {
+          if (statName === "score") {
+            return (
+              <div className="status-score-display" key={statName}>
+                <span className="score-text">{stat.currentStat}</span>{" "}
               </div>
-            </div>
-          </div>
-        ))}
+            );
+          } else {
+            return (
+              <div className={`status-bar status-bar-${statName}`}
+                key={statName}
+              >
+                <div className="bar-container">
+                  <div className="floating-text-container"></div>
+                  <div className="bar-bg"></div>
+                  <img
+                    src={
+                      statName === "health"
+                        ? HealthIcon
+                        : statName === "food"
+                        ? FoodIcon
+                        : statName === "stamina"
+                        ? StaminaIcon
+                        : statName === "happiness"
+                        ? HappinessIcon
+                        : HygieneIcon
+                    }
+                    className="status-icon"
+                    alt={`${statName} Icon`}
+                  />
+                  <div
+                    className={`bar-fill status-bar-${statName}`}
+                    style={{
+                      width: `${(stat.currentStat / stat.max) * 80}%`,
+                      backgroundColor: getStatusColor(
+                        stat.currentStat,
+                        stat.max
+                      ),
+                    }}
+                  ></div>
+                  <div className="stat-text" id={`${statName}Text`}>
+                    {stat.currentStat}
+                  </div>
+                </div>
+              </div>
+              );
+          }
+        })}
       </div>
 
-      <div className="medieval-joystick">
+      <div className="medieval-joystick" ref={joystickRef}>
         <button className="arrow up" data-key="ArrowUp">
           ▲
         </button>
@@ -306,7 +512,13 @@ function StatusGUI() {
           ▼
         </button>
       </div>
-      
+
+      <div id="greeting" className="greeting">
+        {currentGreeting}
+      </div>
+
+    <div id="overlay" style={{ display: "none" }}></div>
+
     {hoveredItem && (
       <div className="item-description-box-outside">
         <h3 className="inventory-title">{hoveredItem.name}</h3>
@@ -361,20 +573,15 @@ function StatusGUI() {
           </div>
         </div>
 
-      
+        {hoveredItem && (
+          <div className="item-description-box-outside">
+            <h3 className="inventory-title">{hoveredItem.name}</h3>
+            <p className="item-description">{hoveredItem.description}</p>
+          </div>
+        )}
       </>
     )}
   
-  {popupVisible && (
-    <div className="popup-box">
-      <h3 className="popup-title">{popupTitle}</h3>
-      <div className="popup-content-row">
-        <p className="popup-message">{popupMessage}</p>
-        <img src={popupImageUrl} alt="Popup Visual" className="popup-image" />
-      </div>
-    </div>
-  )}
-
   {shopVisible && (
     <div className="inventory-overlay">
       <div className="inventory-window shopkeeper-section">
@@ -436,7 +643,15 @@ function StatusGUI() {
     </div>
   )}
 
-
+  {popupVisible && (
+    <div className="popup-box">
+      <h3 className="popup-title">{popupTitle}</h3>
+      <div className="popup-content-row">
+        <p className="popup-message">{popupMessage}</p>
+        <img src={popupImageUrl} alt="Popup Visual" className="popup-image" />
+      </div>
+    </div>
+  )}
 
 
   </>
