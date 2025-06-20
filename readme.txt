@@ -1,5 +1,5 @@
- # PTI UTS Project Group4
- Projek untuk Ujian Tengah Semester PTI (Teori & Lab) Kelompok 4
+ # PTI UTS-UAS Project Group4
+ Projek untuk Ujian Tengah Semester dan Ujian Akhir Semester PTI (Teori & Lab) Kelompok 4
 
 
 # Ketua Kelompok :
